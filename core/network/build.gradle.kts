@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.apollo.graphql)
 }
 
 android {
@@ -32,6 +33,17 @@ android {
     }
 }
 
+apollo {
+    service("service") {
+        packageName.set("com.example.core.network")
+        generateFragmentImplementations.set(true)
+        introspection {
+            endpointUrl.set("https://graphql.anilist.co")
+            schemaFile.set(file("src/main/graphql/schema.graphqls"))
+        }
+    }
+}
+
 dependencies {
 
     implementation(libs.androidx.core.ktx)
@@ -40,4 +52,7 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    // apollo graphql
+    implementation(libs.apollo.runtime)
 }
