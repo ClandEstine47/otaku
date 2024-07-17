@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.dagger.hilt)
+    alias(libs.plugins.kotlin.kapt)
 }
 
 android {
@@ -66,4 +68,12 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // di
+    implementation(libs.dagger.hilt)
+    kapt(libs.dagger.hilt.compiler)
+}
+
+kapt {
+    correctErrorTypes = true
 }

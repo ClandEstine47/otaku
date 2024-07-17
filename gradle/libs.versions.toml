@@ -11,6 +11,7 @@ composeBom = "2024.04.01"
 appcompat = "1.7.0"
 material = "1.10.0"
 apolloGraphql = "3.8.3"
+daggerHilt = "2.51.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -30,9 +31,13 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 apollo-runtime = { group = "com.apollographql.apollo3", name = "apollo-runtime", version.ref = "apolloGraphql" }
+dagger-hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "daggerHilt" }
+dagger-hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "daggerHilt" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 apollo-graphql = { id = "com.apollographql.apollo3", version.ref = "apolloGraphql" }
+dagger-hilt = { id = "com.google.dagger.hilt.android", version.ref = "daggerHilt" }
+kotlin-kapt = { id = "kotlin-kapt" }
