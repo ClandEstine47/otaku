@@ -1,4 +1,4 @@
-package com.example.core.model
+package com.example.core.domain
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
