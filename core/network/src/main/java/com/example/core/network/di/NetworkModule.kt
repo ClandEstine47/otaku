@@ -14,7 +14,7 @@ const val ANILIST_GRAPHQL_URL = "https://graphql.anilist.co"
 
 @Module
 @InstallIn(SingletonComponent::class)
-internal object NetworkModule {
+object NetworkModule {
 
     @Singleton
     @Provides
