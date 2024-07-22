@@ -1,6 +1,6 @@
 query RecentlyUpdated(
-    $page: Int,
-    $perPage: Int = 50,
+    $page: Int!,
+    $perPage: Int! = 50,
     $airingAtLesser: Int!
 ) {
     Page(page: $page, perPage: $perPage) {
