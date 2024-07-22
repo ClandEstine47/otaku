@@ -4,8 +4,9 @@ import com.apollographql.apollo3.ApolloClient
 import com.example.core.domain.model.airing.AiringSchedule
 import com.example.core.domain.service.MediaService
 import com.example.core.network.RecentlyUpdatedQuery
+import javax.inject.Inject
 
-class MediaServiceImpl(
+class MediaServiceImpl @Inject constructor(
     private val apolloClient: ApolloClient
 ): MediaService {
     override suspend fun getTrendingMediaList(pageNumber: Int, airingTimeInMs: Int): List<AiringSchedule> {
