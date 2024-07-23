@@ -12,6 +12,7 @@ appcompat = "1.7.0"
 material = "1.10.0"
 apolloGraphql = "3.8.3"
 daggerHilt = "2.51.1"
+lifecycleViewModelKtx = "2.8.3"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -33,6 +34,7 @@ material = { group = "com.google.android.material", name = "material", version.r
 apollo-runtime = { group = "com.apollographql.apollo3", name = "apollo-runtime", version.ref = "apolloGraphql" }
 dagger-hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "daggerHilt" }
 dagger-hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "daggerHilt" }
+androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycleViewModelKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
