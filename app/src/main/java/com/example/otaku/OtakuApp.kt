@@ -2,6 +2,16 @@ package com.example.otaku
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
+import timber.log.Timber
 
 @HiltAndroidApp
-class OtakuApp: Application()
+class OtakuApp: Application() {
+
+    override fun onCreate() {
+        super.onCreate()
+
+        if (true) {
+            Timber.plant(Timber.DebugTree())
+        }
+    }
+}
