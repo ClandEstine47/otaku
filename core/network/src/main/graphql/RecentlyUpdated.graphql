@@ -1,6 +1,7 @@
 query RecentlyUpdated(
     $page: Int!,
-    $perPage: Int! = 50,
+    $perPage: Int = 50,
+    $airingAtGreater: Int = 0,
     $airingAtLesser: Int!
 ) {
     Page(page: $page, perPage: $perPage) {
@@ -10,7 +11,7 @@ query RecentlyUpdated(
             total
         }
         airingSchedules(
-            airingAt_greater: 0
+            airingAt_greater: $airingAtGreater
             airingAt_lesser: $airingAtLesser
             sort: TIME_DESC
         ) {
