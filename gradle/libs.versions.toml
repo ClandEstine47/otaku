@@ -14,6 +14,7 @@ apolloGraphql = "3.8.3"
 daggerHilt = "2.51.1"
 lifecycleViewModelKtx = "2.8.3"
 hiltNavigationCompose = "1.2.0"
+timber = "5.0.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -37,6 +38,7 @@ material = { group = "com.google.android.material", name = "material", version.r
 apollo-runtime = { group = "com.apollographql.apollo3", name = "apollo-runtime", version.ref = "apolloGraphql" }
 dagger-hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "daggerHilt" }
 dagger-hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "daggerHilt" }
+timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
