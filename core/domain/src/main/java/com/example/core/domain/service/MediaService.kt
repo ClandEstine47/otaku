@@ -4,5 +4,5 @@ import com.example.core.domain.model.airing.AiringSchedule
 
 interface MediaService {
 
-    suspend fun getTrendingMediaList(pageNumber: Int, airingTimeInMs: Int): List<AiringSchedule>
+    suspend fun getTrendingMediaList(pageNumber: Int, airingTimeInMs: Int): Result<List<AiringSchedule>>
 }
