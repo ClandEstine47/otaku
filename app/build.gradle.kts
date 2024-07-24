@@ -53,6 +53,8 @@ android {
 
 dependencies {
 
+    implementation(project(":feature"))
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -71,7 +73,11 @@ dependencies {
 
     // di
     implementation(libs.dagger.hilt)
+    implementation(libs.androidx.hilt.navigation.compose)
     kapt(libs.dagger.hilt.compiler)
+
+    // timber
+    implementation(libs.timber)
 }
 
 kapt {

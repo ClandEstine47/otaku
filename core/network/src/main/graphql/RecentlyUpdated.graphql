@@ -1,0 +1,40 @@
+query RecentlyUpdated(
+    $page: Int!,
+    $perPage: Int = 50,
+    $airingAtGreater: Int = 0,
+    $airingAtLesser: Int!
+) {
+    Page(page: $page, perPage: $perPage) {
+        pageInfo {
+            hasNextPage
+            currentPage
+            total
+        }
+        airingSchedules(
+            airingAt_greater: $airingAtGreater
+            airingAt_lesser: $airingAtLesser
+            sort: TIME_DESC
+        ) {
+            episode
+            airingAt
+            media {
+                id
+                idMal
+                status
+                chapters
+                episodes
+                nextAiringEpisode { episode }
+                isAdult
+                type
+                meanScore
+                isFavourite
+                format
+                bannerImage
+                countryOfOrigin
+                coverImage { large }
+                title { english romaji userPreferred }
+                mediaListEntry { progress private score(format: POINT_100) status }
+            }
+        }
+    }
+}
