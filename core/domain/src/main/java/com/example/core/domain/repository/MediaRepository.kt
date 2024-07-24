@@ -7,5 +7,5 @@ interface MediaRepository {
     suspend fun getRecentlyUpdatedMedia(
         pageNumber: Int,
         airingTimeInMs: Int
-    ): List<AiringSchedule>
+    ): Result<List<AiringSchedule>>
 }
