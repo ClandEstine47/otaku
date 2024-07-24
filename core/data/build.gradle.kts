@@ -52,6 +52,9 @@ dependencies {
 
     // apollo graphql
     implementation(libs.apollo.runtime)
+
+    // timber
+    implementation(libs.timber)
 }
 
 kapt {
