@@ -4,5 +4,5 @@ import com.example.core.domain.model.media.MediaListStatus
 
 data class ListActivityOption(
     val disabled: Boolean = false,
-    val type: MediaListStatus? = null
+    val type: MediaListStatus? = null,
 )

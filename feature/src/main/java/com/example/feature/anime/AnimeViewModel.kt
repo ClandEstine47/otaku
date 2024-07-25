@@ -3,6 +3,7 @@ package com.example.feature.anime
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.core.domain.model.airing.AiringSchedule
+import com.example.core.domain.model.media.Media
 import com.example.core.domain.repository.MediaRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,52 +13,65 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AnimeViewModel @Inject constructor(
-    private val mediaRepository: MediaRepository
-) : ViewModel() {
+class AnimeViewModel
+    @Inject
+    constructor(
+        private val mediaRepository: MediaRepository,
+    ) : ViewModel() {
+        private val _state = MutableStateFlow(AnimeUiState())
+        val state = _state.asStateFlow()
 
-    private val _state = MutableStateFlow(AnimeUiState())
-    val state = _state.asStateFlow()
+        init {
+            viewModelScope.launch {
+                _state.update {
+                    it.copy(
+                        isLoading = true,
+                    )
+                }
 
-    init {
-        viewModelScope.launch {
-            _state.update {
-                it.copy(
-                    isLoading = true
-                )
-            }
-
-            val result = mediaRepository.getRecentlyUpdatedMedia(
-                pageNumber = 1,
-                airingTimeInMs = (System.currentTimeMillis() / 1000 - 10000).toInt()
-            )
-
-            _state.update { currentState ->
-                when {
-                    result.isSuccess -> currentState.copy(
-                        trendingMedia = result.getOrNull(),
-                        isLoading = false,
-                        error = null
+                val recentlyUpdatedResult =
+                    mediaRepository.getRecentlyUpdatedMedia(
+                        pageNumber = 1,
+                        airingTimeInMs = (System.currentTimeMillis() / 1000 - 10000).toInt(),
                     )
 
-                    result.isFailure -> currentState.copy(
-                        trendingMedia = null,
-                        isLoading = false,
-                        error = result.exceptionOrNull()?.message ?: "An unknown error occurred"
+                val trendingNowResult =
+                    mediaRepository.getTrendingNowMedia(
+                        pageNumber = 1,
                     )
 
-                    else -> currentState.copy(
-                        isLoading = false,
-                        error = "Unexpected result state"
-                    )
+                _state.update { currentState ->
+                    when {
+                        recentlyUpdatedResult.isSuccess && trendingNowResult.isSuccess ->
+                            currentState.copy(
+                                recentlyUpdatedMedia = recentlyUpdatedResult.getOrNull(),
+                                trendingNowMedia = trendingNowResult.getOrNull(),
+                                isLoading = false,
+                                error = null,
+                            )
+
+                        recentlyUpdatedResult.isFailure || trendingNowResult.isFailure ->
+                            currentState.copy(
+                                recentlyUpdatedMedia = null,
+                                trendingNowMedia = null,
+                                isLoading = false,
+                                error = recentlyUpdatedResult.exceptionOrNull()?.message ?: "An unknown error occurred",
+                            )
+
+                        else ->
+                            currentState.copy(
+                                isLoading = false,
+                                error = "Unexpected result state",
+                            )
+                    }
                 }
             }
         }
-    }
 
-    data class AnimeUiState(
-        val trendingMedia: List<AiringSchedule>? = null,
-        val isLoading: Boolean = false,
-        val error: String? = null
-    )
-}
+        data class AnimeUiState(
+            val recentlyUpdatedMedia: List<AiringSchedule>? = null,
+            val trendingNowMedia: List<Media>? = null,
+            val isLoading: Boolean = false,
+            val error: String? = null,
+        )
+    }

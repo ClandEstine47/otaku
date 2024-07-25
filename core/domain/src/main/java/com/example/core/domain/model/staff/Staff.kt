@@ -23,5 +23,5 @@ data class Staff(
     val staffMedia: MediaConnection = MediaConnection(),
     val characters: CharacterConnection = CharacterConnection(),
     val characterMedia: MediaConnection = MediaConnection(),
-    val favourites: Int = 0
+    val favourites: Int = 0,
 )

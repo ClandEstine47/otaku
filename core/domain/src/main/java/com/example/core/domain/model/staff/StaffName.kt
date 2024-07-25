@@ -7,5 +7,5 @@ data class StaffName(
     val full: String = "",
     val native: String = "",
     val alternative: List<String> = listOf(),
-    val userPreferred: String = ""
+    val userPreferred: String = "",
 )

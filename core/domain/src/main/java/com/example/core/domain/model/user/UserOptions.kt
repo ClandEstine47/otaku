@@ -12,6 +12,5 @@ data class UserOptions(
     var activityMergeTime: Int = 0,
     var staffNameLanguage: UserStaffNameLanguage? = null,
     var restrictMessagesToFollowing: Boolean = false,
-    var disabledListActivity: List<ListActivityOption> = listOf()
-
+    var disabledListActivity: List<ListActivityOption> = listOf(),
 )

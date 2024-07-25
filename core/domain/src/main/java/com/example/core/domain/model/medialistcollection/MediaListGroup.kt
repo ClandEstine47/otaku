@@ -8,5 +8,5 @@ data class MediaListGroup(
     val name: String = "",
     val isCustomList: Boolean = false,
     val isSplitCompletedList: Boolean = false,
-    val status: MediaListStatus? = null
+    val status: MediaListStatus? = null,
 )

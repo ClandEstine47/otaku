@@ -9,5 +9,5 @@ data class MediaTrend(
     val inProgress: Int? = null,
     val releasing: Boolean,
     val episode: Int? = null,
-    val media: Media? = null
+    val media: Media? = null,
 )

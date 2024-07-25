@@ -12,7 +12,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object FeatureModule {
-
     @Provides
     @Singleton
     fun providesMediaRepository(mediaService: MediaService): MediaRepository {

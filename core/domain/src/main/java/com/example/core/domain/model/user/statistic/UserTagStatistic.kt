@@ -8,5 +8,5 @@ data class UserTagStatistic(
     override val minutesWatched: Int = 0,
     override val chaptersRead: Int = 0,
     override val mediaIds: List<Int> = listOf(),
-    val tag: MediaTag? = null
-): UserStatisticsDetail
+    val tag: MediaTag? = null,
+) : UserStatisticsDetail

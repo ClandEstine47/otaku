@@ -8,5 +8,5 @@ data class CharacterName(
     val native: String = "",
     val alternative: List<String> = listOf(),
     val alternativeSpoiler: List<String> = listOf(),
-    val userPreferred: String = ""
+    val userPreferred: String = "",
 )

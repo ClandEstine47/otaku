@@ -15,5 +15,5 @@ enum class MediaSource {
     GAME,
     COMIC,
     MULTIMEDIA_PROJECT,
-    PICTURE_BOOK
+    PICTURE_BOOK,
 }

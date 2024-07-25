@@ -8,5 +8,5 @@ data class UserFormatStatistic(
     override val minutesWatched: Int = 0,
     override val chaptersRead: Int = 0,
     override val mediaIds: List<Int> = listOf(),
-    val format: MediaFormat? = null
-): UserStatisticsDetail
+    val format: MediaFormat? = null,
+) : UserStatisticsDetail

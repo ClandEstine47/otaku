@@ -4,5 +4,5 @@ import com.example.core.domain.model.media.MediaListStatus
 
 data class StatusDistribution(
     val status: MediaListStatus? = null,
-    val amount: Int = 0
+    val amount: Int = 0,
 )

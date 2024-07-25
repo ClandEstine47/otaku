@@ -8,5 +8,5 @@ data class UserStudioStatistic(
     override val minutesWatched: Int = 0,
     override val chaptersRead: Int = 0,
     override val mediaIds: List<Int> = listOf(),
-    val studio: Studio? = null
-): UserStatisticsDetail
+    val studio: Studio? = null,
+) : UserStatisticsDetail

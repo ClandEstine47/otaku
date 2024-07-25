@@ -9,19 +9,17 @@ import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import javax.inject.Singleton
 
-
 const val ANILIST_GRAPHQL_URL = "https://graphql.anilist.co"
 
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
-
     @Singleton
     @Provides
     fun provideApolloClient(): ApolloClient {
-
-        val okHttpClient = OkHttpClient.Builder()
-            .build()
+        val okHttpClient =
+            OkHttpClient.Builder()
+                .build()
 
         return ApolloClient.Builder()
             .serverUrl(ANILIST_GRAPHQL_URL)

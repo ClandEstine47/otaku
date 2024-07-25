@@ -8,5 +8,5 @@ data class MediaRank(
     val year: Int = 0,
     val season: MediaSeason? = null,
     val allTime: Boolean = false,
-    val context: String = ""
+    val context: String = "",
 )

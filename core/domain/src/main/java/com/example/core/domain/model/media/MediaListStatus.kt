@@ -6,5 +6,5 @@ enum class MediaListStatus {
     COMPLETED,
     DROPPED,
     PAUSED,
-    REPEATING
+    REPEATING,
 }

@@ -21,5 +21,5 @@ data class MediaList(
     var updatedAt: Int = 0,
     var createdAt: Int = 0,
     val media: Media = Media(),
-    val user: User = User()
+    val user: User = User(),
 )

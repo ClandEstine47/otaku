@@ -1,8 +1,8 @@
 package com.example.core.domain.model.media
 
-import com.example.core.domain.model.staff.StaffRoleType
 import com.example.core.domain.model.character.Character
 import com.example.core.domain.model.character.CharacterRole
+import com.example.core.domain.model.staff.StaffRoleType
 
 data class MediaEdge(
     val node: Media = Media(),
@@ -14,5 +14,5 @@ data class MediaEdge(
     val dubGroup: String = "",
     val voiceActorRoles: List<StaffRoleType> = listOf(),
     val staffRole: String = "",
-    val isMainStudio: Boolean = false
+    val isMainStudio: Boolean = false,
 )
