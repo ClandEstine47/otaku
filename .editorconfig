@@ -1,0 +1,6 @@
+# https://editorconfig.org/
+# This configuration is used by ktlint when spotless invokes it
+
+[*.{kt,kts}]
+ktlint_standard_no-wildcard-imports = disabled
+ktlint_standard_function-naming = disabled

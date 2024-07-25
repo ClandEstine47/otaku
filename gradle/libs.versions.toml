@@ -15,6 +15,7 @@ daggerHilt = "2.51.1"
 lifecycleViewModelKtx = "2.8.3"
 hiltNavigationCompose = "1.2.0"
 timber = "5.0.1"
+spotless = "6.25.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -47,3 +48,4 @@ android-library = { id = "com.android.library", version.ref = "agp" }
 apollo-graphql = { id = "com.apollographql.apollo3", version.ref = "apolloGraphql" }
 dagger-hilt = { id = "com.google.dagger.hilt.android", version.ref = "daggerHilt" }
 kotlin-kapt = { id = "kotlin-kapt" }
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
