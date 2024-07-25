@@ -3,6 +3,7 @@ package com.example.core.network.service
 import com.example.core.domain.model.airing.AiringSchedule
 import com.example.core.domain.model.media.*
 import com.example.core.network.RecentlyUpdatedQuery
+import com.example.core.network.TrendingNowQuery
 import com.example.core.network.type.MediaFormat as NetworkMediaFormat
 import com.example.core.network.type.MediaListStatus as NetworkMediaListStatus
 import com.example.core.network.type.MediaStatus as NetworkMediaStatus
@@ -45,7 +46,40 @@ fun RecentlyUpdatedQuery.Media.toDomainMedia(): Media {
     )
 }
 
+fun TrendingNowQuery.Medium.toDomainMedia(): Media {
+    return Media(
+        idAniList = id,
+        idMal = idMal,
+        status = status?.toDomainMediaStatus(),
+        chapters = chapters,
+        episodes = episodes,
+        isAdult = isAdult ?: false,
+        type = type?.toDomainMediaType(),
+        meanScore = meanScore ?: 0,
+        isFavourite = isFavourite ?: false,
+        format = format?.toDomainMediaFormat(),
+        bannerImage = bannerImage.orEmpty(),
+        countryOfOrigin = countryOfOrigin.toString(),
+        coverImage = coverImage?.toDomainMediaCoverImage() ?: MediaCoverImage(),
+        title = MediaTitle(
+            english = title?.english ?: "",
+            romaji = title?.romaji ?: "",
+            userPreferred = title?.userPreferred ?: ""
+        ),
+        mediaListEntry = MediaList(
+            progress = mediaListEntry?.progress ?: 0,
+            private = mediaListEntry?.private ?: false,
+            score = mediaListEntry?.score ?: 0.0,
+            status = mediaListEntry?.status?.toDomainMediaListStatus()
+        )
+    )
+}
+
 fun RecentlyUpdatedQuery.CoverImage.toDomainMediaCoverImage(): MediaCoverImage {
+    return MediaCoverImage(large = large.orEmpty())
+}
+
+fun TrendingNowQuery.CoverImage.toDomainMediaCoverImage(): MediaCoverImage {
     return MediaCoverImage(large = large.orEmpty())
 }
 
