@@ -1,7 +1,7 @@
 package com.example.core.domain.model.character
 
-enum class CharacterRole{
+enum class CharacterRole {
     MAIN,
     SUPPORTING,
-    BACKGROUND
+    BACKGROUND,
 }

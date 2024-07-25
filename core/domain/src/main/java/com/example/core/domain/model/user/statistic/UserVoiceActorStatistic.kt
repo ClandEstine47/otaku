@@ -9,5 +9,5 @@ data class UserVoiceActorStatistic(
     override val chaptersRead: Int = 0,
     override val mediaIds: List<Int> = listOf(),
     val voiceActor: Staff? = null,
-    val characterIds: List<Int> = listOf()
-): UserStatisticsDetail
+    val characterIds: List<Int> = listOf(),
+) : UserStatisticsDetail

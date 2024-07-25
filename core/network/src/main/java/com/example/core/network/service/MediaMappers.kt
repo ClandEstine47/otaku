@@ -3,6 +3,7 @@ package com.example.core.network.service
 import com.example.core.domain.model.airing.AiringSchedule
 import com.example.core.domain.model.media.*
 import com.example.core.network.RecentlyUpdatedQuery
+import com.example.core.network.TrendingNowQuery
 import com.example.core.network.type.MediaFormat as NetworkMediaFormat
 import com.example.core.network.type.MediaListStatus as NetworkMediaListStatus
 import com.example.core.network.type.MediaStatus as NetworkMediaStatus
@@ -12,7 +13,7 @@ fun RecentlyUpdatedQuery.AiringSchedule.toRecentlyUpdatedMedia(): AiringSchedule
     return AiringSchedule(
         airingAt = airingAt,
         episode = episode,
-        media = media?.toDomainMedia() ?: Media()
+        media = media?.toDomainMedia() ?: Media(),
     )
 }
 
@@ -31,17 +32,50 @@ fun RecentlyUpdatedQuery.Media.toDomainMedia(): Media {
         bannerImage = bannerImage.orEmpty(),
         countryOfOrigin = countryOfOrigin.toString(),
         coverImage = coverImage?.toDomainMediaCoverImage() ?: MediaCoverImage(),
-        title = MediaTitle(
-            english = title?.english ?: "",
-            romaji = title?.romaji ?: "",
-            userPreferred = title?.userPreferred ?: ""
-        ),
-        mediaListEntry = MediaList(
-            progress = mediaListEntry?.progress ?: 0,
-            private = mediaListEntry?.private ?: false,
-            score = mediaListEntry?.score ?: 0.0,
-            status = mediaListEntry?.status?.toDomainMediaListStatus()
-        )
+        title =
+            MediaTitle(
+                english = title?.english ?: "",
+                romaji = title?.romaji ?: "",
+                userPreferred = title?.userPreferred ?: "",
+            ),
+        mediaListEntry =
+            MediaList(
+                progress = mediaListEntry?.progress ?: 0,
+                private = mediaListEntry?.private ?: false,
+                score = mediaListEntry?.score ?: 0.0,
+                status = mediaListEntry?.status?.toDomainMediaListStatus(),
+            ),
+    )
+}
+
+fun TrendingNowQuery.Medium.toDomainMedia(): Media {
+    return Media(
+        idAniList = id,
+        idMal = idMal,
+        status = status?.toDomainMediaStatus(),
+        chapters = chapters,
+        episodes = episodes,
+        isAdult = isAdult ?: false,
+        type = type?.toDomainMediaType(),
+        meanScore = meanScore ?: 0,
+        isFavourite = isFavourite ?: false,
+        format = format?.toDomainMediaFormat(),
+        bannerImage = bannerImage.orEmpty(),
+        countryOfOrigin = countryOfOrigin.toString(),
+        coverImage = coverImage?.toDomainMediaCoverImage() ?: MediaCoverImage(),
+        title =
+            MediaTitle(
+                english = title?.english ?: "",
+                romaji = title?.romaji ?: "",
+                userPreferred = title?.userPreferred ?: "",
+            ),
+        mediaListEntry =
+            MediaList(
+                progress = mediaListEntry?.progress ?: 0,
+                private = mediaListEntry?.private ?: false,
+                score = mediaListEntry?.score ?: 0.0,
+                status = mediaListEntry?.status?.toDomainMediaListStatus(),
+            ),
     )
 }
 
@@ -49,8 +83,12 @@ fun RecentlyUpdatedQuery.CoverImage.toDomainMediaCoverImage(): MediaCoverImage {
     return MediaCoverImage(large = large.orEmpty())
 }
 
+fun TrendingNowQuery.CoverImage.toDomainMediaCoverImage(): MediaCoverImage {
+    return MediaCoverImage(large = large.orEmpty())
+}
+
 fun NetworkMediaStatus?.toDomainMediaStatus(): MediaStatus? {
-    return when(this) {
+    return when (this) {
         NetworkMediaStatus.FINISHED -> MediaStatus.FINISHED
         NetworkMediaStatus.RELEASING -> MediaStatus.RELEASING
         NetworkMediaStatus.NOT_YET_RELEASED -> MediaStatus.NOT_YET_RELEASED
@@ -61,7 +99,7 @@ fun NetworkMediaStatus?.toDomainMediaStatus(): MediaStatus? {
 }
 
 fun NetworkMediaType?.toDomainMediaType(): MediaType? {
-    return when(this) {
+    return when (this) {
         NetworkMediaType.ANIME -> MediaType.ANIME
         NetworkMediaType.MANGA -> MediaType.MANGA
         else -> null
@@ -69,7 +107,7 @@ fun NetworkMediaType?.toDomainMediaType(): MediaType? {
 }
 
 fun NetworkMediaFormat?.toDomainMediaFormat(): MediaFormat? {
-    return when(this) {
+    return when (this) {
         NetworkMediaFormat.TV -> MediaFormat.TV
         NetworkMediaFormat.TV_SHORT -> MediaFormat.TV_SHORT
         NetworkMediaFormat.MOVIE -> MediaFormat.MOVIE
@@ -85,7 +123,7 @@ fun NetworkMediaFormat?.toDomainMediaFormat(): MediaFormat? {
 }
 
 fun NetworkMediaListStatus?.toDomainMediaListStatus(): MediaListStatus? {
-    return when(this) {
+    return when (this) {
         NetworkMediaListStatus.CURRENT -> MediaListStatus.CURRENT
         NetworkMediaListStatus.PLANNING -> MediaListStatus.PLANNING
         NetworkMediaListStatus.COMPLETED -> MediaListStatus.COMPLETED

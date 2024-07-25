@@ -15,5 +15,5 @@ data class Character(
     var isFavourite: Boolean = false,
     val siteUrl: String = "",
     val media: MediaConnection = MediaConnection(),
-    val favourites: Int = 0
+    val favourites: Int = 0,
 )

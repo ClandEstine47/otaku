@@ -4,5 +4,5 @@ enum class MediaSeason {
     WINTER,
     SPRING,
     SUMMER,
-    FALL
+    FALL,
 }

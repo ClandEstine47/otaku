@@ -14,5 +14,5 @@ enum class ModRole {
     SOCIAL_MEDIA,
     RETIRED,
     CHARACTER_DATA,
-    STAFF_DATA
+    STAFF_DATA,
 }

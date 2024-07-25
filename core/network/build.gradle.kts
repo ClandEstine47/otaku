@@ -6,6 +6,8 @@ plugins {
     alias(libs.plugins.kotlin.kapt)
 }
 
+apply(from = rootProject.file("spotless.gradle"))
+
 android {
     namespace = "com.example.core.network"
     compileSdk = 34
@@ -22,7 +24,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }

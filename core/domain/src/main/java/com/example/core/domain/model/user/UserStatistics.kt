@@ -32,5 +32,5 @@ data class UserStatistics(
     val countries: List<UserCountryStatistic> = listOf(),
     val voiceActors: List<UserVoiceActorStatistic> = listOf(),
     val staffs: List<UserStaffStatistic> = listOf(),
-    val studios: List<UserStudioStatistic> = listOf()
+    val studios: List<UserStudioStatistic> = listOf(),
 )

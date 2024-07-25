@@ -10,5 +10,5 @@ enum class MediaFormat {
     MUSIC,
     MANGA,
     NOVEL,
-    ONE_SHOT
+    ONE_SHOT,
 }

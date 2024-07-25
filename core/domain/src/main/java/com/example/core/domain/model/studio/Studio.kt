@@ -9,5 +9,5 @@ data class Studio(
     val media: MediaConnection = MediaConnection(),
     val siteUrl: String = "",
     val isFavourite: Boolean = false,
-    val favourites: Int = 0
+    val favourites: Int = 0,
 )

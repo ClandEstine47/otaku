@@ -20,5 +20,5 @@ data class User(
     val donatorTier: Int = 0,
     val donatorBadge: String = "",
     val moderatorRoles: List<ModRole> = listOf(),
-    val createdAt: Int = 0
+    val createdAt: Int = 0,
 )

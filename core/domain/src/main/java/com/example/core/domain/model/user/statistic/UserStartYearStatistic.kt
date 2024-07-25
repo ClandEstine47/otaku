@@ -6,5 +6,5 @@ data class UserStartYearStatistic(
     override val minutesWatched: Int = 0,
     override val chaptersRead: Int = 0,
     override val mediaIds: List<Int> = listOf(),
-    val startYear: Int = 0
-): UserStatisticsDetail
+    val startYear: Int = 0,
+) : UserStatisticsDetail

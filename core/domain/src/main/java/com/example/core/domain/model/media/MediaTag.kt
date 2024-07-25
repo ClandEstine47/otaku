@@ -8,5 +8,5 @@ data class MediaTag(
     val rank: Int = 0,
     val isGeneralSpoiler: Boolean = false,
     val isMediaSpoiler: Boolean = false,
-    val isAdult: Boolean = false
+    val isAdult: Boolean = false,
 )

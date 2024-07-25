@@ -1,13 +1,13 @@
 package com.example.core.domain.model.media
 
+import com.example.core.domain.model.Genre
 import com.example.core.domain.model.airing.AiringSchedule
 import com.example.core.domain.model.airing.AiringScheduleConnection
 import com.example.core.domain.model.character.CharacterConnection
-import com.example.core.domain.model.Genre
+import com.example.core.domain.model.common.FuzzyDate
 import com.example.core.domain.model.recommendation.RecommendationConnection
 import com.example.core.domain.model.staff.StaffConnection
 import com.example.core.domain.model.studio.StudioConnection
-import com.example.core.domain.model.common.FuzzyDate
 
 data class Media(
     val idAniList: Int = 0,
@@ -52,5 +52,5 @@ data class Media(
     val recommendations: RecommendationConnection = RecommendationConnection(),
     val stats: MediaStats? = null,
     val siteUrl: String = "",
-    val mediaListEntry: MediaList? = null
+    val mediaListEntry: MediaList? = null,
 )

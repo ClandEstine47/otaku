@@ -7,16 +7,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 
 @Composable
-fun AnimeScreen(
-    state: AnimeViewModel.AnimeUiState
-) {
+fun AnimeScreen(state: AnimeViewModel.AnimeUiState) {
     Column {
         if (state.isLoading) {
             CircularProgressIndicator()
         } else {
-            state.trendingMedia?.forEach { media ->
+            state.trendingNowMedia?.forEach { media ->
                 Row {
-                    Text(text = media.media.title.romaji)
+                    Text(text = media.title.romaji)
                 }
             }
         }

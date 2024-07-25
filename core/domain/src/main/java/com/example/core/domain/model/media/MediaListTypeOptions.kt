@@ -5,5 +5,5 @@ data class MediaListTypeOptions(
     var splitCompletedSectionByFormat: Boolean = false,
     var customLists: List<String> = listOf(),
     var advancedScoring: List<String> = listOf(),
-    var advancedScoringEnabled: Boolean = false
+    var advancedScoringEnabled: Boolean = false,
 )

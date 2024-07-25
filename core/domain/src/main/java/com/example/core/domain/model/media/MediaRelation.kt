@@ -13,5 +13,5 @@ enum class MediaRelation {
     OTHER,
     SOURCE,
     COMPILATION,
-    CONTAINS
+    CONTAINS,
 }

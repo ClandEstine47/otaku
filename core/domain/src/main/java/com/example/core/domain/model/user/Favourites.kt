@@ -10,5 +10,5 @@ data class Favourites(
     val manga: MediaConnection = MediaConnection(),
     val characters: CharacterConnection = CharacterConnection(),
     val staff: StaffConnection = StaffConnection(),
-    val studios: StudioConnection = StudioConnection()
+    val studios: StudioConnection = StudioConnection(),
 )

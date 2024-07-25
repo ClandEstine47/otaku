@@ -1,0 +1,47 @@
+query TrendingNow(
+    $page: Int!,
+    $perPage: Int = 50
+) {
+    Page(
+        page: $page,
+        perPage: $perPage
+    ) {
+        pageInfo {
+            hasNextPage
+            currentPage
+            total
+        }
+        media(
+            type: ANIME,
+            sort: TRENDING_DESC
+        ) {
+            id
+            idMal
+            status
+            chapters
+            episodes
+            nextAiringEpisode { episode }
+            isAdult
+            type
+            meanScore
+            isFavourite
+            format
+            bannerImage
+            countryOfOrigin
+            coverImage {
+                large
+            }
+            title {
+                english
+                romaji
+                userPreferred
+            }
+            mediaListEntry {
+                progress
+                private
+                score(format: POINT_100)
+                status
+            }
+        }
+    }
+}

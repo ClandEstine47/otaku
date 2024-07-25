@@ -8,5 +8,5 @@ data class UserStaffStatistic(
     override val minutesWatched: Int = 0,
     override val chaptersRead: Int = 0,
     override val mediaIds: List<Int> = listOf(),
-    val staff: Staff? = null
-): UserStatisticsDetail
+    val staff: Staff? = null,
+) : UserStatisticsDetail

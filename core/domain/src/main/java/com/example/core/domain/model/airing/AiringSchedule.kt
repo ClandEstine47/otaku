@@ -7,5 +7,5 @@ data class AiringSchedule(
     val airingAt: Int = 0,
     val timeUntilAiring: Int = 0,
     val episode: Int = 0,
-    val media: Media = Media()
+    val media: Media = Media(),
 )
