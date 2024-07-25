@@ -24,6 +24,11 @@
       "automerge": true,
       "automergeType": "pr",
       "platformAutomerge": true
+    },
+    {
+      "description": "Exclude Spotless updates",
+      "matchPackagePrefixes": ["com.diffplug.spotless"],
+      "enabled": false
     }
   ]
 }
