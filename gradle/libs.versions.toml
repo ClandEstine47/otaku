@@ -15,6 +15,7 @@ apolloGraphql = "3.8.5"
 daggerHilt = "2.51.1"
 lifecycleViewModelKtx = "2.8.4"
 hiltNavigationCompose = "1.2.0"
+kotlinxSerializationJson = "1.7.1"
 timber = "5.0.1"
 spotless = "6.25.0"
 
@@ -41,10 +42,12 @@ apollo-runtime = { group = "com.apollographql.apollo3", name = "apollo-runtime",
 dagger-hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "daggerHilt" }
 dagger-hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "daggerHilt" }
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 apollo-graphql = { id = "com.apollographql.apollo3", version.ref = "apolloGraphql" }
