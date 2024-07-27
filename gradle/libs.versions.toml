@@ -1,8 +1,7 @@
 [versions]
 agp = "8.5.1"
-kotlin = "1.9.20"
-ksp = "1.9.20-1.0.13"
-kotlinCompilerExtension = "1.5.5"
+kotlin = "2.0.0"
+ksp = "2.0.0-1.0.22"
 coreKtx = "1.13.1"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -47,6 +46,7 @@ timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "tim
 android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 android-library = { id = "com.android.library", version.ref = "agp" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 apollo-graphql = { id = "com.apollographql.apollo3", version.ref = "apolloGraphql" }
 dagger-hilt = { id = "com.google.dagger.hilt.android", version.ref = "daggerHilt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
