@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.apollo.graphql)
     alias(libs.plugins.dagger.hilt)
-    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.ksp)
 }
 
 apply(from = rootProject.file("spotless.gradle"))
@@ -64,9 +64,5 @@ dependencies {
 
     // di
     implementation(libs.dagger.hilt)
-    kapt(libs.dagger.hilt.compiler)
-}
-
-kapt {
-    correctErrorTypes = true
+    ksp(libs.dagger.hilt.compiler)
 }

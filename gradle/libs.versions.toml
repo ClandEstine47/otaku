@@ -1,7 +1,8 @@
 [versions]
 agp = "8.5.1"
-kotlin = "1.9.0"
-kotlinCompilerExtension = "1.5.1"
+kotlin = "1.9.20"
+ksp = "1.9.20-1.0.13"
+kotlinCompilerExtension = "1.5.5"
 coreKtx = "1.13.1"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -48,5 +49,5 @@ jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = 
 android-library = { id = "com.android.library", version.ref = "agp" }
 apollo-graphql = { id = "com.apollographql.apollo3", version.ref = "apolloGraphql" }
 dagger-hilt = { id = "com.google.dagger.hilt.android", version.ref = "daggerHilt" }
-kotlin-kapt = { id = "kotlin-kapt" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
