@@ -1,14 +1,14 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
-    alias(libs.plugins.dagger.hilt)
-    alias(libs.plugins.ksp)
+    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.kotlinx.serialization)
 }
 
 apply(from = rootProject.file("spotless.gradle"))
 
 android {
-    namespace = "com.example.core.data"
+    namespace = "com.example.core.navigation"
     compileSdk = 34
 
     defaultConfig {
@@ -34,12 +34,14 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+    composeCompiler {
+        enableStrongSkippingMode = true
+    }
 }
 
 dependencies {
 
-    implementation(project(":core:domain"))
-    implementation(project(":core:network"))
+    implementation(project(":feature"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -48,13 +50,19 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    // di
-    implementation(libs.dagger.hilt)
-    ksp(libs.dagger.hilt.compiler)
+    implementation(libs.androidx.activity.compose)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.material3)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
 
-    // apollo graphql
-    implementation(libs.apollo.runtime)
+    // serialization
+    implementation(libs.kotlinx.serialization.json)
 
-    // timber
-    implementation(libs.timber)
+    // navigation
+    implementation(libs.androidx.navigation.compose)
 }

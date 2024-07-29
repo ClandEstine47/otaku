@@ -1,8 +1,9 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.dagger.hilt)
-    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.ksp)
 }
 
 apply(from = rootProject.file("spotless.gradle"))
@@ -34,11 +35,8 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
-    buildFeatures {
-        compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+    composeCompiler {
+        enableStrongSkippingMode = true
     }
 }
 
@@ -63,14 +61,13 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    implementation(libs.androidx.lifecycle.runtime.compose)
+
     // viewmodel
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
 
     // di
     implementation(libs.dagger.hilt)
-    kapt(libs.dagger.hilt.compiler)
-}
-
-kapt {
-    correctErrorTypes = true
+    implementation(libs.androidx.hilt.navigation.compose)
+    ksp(libs.dagger.hilt.compiler)
 }
