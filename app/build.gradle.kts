@@ -53,6 +53,7 @@ android {
 
 dependencies {
 
+    implementation(project(":core:navigation"))
     implementation(project(":feature"))
 
     implementation(libs.androidx.core.ktx)
