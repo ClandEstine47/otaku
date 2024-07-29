@@ -44,6 +44,7 @@ dependencies {
 
     implementation(project(":core:data"))
     implementation(project(":core:domain"))
+    implementation(project(":core:navigation"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)
@@ -70,4 +71,7 @@ dependencies {
     implementation(libs.dagger.hilt)
     implementation(libs.androidx.hilt.navigation.compose)
     ksp(libs.dagger.hilt.compiler)
+
+    // coil
+    implementation(libs.coil.compose)
 }
