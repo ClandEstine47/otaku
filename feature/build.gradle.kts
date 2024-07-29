@@ -61,10 +61,13 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    implementation(libs.androidx.lifecycle.runtime.compose)
+
     // viewmodel
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
 
     // di
     implementation(libs.dagger.hilt)
+    implementation(libs.androidx.hilt.navigation.compose)
     ksp(libs.dagger.hilt.compiler)
 }
