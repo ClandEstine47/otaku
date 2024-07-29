@@ -17,6 +17,7 @@ androidxJunit = "1.2.1"
 
 # Other
 apolloGraphql = "3.8.5"
+coilCompose = "2.7.0"
 daggerHilt = "2.51.1"
 kotlinxSerializationJson = "1.7.1"
 material = "1.12.0"
@@ -49,6 +50,7 @@ dagger-hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compi
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidxNavigation" }
+coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coilCompose" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
