@@ -14,6 +14,7 @@ android {
 
     defaultConfig {
         minSdk = 24
+        multiDexEnabled = true
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -31,6 +32,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+        isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
         jvmTarget = "17"
@@ -74,4 +76,7 @@ dependencies {
 
     // coil
     implementation(libs.coil.compose)
+
+    // desugar
+    coreLibraryDesugaring(libs.desugar)
 }
