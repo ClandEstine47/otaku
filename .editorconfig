@@ -4,3 +4,4 @@
 [*.{kt,kts}]
 ktlint_standard_no-wildcard-imports = disabled
 ktlint_standard_function-naming = disabled
+max_line_length = off
