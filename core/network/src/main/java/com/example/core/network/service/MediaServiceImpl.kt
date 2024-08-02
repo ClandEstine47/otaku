@@ -1,11 +1,14 @@
 package com.example.core.network.service
 
 import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo3.api.Optional
 import com.apollographql.apollo3.exception.ApolloException
 import com.example.core.domain.model.airing.AiringSchedule
 import com.example.core.domain.model.media.Media
+import com.example.core.domain.model.media.MediaSeason
 import com.example.core.domain.service.MediaService
 import com.example.core.network.RecentlyUpdatedQuery
+import com.example.core.network.SeasonalAnimeQuery
 import com.example.core.network.TrendingNowQuery
 import javax.inject.Inject
 
@@ -14,6 +17,46 @@ class MediaServiceImpl
     constructor(
         private val apolloClient: ApolloClient,
     ) : MediaService {
+        override suspend fun getSeasonalMediaList(
+            pageNumber: Int,
+            seasonYear: Int,
+            season: MediaSeason,
+        ): Result<List<Media>> {
+            return try {
+                val response =
+                    apolloClient
+                        .query(
+                            SeasonalAnimeQuery(
+                                page = pageNumber,
+                                seasonYear = Optional.present(seasonYear),
+                                season = Optional.present(season.toNetworkMediaSeason()),
+                            ),
+                        )
+                        .execute()
+
+                when {
+                    response.hasErrors() -> {
+                        val errorMessage =
+                            response.errors?.joinToString("; ") { it.message }
+                                ?: "Unknown GraphQL error"
+                        Result.failure(Exception(errorMessage))
+                    }
+
+                    else -> {
+                        val seasonalMedia =
+                            response.data?.Page?.media
+                                ?.mapNotNull { it?.toDomainMedia() }
+                                ?: emptyList()
+                        Result.success(seasonalMedia)
+                    }
+                }
+            } catch (e: ApolloException) {
+                Result.failure(e)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+
         override suspend fun getRecentlyUpdatedMediaList(
             pageNumber: Int,
             airingTimeInMs: Int,
