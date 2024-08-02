@@ -2,6 +2,7 @@ package com.example.core.data.repository
 
 import com.example.core.domain.model.airing.AiringSchedule
 import com.example.core.domain.model.media.Media
+import com.example.core.domain.model.media.MediaSeason
 import com.example.core.domain.repository.MediaRepository
 import com.example.core.domain.service.MediaService
 import timber.log.Timber
@@ -12,6 +13,20 @@ class MediaRepositoryImpl
     constructor(
         private val mediaService: MediaService,
     ) : MediaRepository {
+        override suspend fun getSeasonalMedia(
+            pageNumber: Int,
+            seasonYear: Int,
+            season: MediaSeason,
+        ): Result<List<Media>> {
+            return mediaService.getSeasonalMediaList(
+                pageNumber = pageNumber,
+                seasonYear = seasonYear,
+                season = season,
+            ).onFailure { error ->
+                Timber.e(error, "Failed to get trending now media")
+            }
+        }
+
         override suspend fun getRecentlyUpdatedMedia(
             pageNumber: Int,
             airingTimeInMs: Int,
