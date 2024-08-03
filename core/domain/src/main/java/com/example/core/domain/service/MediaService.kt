@@ -17,4 +17,6 @@ interface MediaService {
     ): Result<List<AiringSchedule>>
 
     suspend fun getTrendingNowMediaList(pageNumber: Int): Result<List<Media>>
+
+    suspend fun getPopularMediaList(pageNumber: Int): Result<List<Media>>
 }

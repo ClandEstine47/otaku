@@ -128,4 +128,38 @@ class MediaServiceImpl
                 Result.failure(e)
             }
         }
+
+        override suspend fun getPopularMediaList(pageNumber: Int): Result<List<Media>> {
+            return try {
+                val response =
+                    apolloClient
+                        .query(
+                            SeasonalAnimeQuery(
+                                page = pageNumber,
+                            ),
+                        )
+                        .execute()
+
+                when {
+                    response.hasErrors() -> {
+                        val errorMessage =
+                            response.errors?.joinToString("; ") { it.message }
+                                ?: "Unknown GraphQL error"
+                        Result.failure(Exception(errorMessage))
+                    }
+
+                    else -> {
+                        val popularMedia =
+                            response.data?.Page?.media
+                                ?.mapNotNull { it?.toDomainMedia() }
+                                ?: emptyList()
+                        Result.success(popularMedia)
+                    }
+                }
+            } catch (e: ApolloException) {
+                Result.failure(e)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
     }
