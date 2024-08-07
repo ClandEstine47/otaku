@@ -2,9 +2,10 @@ package com.example.otaku.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val dark_background = Color(0xFF000000)
+val dark_background = Color(0xFF252222)
 val light_background = Color(0xFFFFFFFF)
-val primary = Color(0xFF16C21C)
+val dark_primary = Color(0xFFA783E0)
+val light_primary = Color(0xFF6650a4)
 
 val Purple80 = Color(0xFFD0BCFF)
 val PurpleGrey80 = Color(0xFFCCC2DC)
