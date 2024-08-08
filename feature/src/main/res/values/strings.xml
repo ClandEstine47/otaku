@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="trending_now">Trending Now</string>
+    <string name="recently_updated">Recently Updated</string>
+    <string name="next_season">Next Season</string>
+    <string name="popular_now">Popular Now</string>
+</resources>
