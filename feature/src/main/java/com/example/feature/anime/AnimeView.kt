@@ -159,13 +159,21 @@ fun AnimeContent(
                     rememberAsyncImagePainter(
                         model = anime.media.coverImage.large,
                     )
-                ImageCard(
-                    painter = painter,
-                    score = (anime.media.meanScore.toDouble()) / 10,
-                    totalEpisodes = anime.media.episodes,
-                    releasedEpisodes = anime.episode,
-                    format = anime.media.format?.name,
-                )
+
+                Column(
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.spacedBy(3.dp),
+                ) {
+                    ImageCard(
+                        painter = painter,
+                        score = (anime.media.meanScore.toDouble()) / 10,
+                        totalEpisodes = anime.media.episodes,
+                        releasedEpisodes = anime.episode,
+                        format = anime.media.format?.name,
+                    )
+
+                    OtakuImageCardTitle(title = anime.media.title.romaji)
+                }
             }
         }
     }
@@ -201,13 +209,21 @@ fun AnimeContent(
                     rememberAsyncImagePainter(
                         model = anime.coverImage.large,
                     )
-                ImageCard(
-                    painter = painter,
-                    score = (anime.meanScore.toDouble()) / 10,
-                    totalEpisodes = anime.episodes,
-                    releasedEpisodes = anime.nextAiringEpisode?.episode?.minus(1),
-                    format = anime.format?.name,
-                )
+
+                Column(
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.spacedBy(3.dp),
+                ) {
+                    ImageCard(
+                        painter = painter,
+                        score = (anime.meanScore.toDouble()) / 10,
+                        totalEpisodes = anime.episodes,
+                        releasedEpisodes = anime.nextAiringEpisode?.episode?.minus(1),
+                        format = anime.format?.name,
+                    )
+
+                    OtakuImageCardTitle(title = anime.title.romaji)
+                }
             }
         }
     }
@@ -243,13 +259,21 @@ fun AnimeContent(
                     rememberAsyncImagePainter(
                         model = anime.coverImage.large,
                     )
-                ImageCard(
-                    painter = painter,
-                    score = (anime.meanScore.toDouble()) / 10,
-                    totalEpisodes = anime.episodes,
-                    releasedEpisodes = anime.nextAiringEpisode?.episode?.minus(1),
-                    format = anime.format?.name,
-                )
+
+                Column(
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.spacedBy(3.dp),
+                ) {
+                    ImageCard(
+                        painter = painter,
+                        score = (anime.meanScore.toDouble()) / 10,
+                        totalEpisodes = anime.episodes,
+                        releasedEpisodes = anime.nextAiringEpisode?.episode?.minus(1),
+                        format = anime.format?.name,
+                    )
+
+                    OtakuImageCardTitle(title = anime.title.romaji)
+                }
             }
         }
     }
@@ -285,14 +309,22 @@ fun AnimeContent(
                     rememberAsyncImagePainter(
                         model = anime.coverImage.large,
                     )
-                ImageCard(
-                    painter = painter,
-                    score = (anime.meanScore.toDouble()) / 10,
-                    showScore = false,
-                    totalEpisodes = anime.episodes,
-                    releasedEpisodes = null,
-                    format = anime.format?.name,
-                )
+
+                Column(
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.spacedBy(3.dp),
+                ) {
+                    ImageCard(
+                        painter = painter,
+                        score = (anime.meanScore.toDouble()) / 10,
+                        showScore = false,
+                        totalEpisodes = anime.episodes,
+                        releasedEpisodes = null,
+                        format = anime.format?.name,
+                    )
+
+                    OtakuImageCardTitle(title = anime.title.romaji)
+                }
             }
         }
     }
