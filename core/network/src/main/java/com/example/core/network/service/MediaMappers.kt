@@ -56,6 +56,10 @@ fun TrendingNowQuery.Medium.toDomainMedia(): Media {
         status = status?.toDomainMediaStatus(),
         chapters = chapters,
         episodes = episodes,
+        nextAiringEpisode =
+            AiringSchedule(
+                episode = nextAiringEpisode?.episode,
+            ),
         isAdult = isAdult ?: false,
         type = type?.toDomainMediaType(),
         meanScore = meanScore ?: 0,
@@ -87,6 +91,10 @@ fun SeasonalAnimeQuery.Medium.toDomainMedia(): Media {
         status = status?.toDomainMediaStatus(),
         chapters = chapters,
         episodes = episodes,
+        nextAiringEpisode =
+            AiringSchedule(
+                episode = nextAiringEpisode?.episode,
+            ),
         isAdult = isAdult ?: false,
         type = type?.toDomainMediaType(),
         meanScore = meanScore ?: 0,
