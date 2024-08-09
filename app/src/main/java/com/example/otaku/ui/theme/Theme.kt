@@ -12,16 +12,20 @@ import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme =
     darkColorScheme(
-        primary = Purple80,
-        secondary = PurpleGrey80,
+        primary = dark_primary,
+        secondary = dark_secondary,
         tertiary = Pink80,
+        background = dark_background,
+        onBackground = dark_on_background,
     )
 
 private val LightColorScheme =
     lightColorScheme(
-        primary = Purple40,
-        secondary = PurpleGrey40,
+        primary = light_primary,
+        secondary = light_secondary,
         tertiary = Pink40,
+        background = light_background,
+        onBackground = light_on_background,
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
     surface = Color(0xFFFFFBFE),
@@ -37,7 +41,7 @@ private val LightColorScheme =
 fun OtakuTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit,
 ) {
     val colorScheme =

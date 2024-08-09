@@ -1,4 +1,4 @@
-package com.example.core.navigation
+package com.example.otaku
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -7,6 +7,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.core.navigation.DeepLink
+import com.example.core.navigation.NavActionManager
+import com.example.core.navigation.OtakuScreen
 import com.example.feature.anime.AnimeView
 
 @Composable
@@ -21,7 +24,7 @@ fun MainNavigation(
         modifier = Modifier.padding(8.dp),
     ) {
         composable<OtakuScreen.AnimeTab> {
-            AnimeView()
+            AnimeView(navActionManager = navActionManager)
         }
     }
 }
