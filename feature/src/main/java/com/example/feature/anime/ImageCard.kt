@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -126,7 +127,7 @@ fun ImageCard(
                                     text = releasedEpisodes.toString(),
                                     style = MaterialTheme.typography.labelSmall,
                                     fontWeight = FontWeight.Medium,
-                                    color = MaterialTheme.colorScheme.onBackground,
+                                    color = Color.White,
                                     modifier = Modifier.padding(2.dp),
                                 )
                             }
@@ -143,7 +144,7 @@ fun ImageCard(
                                 text = (totalEpisodes ?: "?").toString(),
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = FontWeight.Medium,
-                                color = MaterialTheme.colorScheme.onBackground,
+                                color = Color.White,
                                 modifier = Modifier.padding(2.dp),
                             )
                         }
