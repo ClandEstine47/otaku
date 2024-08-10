@@ -16,7 +16,7 @@ data class Media(
     val type: MediaType? = null,
     val format: MediaFormat? = null,
     val status: MediaStatus? = null,
-    val description: String = "",
+    val description: String? = "",
     val startDate: FuzzyDate? = null,
     val endDate: FuzzyDate? = null,
     val season: MediaSeason? = null,

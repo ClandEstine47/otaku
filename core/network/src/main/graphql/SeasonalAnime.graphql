@@ -26,6 +26,7 @@ query SeasonalAnime(
             nextAiringEpisode { episode }
             isAdult
             type
+            description
             meanScore
             isFavourite
             format
