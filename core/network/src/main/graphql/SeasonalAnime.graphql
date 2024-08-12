@@ -27,6 +27,7 @@ query SeasonalAnime(
             isAdult
             type
             description
+            genres
             meanScore
             isFavourite
             format

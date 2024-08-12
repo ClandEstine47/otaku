@@ -100,6 +100,7 @@ fun SeasonalAnimeQuery.Medium.toDomainMedia(): Media {
         meanScore = meanScore ?: 0,
         isFavourite = isFavourite,
         description = description,
+        genres = genres,
         format = format?.toDomainMediaFormat(),
         bannerImage = bannerImage.orEmpty(),
         countryOfOrigin = countryOfOrigin.toString(),
