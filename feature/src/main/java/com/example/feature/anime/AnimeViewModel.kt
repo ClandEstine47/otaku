@@ -55,7 +55,7 @@ class AnimeViewModel
                     }
                 val recentlyUpdatedResultDeferred =
                     async {
-                        mediaRepository.getRecentlyUpdatedMedia(
+                        mediaRepository.getRecentlyUpdatedAnimeList(
                             pageNumber = 1,
                             airingTimeInMs = (System.currentTimeMillis() / 1000 - 10000).toInt(),
                         )

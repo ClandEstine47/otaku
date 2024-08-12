@@ -58,7 +58,7 @@ class MediaServiceImpl
             }
         }
 
-        override suspend fun getRecentlyUpdatedMediaList(
+        override suspend fun getRecentlyUpdatedAnimeList(
             pageNumber: Int,
             airingTimeInMs: Int,
         ): Result<List<AiringSchedule>> {

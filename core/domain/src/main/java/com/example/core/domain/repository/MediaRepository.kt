@@ -11,7 +11,7 @@ interface MediaRepository {
         season: MediaSeason,
     ): Result<List<Media>>
 
-    suspend fun getRecentlyUpdatedMedia(
+    suspend fun getRecentlyUpdatedAnimeList(
         pageNumber: Int,
         airingTimeInMs: Int,
     ): Result<List<AiringSchedule>>

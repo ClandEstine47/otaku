@@ -11,7 +11,7 @@ interface MediaService {
         season: MediaSeason,
     ): Result<List<Media>>
 
-    suspend fun getRecentlyUpdatedMediaList(
+    suspend fun getRecentlyUpdatedAnimeList(
         pageNumber: Int,
         airingTimeInMs: Int,
     ): Result<List<AiringSchedule>>
