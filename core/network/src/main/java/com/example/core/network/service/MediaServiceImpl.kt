@@ -6,6 +6,7 @@ import com.apollographql.apollo3.exception.ApolloException
 import com.example.core.domain.model.airing.AiringSchedule
 import com.example.core.domain.model.media.Media
 import com.example.core.domain.model.media.MediaSeason
+import com.example.core.domain.model.media.MediaType
 import com.example.core.domain.service.MediaService
 import com.example.core.network.RecentlyUpdatedQuery
 import com.example.core.network.SeasonalAnimeQuery
@@ -84,6 +85,7 @@ class MediaServiceImpl
                         val airingSchedules =
                             response.data?.Page?.airingSchedules
                                 ?.mapNotNull { it?.toRecentlyUpdatedMedia() }
+                                ?.filter { it.media.type == MediaType.ANIME }
                                 ?: emptyList()
                         Result.success(airingSchedules)
                     }
