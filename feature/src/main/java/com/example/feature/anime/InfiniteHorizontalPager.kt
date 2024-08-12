@@ -163,6 +163,7 @@ fun BannerItem(anime: Media) {
                     OtakuTitle(
                         title = anime.status?.name ?: "-",
                         color = MaterialTheme.colorScheme.primary,
+                        style = MaterialTheme.typography.titleSmall,
                     )
                 }
             }

@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -19,12 +20,14 @@ import androidx.compose.ui.unit.dp
 fun OtakuTitle(
     modifier: Modifier = Modifier,
     id: Int,
+    style: TextStyle = MaterialTheme.typography.titleMedium,
+    fontWeight: FontWeight = FontWeight.Bold,
 ) {
     Text(
         text = stringResource(id = id),
         modifier = modifier,
-        style = MaterialTheme.typography.titleMedium,
-        fontWeight = FontWeight.Bold,
+        style = style,
+        fontWeight = fontWeight,
     )
 }
 
@@ -33,12 +36,14 @@ fun OtakuTitle(
     modifier: Modifier = Modifier,
     title: String,
     color: Color,
+    style: TextStyle = MaterialTheme.typography.titleMedium,
+    fontWeight: FontWeight = FontWeight.Bold,
 ) {
     Text(
         text = title,
         modifier = modifier,
-        style = MaterialTheme.typography.titleMedium,
-        fontWeight = FontWeight.Bold,
+        style = style,
+        fontWeight = fontWeight,
         color = color,
     )
 }
