@@ -46,13 +46,13 @@ fun ImageCard(
 ) {
     Column(
         modifier =
-            Modifier
+            modifier
                 .width(100.dp)
                 .clip(RoundedCornerShape(8.dp)),
     ) {
         Box(
             modifier =
-                modifier
+                Modifier
                     .height(140.dp)
                     .fillMaxWidth(),
         ) {
