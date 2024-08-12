@@ -79,4 +79,7 @@ dependencies {
 
     // desugar
     coreLibraryDesugaring(libs.desugar)
+
+    // compose rich editor
+    implementation(libs.rich.editor.compose)
 }
