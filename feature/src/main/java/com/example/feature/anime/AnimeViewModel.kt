@@ -51,6 +51,7 @@ class AnimeViewModel
                     async {
                         mediaRepository.getSeasonalMedia(
                             pageNumber = 1,
+                            perPage = 20,
                             seasonYear = state.value.nowAnimeSeason.year,
                             season = state.value.nowAnimeSeason.season,
                             mediaType = mediaType,
@@ -73,6 +74,7 @@ class AnimeViewModel
                     async {
                         mediaRepository.getSeasonalMedia(
                             pageNumber = 1,
+                            perPage = 20,
                             seasonYear = state.value.nextAnimeSeason.year,
                             season = state.value.nextAnimeSeason.season,
                             mediaType = mediaType,

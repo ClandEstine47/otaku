@@ -20,6 +20,7 @@ class MediaServiceImpl
     ) : MediaService {
         override suspend fun getSeasonalMediaList(
             pageNumber: Int,
+            perPage: Int,
             seasonYear: Int,
             season: MediaSeason,
             mediaType: MediaType,
@@ -30,6 +31,7 @@ class MediaServiceImpl
                         .query(
                             SeasonalAnimeQuery(
                                 page = pageNumber,
+                                perPage = Optional.present(perPage),
                                 seasonYear = Optional.present(seasonYear),
                                 season = Optional.present(season.toNetworkMediaSeason()),
                                 mediaType = Optional.present(mediaType.toNetworkMediaType()),

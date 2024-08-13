@@ -16,12 +16,14 @@ class MediaRepositoryImpl
     ) : MediaRepository {
         override suspend fun getSeasonalMedia(
             pageNumber: Int,
+            perPage: Int,
             seasonYear: Int,
             season: MediaSeason,
             mediaType: MediaType,
         ): Result<List<Media>> {
             return mediaService.getSeasonalMediaList(
                 pageNumber = pageNumber,
+                perPage = perPage,
                 seasonYear = seasonYear,
                 season = season,
                 mediaType = mediaType,

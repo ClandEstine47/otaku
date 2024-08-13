@@ -8,6 +8,7 @@ import com.example.core.domain.model.media.MediaType
 interface MediaRepository {
     suspend fun getSeasonalMedia(
         pageNumber: Int,
+        perPage: Int,
         seasonYear: Int,
         season: MediaSeason,
         mediaType: MediaType,

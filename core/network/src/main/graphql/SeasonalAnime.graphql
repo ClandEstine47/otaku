@@ -1,6 +1,6 @@
 query SeasonalAnime(
     $page: Int!,
-    $perPage: Int = 25,
+    $perPage: Int,
     $season: MediaSeason,
     $seasonYear: Int,
     $mediaType: MediaType
