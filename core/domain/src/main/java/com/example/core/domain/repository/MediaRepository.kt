@@ -19,7 +19,10 @@ interface MediaRepository {
         airingTimeInMs: Int,
     ): Result<List<AiringSchedule>>
 
-    suspend fun getTrendingNowMedia(pageNumber: Int): Result<List<Media>>
+    suspend fun getTrendingNowMedia(
+        pageNumber: Int,
+        perPage: Int,
+    ): Result<List<Media>>
 
     suspend fun getPopularMedia(pageNumber: Int): Result<List<Media>>
 }

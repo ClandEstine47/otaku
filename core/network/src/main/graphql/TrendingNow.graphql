@@ -1,6 +1,6 @@
 query TrendingNow(
     $page: Int!,
-    $perPage: Int = 50
+    $perPage: Int
 ) {
     Page(
         page: $page,

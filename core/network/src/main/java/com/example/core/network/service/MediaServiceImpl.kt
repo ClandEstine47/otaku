@@ -101,13 +101,17 @@ class MediaServiceImpl
             }
         }
 
-        override suspend fun getTrendingNowMediaList(pageNumber: Int): Result<List<Media>> {
+        override suspend fun getTrendingNowMediaList(
+            pageNumber: Int,
+            perPage: Int,
+        ): Result<List<Media>> {
             return try {
                 val response =
                     apolloClient
                         .query(
                             TrendingNowQuery(
                                 page = pageNumber,
+                                perPage = Optional.present(perPage),
                             ),
                         )
                         .execute()
