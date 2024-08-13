@@ -64,6 +64,7 @@ class MediaServiceImpl
 
         override suspend fun getRecentlyUpdatedAnimeList(
             pageNumber: Int,
+            perPage: Int,
             airingTimeInMs: Int,
         ): Result<List<AiringSchedule>> {
             return try {
@@ -72,6 +73,7 @@ class MediaServiceImpl
                         .query(
                             RecentlyUpdatedQuery(
                                 page = pageNumber,
+                                perPage = Optional.present(perPage),
                                 airingAtLesser = airingTimeInMs,
                             ),
                         )

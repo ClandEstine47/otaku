@@ -61,6 +61,7 @@ class AnimeViewModel
                     async {
                         mediaRepository.getRecentlyUpdatedAnimeList(
                             pageNumber = 1,
+                            perPage = 20,
                             airingTimeInMs = (System.currentTimeMillis() / 1000 - 10000).toInt(),
                         )
                     }

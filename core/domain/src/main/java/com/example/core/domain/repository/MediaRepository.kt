@@ -16,6 +16,7 @@ interface MediaRepository {
 
     suspend fun getRecentlyUpdatedAnimeList(
         pageNumber: Int,
+        perPage: Int,
         airingTimeInMs: Int,
     ): Result<List<AiringSchedule>>
 
