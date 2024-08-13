@@ -60,9 +60,15 @@ class MediaRepositoryImpl
             }
         }
 
-        override suspend fun getPopularMedia(pageNumber: Int): Result<List<Media>> {
+        override suspend fun getPopularMedia(
+            pageNumber: Int,
+            perPage: Int,
+            mediaType: MediaType,
+        ): Result<List<Media>> {
             return mediaService.getPopularMediaList(
                 pageNumber = pageNumber,
+                perPage = perPage,
+                mediaType = mediaType,
             ).onFailure { error ->
                 Timber.e(error, "Failed to get trending now media")
             }

@@ -143,13 +143,19 @@ class MediaServiceImpl
             }
         }
 
-        override suspend fun getPopularMediaList(pageNumber: Int): Result<List<Media>> {
+        override suspend fun getPopularMediaList(
+            pageNumber: Int,
+            perPage: Int,
+            mediaType: MediaType,
+        ): Result<List<Media>> {
             return try {
                 val response =
                     apolloClient
                         .query(
                             SeasonalAnimeQuery(
                                 page = pageNumber,
+                                perPage = Optional.present(perPage),
+                                mediaType = Optional.present(mediaType.toNetworkMediaType()),
                             ),
                         )
                         .execute()

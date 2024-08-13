@@ -26,5 +26,9 @@ interface MediaRepository {
         mediaType: MediaType,
     ): Result<List<Media>>
 
-    suspend fun getPopularMedia(pageNumber: Int): Result<List<Media>>
+    suspend fun getPopularMedia(
+        pageNumber: Int,
+        perPage: Int,
+        mediaType: MediaType,
+    ): Result<List<Media>>
 }

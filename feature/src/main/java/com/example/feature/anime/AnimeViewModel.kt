@@ -87,6 +87,8 @@ class AnimeViewModel
                     async {
                         mediaRepository.getPopularMedia(
                             pageNumber = 1,
+                            perPage = 20,
+                            mediaType = mediaType,
                         )
                     }
 
