@@ -22,6 +22,7 @@ interface MediaRepository {
     suspend fun getTrendingNowMedia(
         pageNumber: Int,
         perPage: Int,
+        mediaType: MediaType,
     ): Result<List<Media>>
 
     suspend fun getPopularMedia(pageNumber: Int): Result<List<Media>>

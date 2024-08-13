@@ -22,6 +22,7 @@ interface MediaService {
     suspend fun getTrendingNowMediaList(
         pageNumber: Int,
         perPage: Int,
+        mediaType: MediaType,
     ): Result<List<Media>>
 
     suspend fun getPopularMediaList(pageNumber: Int): Result<List<Media>>

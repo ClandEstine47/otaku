@@ -104,6 +104,7 @@ class MediaServiceImpl
         override suspend fun getTrendingNowMediaList(
             pageNumber: Int,
             perPage: Int,
+            mediaType: MediaType,
         ): Result<List<Media>> {
             return try {
                 val response =
@@ -112,6 +113,7 @@ class MediaServiceImpl
                             TrendingNowQuery(
                                 page = pageNumber,
                                 perPage = Optional.present(perPage),
+                                mediaType = Optional.present(mediaType.toNetworkMediaType()),
                             ),
                         )
                         .execute()

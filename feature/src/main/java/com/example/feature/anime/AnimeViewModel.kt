@@ -69,6 +69,7 @@ class AnimeViewModel
                         mediaRepository.getTrendingNowMedia(
                             pageNumber = 1,
                             perPage = 20,
+                            mediaType = mediaType,
                         )
                     }
                 val nextSeasonResultDeferred =
