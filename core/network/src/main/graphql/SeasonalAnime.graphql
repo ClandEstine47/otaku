@@ -2,7 +2,8 @@ query SeasonalAnime(
     $page: Int!,
     $perPage: Int = 25,
     $season: MediaSeason,
-    $seasonYear: Int
+    $seasonYear: Int,
+    $mediaType: MediaType
 ) {
     Page(
         page: $page,
@@ -16,6 +17,7 @@ query SeasonalAnime(
         media(
             season: $season,
             seasonYear: $seasonYear,
+            type: $mediaType,
             sort: POPULARITY_DESC
         ) {
             id

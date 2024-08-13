@@ -3,6 +3,7 @@ package com.example.core.data.repository
 import com.example.core.domain.model.airing.AiringSchedule
 import com.example.core.domain.model.media.Media
 import com.example.core.domain.model.media.MediaSeason
+import com.example.core.domain.model.media.MediaType
 import com.example.core.domain.repository.MediaRepository
 import com.example.core.domain.service.MediaService
 import timber.log.Timber
@@ -17,11 +18,13 @@ class MediaRepositoryImpl
             pageNumber: Int,
             seasonYear: Int,
             season: MediaSeason,
+            mediaType: MediaType,
         ): Result<List<Media>> {
             return mediaService.getSeasonalMediaList(
                 pageNumber = pageNumber,
                 seasonYear = seasonYear,
                 season = season,
+                mediaType = mediaType,
             ).onFailure { error ->
                 Timber.e(error, "Failed to get trending now media")
             }

@@ -189,3 +189,10 @@ fun MediaSeason.toNetworkMediaSeason(): com.example.core.network.type.MediaSeaso
         MediaSeason.UNKNOWN -> com.example.core.network.type.MediaSeason.UNKNOWN__
     }
 }
+
+fun MediaType.toNetworkMediaType(): com.example.core.network.type.MediaType {
+    return when (this) {
+        MediaType.ANIME -> com.example.core.network.type.MediaType.ANIME
+        MediaType.MANGA -> com.example.core.network.type.MediaType.MANGA
+    }
+}

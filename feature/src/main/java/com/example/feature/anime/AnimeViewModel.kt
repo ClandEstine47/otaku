@@ -2,6 +2,7 @@ package com.example.feature.anime
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.core.domain.model.media.MediaType
 import com.example.core.domain.repository.MediaRepository
 import com.example.feature.Utils.currentAnimeSeason
 import com.example.feature.Utils.nextAnimeSeason
@@ -21,6 +22,7 @@ class AnimeViewModel
         private val mediaRepository: MediaRepository,
     ) : ViewModel() {
         private val currentTime = LocalDateTime.now()
+        private val mediaType = MediaType.ANIME
 
         private val _state =
             MutableStateFlow(
@@ -51,6 +53,7 @@ class AnimeViewModel
                             pageNumber = 1,
                             seasonYear = state.value.nowAnimeSeason.year,
                             season = state.value.nowAnimeSeason.season,
+                            mediaType = mediaType,
                         )
                     }
                 val recentlyUpdatedResultDeferred =
@@ -72,6 +75,7 @@ class AnimeViewModel
                             pageNumber = 1,
                             seasonYear = state.value.nextAnimeSeason.year,
                             season = state.value.nextAnimeSeason.season,
+                            mediaType = mediaType,
                         )
                     }
                 val popularResultDeferred =

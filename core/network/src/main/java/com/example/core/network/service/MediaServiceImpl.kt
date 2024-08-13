@@ -22,6 +22,7 @@ class MediaServiceImpl
             pageNumber: Int,
             seasonYear: Int,
             season: MediaSeason,
+            mediaType: MediaType,
         ): Result<List<Media>> {
             return try {
                 val response =
@@ -31,6 +32,7 @@ class MediaServiceImpl
                                 page = pageNumber,
                                 seasonYear = Optional.present(seasonYear),
                                 season = Optional.present(season.toNetworkMediaSeason()),
+                                mediaType = Optional.present(mediaType.toNetworkMediaType()),
                             ),
                         )
                         .execute()
