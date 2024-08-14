@@ -4,4 +4,7 @@
     <string name="recently_updated">Recently Updated</string>
     <string name="next_season">Next Season</string>
     <string name="popular_now">Popular Now</string>
+    <string name="popular_manga">Popular Manga</string>
+    <string name="popular_manhwa">Popular Manhwa</string>
+    <string name="popular_novel">Popular Novel</string>
 </resources>

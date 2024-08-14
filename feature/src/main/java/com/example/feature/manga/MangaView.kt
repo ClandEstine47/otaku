@@ -62,6 +62,7 @@ fun MangaView(
                 trendingMangaList = uiState.trendingMangaList,
                 popularMangaList = uiState.popularMangaList,
                 popularManhwaList = uiState.popularManhwaList,
+                popularNovelList = uiState.popularNovelList,
             )
         }
     }
@@ -73,6 +74,7 @@ fun MangaContent(
     trendingMangaList: List<Media>? = null,
     popularMangaList: List<Media>? = null,
     popularManhwaList: List<Media>? = null,
+    popularNovelList: List<Media>? = null,
 ) {
     if (trendingMangaList != null) {
         InfiniteHorizontalPager(mediaList = trendingMangaList)
@@ -86,7 +88,7 @@ fun MangaContent(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         OtakuTitle(
-            id = R.string.popular_now,
+            id = R.string.popular_manga,
             modifier = Modifier.padding(start = 10.dp),
         )
 
@@ -136,7 +138,7 @@ fun MangaContent(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         OtakuTitle(
-            id = R.string.popular_now,
+            id = R.string.popular_manhwa,
             modifier = Modifier.padding(start = 10.dp),
         )
 
@@ -175,6 +177,56 @@ fun MangaContent(
                     )
 
                     OtakuImageCardTitle(title = manhwa.title.romaji)
+                }
+            }
+        }
+    }
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        OtakuTitle(
+            id = R.string.popular_novel,
+            modifier = Modifier.padding(start = 10.dp),
+        )
+
+        ExpandMediaListButton(
+            modifier = Modifier,
+            onButtonClick = {
+                // todo: update later
+            },
+        )
+    }
+
+    popularNovelList?.let { novels ->
+        LazyRow(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            items(novels) { novel ->
+                val painter =
+                    rememberAsyncImagePainter(
+                        model = novel.coverImage.large,
+                    )
+
+                Column(
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.spacedBy(3.dp),
+                ) {
+                    ImageCard(
+                        painter = painter,
+                        score = (novel.meanScore.toDouble()) / 10,
+                        totalEpisodes = novel.episodes,
+                        releasedEpisodes = novel.nextAiringEpisode?.episode?.minus(1),
+                        format = novel.format?.name,
+                    )
+
+                    OtakuImageCardTitle(title = novel.title.romaji)
                 }
             }
         }
