@@ -4,7 +4,8 @@ query SeasonalAnime(
     $season: MediaSeason,
     $seasonYear: Int,
     $mediaType: MediaType,
-    $mediaFormat: MediaFormat
+    $mediaFormat: MediaFormat,
+    $countryOfOrigin: CountryCode
 ) {
     Page(
         page: $page,
@@ -20,6 +21,7 @@ query SeasonalAnime(
             seasonYear: $seasonYear,
             type: $mediaType,
             format: $mediaFormat,
+            countryOfOrigin: $countryOfOrigin,
             sort: POPULARITY_DESC
         ) {
             id
