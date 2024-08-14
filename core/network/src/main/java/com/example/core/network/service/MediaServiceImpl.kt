@@ -149,6 +149,7 @@ class MediaServiceImpl
             perPage: Int,
             mediaType: MediaType,
             mediaFormat: MediaFormat?,
+            countryOfOrigin: String?,
         ): Result<List<Media>> {
             return try {
                 val response =
@@ -158,7 +159,8 @@ class MediaServiceImpl
                                 page = pageNumber,
                                 perPage = Optional.present(perPage),
                                 mediaType = Optional.present(mediaType.toNetworkMediaType()),
-                                mediaFormat = Optional.present(mediaFormat?.toNetworkMediaFormat()),
+                                mediaFormat = Optional.presentIfNotNull(mediaFormat?.toNetworkMediaFormat()),
+                                countryOfOrigin = Optional.presentIfNotNull(countryOfOrigin),
                             ),
                         )
                         .execute()

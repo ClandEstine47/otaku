@@ -66,12 +66,14 @@ class MediaRepositoryImpl
             perPage: Int,
             mediaType: MediaType,
             mediaFormat: MediaFormat?,
+            countryOfOrigin: String?,
         ): Result<List<Media>> {
             return mediaService.getPopularMediaList(
                 pageNumber = pageNumber,
                 perPage = perPage,
                 mediaType = mediaType,
                 mediaFormat = mediaFormat,
+                countryOfOrigin = countryOfOrigin,
             ).onFailure { error ->
                 Timber.e(error, "Failed to get trending now media")
             }

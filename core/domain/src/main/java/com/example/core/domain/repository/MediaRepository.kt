@@ -32,5 +32,6 @@ interface MediaRepository {
         perPage: Int,
         mediaType: MediaType,
         mediaFormat: MediaFormat? = null,
+        countryOfOrigin: String? = null,
     ): Result<List<Media>>
 }

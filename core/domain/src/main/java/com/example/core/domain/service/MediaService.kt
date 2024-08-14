@@ -32,5 +32,6 @@ interface MediaService {
         perPage: Int,
         mediaType: MediaType,
         mediaFormat: MediaFormat?,
+        countryOfOrigin: String?,
     ): Result<List<Media>>
 }
