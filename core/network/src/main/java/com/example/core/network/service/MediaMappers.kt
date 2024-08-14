@@ -196,3 +196,18 @@ fun MediaType.toNetworkMediaType(): com.example.core.network.type.MediaType {
         MediaType.MANGA -> com.example.core.network.type.MediaType.MANGA
     }
 }
+
+fun MediaFormat.toNetworkMediaFormat(): com.example.core.network.type.MediaFormat {
+    return when (this) {
+        MediaFormat.TV -> com.example.core.network.type.MediaFormat.TV
+        MediaFormat.TV_SHORT -> com.example.core.network.type.MediaFormat.TV_SHORT
+        MediaFormat.MOVIE -> com.example.core.network.type.MediaFormat.MOVIE
+        MediaFormat.OVA -> com.example.core.network.type.MediaFormat.OVA
+        MediaFormat.ONA -> com.example.core.network.type.MediaFormat.ONA
+        MediaFormat.SPECIAL -> com.example.core.network.type.MediaFormat.SPECIAL
+        MediaFormat.MUSIC -> com.example.core.network.type.MediaFormat.MUSIC
+        MediaFormat.MANGA -> com.example.core.network.type.MediaFormat.MANGA
+        MediaFormat.NOVEL -> com.example.core.network.type.MediaFormat.NOVEL
+        MediaFormat.ONE_SHOT -> com.example.core.network.type.MediaFormat.ONE_SHOT
+    }
+}
