@@ -42,13 +42,13 @@ import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun InfiniteHorizontalPager(currentSeasonMedia: List<Media>) {
+fun InfiniteHorizontalPager(mediaList: List<Media>) {
     val pagerState = rememberPagerState { Int.MAX_VALUE }
 
     // infinite scroll
     LaunchedEffect(key1 = Unit) {
         var initPage = Int.MAX_VALUE / 2
-        while (initPage % currentSeasonMedia.size != 0) {
+        while (initPage % mediaList.size != 0) {
             initPage++
         }
         pagerState.scrollToPage(initPage)
@@ -84,10 +84,10 @@ fun InfiniteHorizontalPager(currentSeasonMedia: List<Media>) {
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(0.dp),
             ) { index ->
-                currentSeasonMedia.getOrNull(
-                    index % (currentSeasonMedia.size),
-                )?.let { anime ->
-                    BannerItem(anime = anime)
+                mediaList.getOrNull(
+                    index % (mediaList.size),
+                )?.let { media ->
+                    BannerItem(media = media)
                 }
             }
         }
@@ -95,12 +95,12 @@ fun InfiniteHorizontalPager(currentSeasonMedia: List<Media>) {
 }
 
 @Composable
-fun BannerItem(anime: Media) {
+fun BannerItem(media: Media) {
     val bannerPainter =
         rememberAsyncImagePainter(
             model =
                 ImageRequest.Builder(LocalContext.current)
-                    .data(anime.bannerImage)
+                    .data(media.bannerImage)
                     .crossfade(true)
                     .build(),
         )
@@ -109,7 +109,7 @@ fun BannerItem(anime: Media) {
         rememberAsyncImagePainter(
             model =
                 ImageRequest.Builder(LocalContext.current)
-                    .data(anime.coverImage.large)
+                    .data(media.coverImage.large)
                     .crossfade(true)
                     .build(),
         )
@@ -118,7 +118,7 @@ fun BannerItem(anime: Media) {
         BannerCard(
             bannerPainter = bannerPainter,
             coverPainter = coverPainter,
-            score = (anime.meanScore.toDouble() / 10),
+            score = (media.meanScore.toDouble() / 10),
         )
 
         Column(
@@ -140,7 +140,7 @@ fun BannerItem(anime: Media) {
                     ImageCard(
                         modifier = Modifier,
                         painter = coverPainter,
-                        score = (anime.meanScore.toDouble()) / 10,
+                        score = (media.meanScore.toDouble()) / 10,
                         showScore = true,
                         showBottomBar = false,
                     )
@@ -154,14 +154,14 @@ fun BannerItem(anime: Media) {
                     verticalArrangement = Arrangement.Bottom,
                 ) {
                     OtakuTitle(
-                        title = anime.title.romaji,
+                        title = media.title.romaji,
                         color = MaterialTheme.colorScheme.onBackground,
                     )
 
                     Spacer(modifier = Modifier.height(5.dp))
 
                     OtakuTitle(
-                        title = anime.status?.name ?: "-",
+                        title = media.status?.name ?: "-",
                         color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.titleSmall,
                     )
@@ -175,7 +175,7 @@ fun BannerItem(anime: Media) {
                         .padding(end = 10.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                anime.genres?.let { genres ->
+                media.genres?.let { genres ->
                     val genreCount = genres.size
                     genres.forEachIndexed { index, genre ->
                         genre?.let {
