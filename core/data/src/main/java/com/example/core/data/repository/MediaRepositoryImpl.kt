@@ -2,6 +2,7 @@ package com.example.core.data.repository
 
 import com.example.core.domain.model.airing.AiringSchedule
 import com.example.core.domain.model.media.Media
+import com.example.core.domain.model.media.MediaFormat
 import com.example.core.domain.model.media.MediaSeason
 import com.example.core.domain.model.media.MediaType
 import com.example.core.domain.repository.MediaRepository
@@ -64,11 +65,13 @@ class MediaRepositoryImpl
             pageNumber: Int,
             perPage: Int,
             mediaType: MediaType,
+            mediaFormat: MediaFormat?,
         ): Result<List<Media>> {
             return mediaService.getPopularMediaList(
                 pageNumber = pageNumber,
                 perPage = perPage,
                 mediaType = mediaType,
+                mediaFormat = mediaFormat,
             ).onFailure { error ->
                 Timber.e(error, "Failed to get trending now media")
             }

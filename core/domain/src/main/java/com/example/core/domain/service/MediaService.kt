@@ -2,6 +2,7 @@ package com.example.core.domain.service
 
 import com.example.core.domain.model.airing.AiringSchedule
 import com.example.core.domain.model.media.Media
+import com.example.core.domain.model.media.MediaFormat
 import com.example.core.domain.model.media.MediaSeason
 import com.example.core.domain.model.media.MediaType
 
@@ -30,5 +31,6 @@ interface MediaService {
         pageNumber: Int,
         perPage: Int,
         mediaType: MediaType,
+        mediaFormat: MediaFormat?,
     ): Result<List<Media>>
 }

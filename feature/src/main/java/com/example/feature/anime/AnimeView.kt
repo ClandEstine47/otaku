@@ -75,7 +75,7 @@ fun AnimeContent(
     popularNowMedia: List<Media>? = null,
 ) {
     if (currentSeasonMedia != null) {
-        InfiniteHorizontalPager(currentSeasonMedia = currentSeasonMedia)
+        InfiniteHorizontalPager(mediaList = currentSeasonMedia)
     }
 
     Spacer(modifier = Modifier.height(40.dp))

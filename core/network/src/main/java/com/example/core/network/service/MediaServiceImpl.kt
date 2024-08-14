@@ -5,6 +5,7 @@ import com.apollographql.apollo3.api.Optional
 import com.apollographql.apollo3.exception.ApolloException
 import com.example.core.domain.model.airing.AiringSchedule
 import com.example.core.domain.model.media.Media
+import com.example.core.domain.model.media.MediaFormat
 import com.example.core.domain.model.media.MediaSeason
 import com.example.core.domain.model.media.MediaType
 import com.example.core.domain.service.MediaService
@@ -147,6 +148,7 @@ class MediaServiceImpl
             pageNumber: Int,
             perPage: Int,
             mediaType: MediaType,
+            mediaFormat: MediaFormat?,
         ): Result<List<Media>> {
             return try {
                 val response =
@@ -156,6 +158,7 @@ class MediaServiceImpl
                                 page = pageNumber,
                                 perPage = Optional.present(perPage),
                                 mediaType = Optional.present(mediaType.toNetworkMediaType()),
+                                mediaFormat = Optional.present(mediaFormat?.toNetworkMediaFormat()),
                             ),
                         )
                         .execute()
