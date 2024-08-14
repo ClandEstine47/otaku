@@ -59,8 +59,9 @@ fun MangaView(
         } else {
             MangaContent(
                 navActionManager = navActionManager,
-                trendingNowMedia = uiState.trendingNowMedia,
-                popularMedia = uiState.popularMedia,
+                trendingMangaList = uiState.trendingMangaList,
+                popularMangaList = uiState.popularMangaList,
+                popularManhwaList = uiState.popularManhwaList,
             )
         }
     }
@@ -69,11 +70,12 @@ fun MangaView(
 @Composable
 fun MangaContent(
     navActionManager: NavActionManager,
-    trendingNowMedia: List<Media>? = null,
-    popularMedia: List<Media>? = null,
+    trendingMangaList: List<Media>? = null,
+    popularMangaList: List<Media>? = null,
+    popularManhwaList: List<Media>? = null,
 ) {
-    if (trendingNowMedia != null) {
-        InfiniteHorizontalPager(mediaList = trendingNowMedia)
+    if (trendingMangaList != null) {
+        InfiniteHorizontalPager(mediaList = trendingMangaList)
     }
 
     Spacer(modifier = Modifier.height(40.dp))
@@ -96,7 +98,7 @@ fun MangaContent(
         )
     }
 
-    popularMedia?.let { popularMangas ->
+    popularMangaList?.let { mangas ->
         LazyRow(
             modifier =
                 Modifier
@@ -104,7 +106,7 @@ fun MangaContent(
                     .padding(16.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            items(popularMangas) { manga ->
+            items(mangas) { manga ->
                 val painter =
                     rememberAsyncImagePainter(
                         model = manga.coverImage.large,
@@ -123,6 +125,56 @@ fun MangaContent(
                     )
 
                     OtakuImageCardTitle(title = manga.title.romaji)
+                }
+            }
+        }
+    }
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        OtakuTitle(
+            id = R.string.popular_now,
+            modifier = Modifier.padding(start = 10.dp),
+        )
+
+        ExpandMediaListButton(
+            modifier = Modifier,
+            onButtonClick = {
+                // todo: update later
+            },
+        )
+    }
+
+    popularManhwaList?.let { manhwas ->
+        LazyRow(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            items(manhwas) { manhwa ->
+                val painter =
+                    rememberAsyncImagePainter(
+                        model = manhwa.coverImage.large,
+                    )
+
+                Column(
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.spacedBy(3.dp),
+                ) {
+                    ImageCard(
+                        painter = painter,
+                        score = (manhwa.meanScore.toDouble()) / 10,
+                        totalEpisodes = manhwa.episodes,
+                        releasedEpisodes = manhwa.nextAiringEpisode?.episode?.minus(1),
+                        format = manhwa.format?.name,
+                    )
+
+                    OtakuImageCardTitle(title = manhwa.title.romaji)
                 }
             }
         }

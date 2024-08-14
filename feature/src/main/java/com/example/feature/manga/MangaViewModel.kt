@@ -49,7 +49,7 @@ class MangaViewModel
                             mediaType = mediaType,
                         )
                     }
-                val popularResultDeferred =
+                val popularMangaResultDeferred =
                     async {
                         mediaRepository.getPopularMedia(
                             pageNumber = 1,
@@ -59,24 +59,37 @@ class MangaViewModel
                             countryOfOrigin = "JP",
                         )
                     }
+                val popularManhwaResultDeferred =
+                    async {
+                        mediaRepository.getPopularMedia(
+                            pageNumber = 1,
+                            perPage = 20,
+                            mediaType = mediaType,
+                            mediaFormat = MediaFormat.MANGA,
+                            countryOfOrigin = "KR",
+                        )
+                    }
 
                 val trendingNowResult = trendingNowResultDeferred.await()
-                val popularResult = popularResultDeferred.await()
+                val popularMangaResult = popularMangaResultDeferred.await()
+                val popularManhwaResult = popularManhwaResultDeferred.await()
 
                 _state.update { currentState ->
                     when {
-                        trendingNowResult.isSuccess && popularResult.isSuccess ->
+                        trendingNowResult.isSuccess && popularMangaResult.isSuccess && popularManhwaResult.isSuccess ->
                             currentState.copy(
-                                trendingNowMedia = trendingNowResult.getOrNull(),
-                                popularMedia = popularResult.getOrNull(),
+                                trendingMangaList = trendingNowResult.getOrNull(),
+                                popularMangaList = popularMangaResult.getOrNull(),
+                                popularManhwaList = popularManhwaResult.getOrNull(),
                                 isLoading = false,
                                 error = null,
                             )
 
-                        trendingNowResult.isFailure || popularResult.isFailure ->
+                        trendingNowResult.isFailure || popularMangaResult.isFailure || popularManhwaResult.isFailure ->
                             currentState.copy(
-                                trendingNowMedia = null,
-                                popularMedia = null,
+                                trendingMangaList = null,
+                                popularMangaList = null,
+                                popularManhwaList = null,
                                 isLoading = false,
                                 error = trendingNowResult.exceptionOrNull()?.message ?: "An unknown error occurred",
                             )
