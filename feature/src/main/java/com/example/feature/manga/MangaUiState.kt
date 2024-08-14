@@ -6,7 +6,7 @@ data class MangaUiState(
     val trendingNowMedia: List<Media>? = null,
 //    val currentSeasonMedia: List<Media>? = null,
 //    val recentlyUpdatedMedia: List<AiringSchedule>? = null,
-//    val popularMedia: List<Media>? = null,
+    val popularMedia: List<Media>? = null,
 //    val nextSeasonMedia: List<Media>? = null,
 //    val nowAnimeSeason: AnimeSeason,
 //    val nextAnimeSeason: AnimeSeason,

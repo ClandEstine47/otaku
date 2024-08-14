@@ -2,6 +2,7 @@ package com.example.feature.manga
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.core.domain.model.media.MediaFormat
 import com.example.core.domain.model.media.MediaType
 import com.example.core.domain.repository.MediaRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -48,21 +49,34 @@ class MangaViewModel
                             mediaType = mediaType,
                         )
                     }
+                val popularResultDeferred =
+                    async {
+                        mediaRepository.getPopularMedia(
+                            pageNumber = 1,
+                            perPage = 20,
+                            mediaType = mediaType,
+                            mediaFormat = MediaFormat.MANGA,
+                            countryOfOrigin = "JP",
+                        )
+                    }
 
                 val trendingNowResult = trendingNowResultDeferred.await()
+                val popularResult = popularResultDeferred.await()
 
                 _state.update { currentState ->
                     when {
-                        trendingNowResult.isSuccess ->
+                        trendingNowResult.isSuccess && popularResult.isSuccess ->
                             currentState.copy(
                                 trendingNowMedia = trendingNowResult.getOrNull(),
+                                popularMedia = popularResult.getOrNull(),
                                 isLoading = false,
                                 error = null,
                             )
 
-                        trendingNowResult.isFailure ->
+                        trendingNowResult.isFailure || popularResult.isFailure ->
                             currentState.copy(
                                 trendingNowMedia = null,
+                                popularMedia = null,
                                 isLoading = false,
                                 error = trendingNowResult.exceptionOrNull()?.message ?: "An unknown error occurred",
                             )
