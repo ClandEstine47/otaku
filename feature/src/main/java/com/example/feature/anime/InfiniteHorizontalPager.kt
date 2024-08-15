@@ -100,7 +100,11 @@ fun BannerItem(media: Media) {
         rememberAsyncImagePainter(
             model =
                 ImageRequest.Builder(LocalContext.current)
-                    .data(media.bannerImage)
+                    .data(
+                        media.bannerImage.ifBlank {
+                            media.coverImage.extraLarge
+                        },
+                    )
                     .crossfade(true)
                     .build(),
         )
