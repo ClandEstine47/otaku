@@ -126,11 +126,17 @@ fun RecentlyUpdatedQuery.CoverImage.toDomainMediaCoverImage(): MediaCoverImage {
 }
 
 fun TrendingNowQuery.CoverImage.toDomainMediaCoverImage(): MediaCoverImage {
-    return MediaCoverImage(large = large.orEmpty())
+    return MediaCoverImage(
+        large = large.orEmpty(),
+        extraLarge = extraLarge.orEmpty(),
+    )
 }
 
 fun SeasonalAnimeQuery.CoverImage.toDomainMediaCoverImage(): MediaCoverImage {
-    return MediaCoverImage(large = large.orEmpty())
+    return MediaCoverImage(
+        large = large.orEmpty(),
+        extraLarge = extraLarge.orEmpty(),
+    )
 }
 
 fun NetworkMediaStatus?.toDomainMediaStatus(): MediaStatus? {
