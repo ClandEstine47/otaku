@@ -119,6 +119,7 @@ fun AnimeContent(
                     ImageCard(
                         painter = painter,
                         score = (anime.media.meanScore.toDouble()) / 10,
+                        isAnime = true,
                         totalEpisodes = anime.media.episodes,
                         releasedEpisodes = anime.episode,
                         format = anime.media.format?.name,
@@ -169,6 +170,7 @@ fun AnimeContent(
                     ImageCard(
                         painter = painter,
                         score = (anime.meanScore.toDouble()) / 10,
+                        isAnime = true,
                         totalEpisodes = anime.episodes,
                         releasedEpisodes = anime.nextAiringEpisode?.episode?.minus(1),
                         format = anime.format?.name,
@@ -219,6 +221,7 @@ fun AnimeContent(
                     ImageCard(
                         painter = painter,
                         score = (anime.meanScore.toDouble()) / 10,
+                        isAnime = true,
                         totalEpisodes = anime.episodes,
                         releasedEpisodes = anime.nextAiringEpisode?.episode?.minus(1),
                         format = anime.format?.name,
@@ -269,6 +272,7 @@ fun AnimeContent(
                     ImageCard(
                         painter = painter,
                         score = (anime.meanScore.toDouble()) / 10,
+                        isAnime = true,
                         showScore = false,
                         totalEpisodes = anime.episodes,
                         releasedEpisodes = null,

@@ -147,6 +147,7 @@ fun BannerItem(media: Media) {
                         score = (media.meanScore.toDouble()) / 10,
                         showScore = true,
                         showBottomBar = false,
+                        isAnime = true,
                     )
                 }
 

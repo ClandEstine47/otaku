@@ -123,8 +123,8 @@ fun MangaContent(
                     ImageCard(
                         painter = painter,
                         score = (manga.meanScore.toDouble()) / 10,
-                        totalEpisodes = manga.episodes,
-                        releasedEpisodes = manga.nextAiringEpisode?.episode?.minus(1),
+                        isAnime = false,
+                        totalChapters = manga.chapters,
                         format = manga.format?.name,
                     )
 
@@ -173,8 +173,8 @@ fun MangaContent(
                     ImageCard(
                         painter = painter,
                         score = (manhwa.meanScore.toDouble()) / 10,
-                        totalEpisodes = manhwa.episodes,
-                        releasedEpisodes = manhwa.nextAiringEpisode?.episode?.minus(1),
+                        isAnime = false,
+                        totalChapters = manhwa.chapters,
                         format = manhwa.format?.name,
                     )
 
@@ -223,8 +223,8 @@ fun MangaContent(
                     ImageCard(
                         painter = painter,
                         score = (novel.meanScore.toDouble()) / 10,
-                        totalEpisodes = novel.episodes,
-                        releasedEpisodes = novel.nextAiringEpisode?.episode?.minus(1),
+                        isAnime = false,
+                        totalChapters = novel.chapters,
                         format = novel.format?.name,
                     )
 
@@ -273,8 +273,8 @@ fun MangaContent(
                     ImageCard(
                         painter = painter,
                         score = (oneShort.meanScore.toDouble()) / 10,
-                        totalEpisodes = oneShort.episodes,
-                        releasedEpisodes = oneShort.nextAiringEpisode?.episode?.minus(1),
+                        isAnime = false,
+                        totalChapters = oneShort.chapters,
                         format = oneShort.format?.name,
                     )
 

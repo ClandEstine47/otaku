@@ -40,6 +40,8 @@ fun ImageCard(
     showBottomBar: Boolean = true,
     score: Double? = null,
     showScore: Boolean = true,
+    isAnime: Boolean,
+    totalChapters: Int? = null,
     totalEpisodes: Int? = null,
     releasedEpisodes: Int? = null,
     format: String? = null,
@@ -141,7 +143,7 @@ fun ImageCard(
                                     .background(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f)),
                         ) {
                             Text(
-                                text = (totalEpisodes ?: "?").toString(),
+                                text = ((if (isAnime) totalEpisodes else totalChapters) ?: "?").toString(),
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = FontWeight.Medium,
                                 color = Color.White,
@@ -172,6 +174,8 @@ fun ImageCardPreview() {
     ImageCard(
         painter = painterResource(id = R.drawable.anime_cover_preview),
         score = 8.9,
+        isAnime = true,
+        totalChapters = 190,
         totalEpisodes = 12,
         releasedEpisodes = 4,
         format = "MOVIE",
