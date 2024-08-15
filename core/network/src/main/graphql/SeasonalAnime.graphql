@@ -41,6 +41,7 @@ query SeasonalAnime(
             countryOfOrigin
             coverImage {
                 large
+                extraLarge
             }
             title {
                 english
