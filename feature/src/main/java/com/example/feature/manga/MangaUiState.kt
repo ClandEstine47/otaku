@@ -7,6 +7,7 @@ data class MangaUiState(
     val popularMangaList: List<Media>? = null,
     val popularManhwaList: List<Media>? = null,
     val popularNovelList: List<Media>? = null,
+    val popularOneShotList: List<Media>? = null,
     val isLoading: Boolean = false,
     val error: String? = null,
 )

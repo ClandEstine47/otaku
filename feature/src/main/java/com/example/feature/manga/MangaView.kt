@@ -63,6 +63,7 @@ fun MangaView(
                 popularMangaList = uiState.popularMangaList,
                 popularManhwaList = uiState.popularManhwaList,
                 popularNovelList = uiState.popularNovelList,
+                popularOneShotList = uiState.popularOneShotList,
             )
         }
     }
@@ -75,6 +76,7 @@ fun MangaContent(
     popularMangaList: List<Media>? = null,
     popularManhwaList: List<Media>? = null,
     popularNovelList: List<Media>? = null,
+    popularOneShotList: List<Media>? = null,
 ) {
     if (trendingMangaList != null) {
         InfiniteHorizontalPager(mediaList = trendingMangaList)
@@ -227,6 +229,56 @@ fun MangaContent(
                     )
 
                     OtakuImageCardTitle(title = novel.title.romaji)
+                }
+            }
+        }
+    }
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        OtakuTitle(
+            id = R.string.popular_one_shot,
+            modifier = Modifier.padding(start = 10.dp),
+        )
+
+        ExpandMediaListButton(
+            modifier = Modifier,
+            onButtonClick = {
+                // todo: update later
+            },
+        )
+    }
+
+    popularOneShotList?.let { oneShorts ->
+        LazyRow(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            items(oneShorts) { oneShort ->
+                val painter =
+                    rememberAsyncImagePainter(
+                        model = oneShort.coverImage.large,
+                    )
+
+                Column(
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.spacedBy(3.dp),
+                ) {
+                    ImageCard(
+                        painter = painter,
+                        score = (oneShort.meanScore.toDouble()) / 10,
+                        totalEpisodes = oneShort.episodes,
+                        releasedEpisodes = oneShort.nextAiringEpisode?.episode?.minus(1),
+                        format = oneShort.format?.name,
+                    )
+
+                    OtakuImageCardTitle(title = oneShort.title.romaji)
                 }
             }
         }
