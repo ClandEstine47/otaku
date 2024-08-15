@@ -62,6 +62,8 @@ fun TrendingNowQuery.Medium.toDomainMedia(): Media {
             ),
         isAdult = isAdult ?: false,
         type = type?.toDomainMediaType(),
+        description = description,
+        genres = genres,
         meanScore = meanScore ?: 0,
         isFavourite = isFavourite ?: false,
         format = format?.toDomainMediaFormat(),

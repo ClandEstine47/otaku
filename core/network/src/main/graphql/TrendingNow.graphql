@@ -24,6 +24,8 @@ query TrendingNow(
             nextAiringEpisode { episode }
             isAdult
             type
+            description
+            genres
             meanScore
             isFavourite
             format
