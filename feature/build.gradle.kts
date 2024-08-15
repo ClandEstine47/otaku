@@ -80,6 +80,9 @@ dependencies {
     // desugar
     coreLibraryDesugaring(libs.desugar)
 
+    // timber
+    implementation(libs.timber)
+
     // compose rich editor
     implementation(libs.rich.editor.compose)
 }
