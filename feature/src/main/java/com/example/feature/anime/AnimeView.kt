@@ -55,11 +55,11 @@ fun AnimeView(
         } else {
             AnimeContent(
                 navActionManager = navActionManager,
-                currentSeasonMedia = uiState.currentSeasonMedia,
-                recentlyUpdatedMedia = uiState.recentlyUpdatedMedia,
                 trendingNowMedia = uiState.trendingNowMedia,
-                nextSeasonMedia = uiState.nextSeasonMedia,
+                recentlyUpdatedMedia = uiState.recentlyUpdatedMedia,
+                currentSeasonMedia = uiState.currentSeasonMedia,
                 popularNowMedia = uiState.popularMedia,
+                nextSeasonMedia = uiState.nextSeasonMedia,
             )
         }
     }
@@ -68,14 +68,14 @@ fun AnimeView(
 @Composable
 fun AnimeContent(
     navActionManager: NavActionManager,
-    currentSeasonMedia: List<Media>? = null,
-    recentlyUpdatedMedia: List<AiringSchedule>? = null,
     trendingNowMedia: List<Media>? = null,
-    nextSeasonMedia: List<Media>? = null,
+    recentlyUpdatedMedia: List<AiringSchedule>? = null,
+    currentSeasonMedia: List<Media>? = null,
     popularNowMedia: List<Media>? = null,
+    nextSeasonMedia: List<Media>? = null,
 ) {
-    if (currentSeasonMedia != null) {
-        InfiniteHorizontalPager(mediaList = currentSeasonMedia)
+    if (trendingNowMedia != null) {
+        InfiniteHorizontalPager(mediaList = trendingNowMedia)
     }
 
     Spacer(modifier = Modifier.height(40.dp))
@@ -137,7 +137,7 @@ fun AnimeContent(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         OtakuTitle(
-            id = R.string.trending_now,
+            id = R.string.current_season,
             modifier = Modifier.padding(start = 10.dp),
         )
 
@@ -149,7 +149,7 @@ fun AnimeContent(
         )
     }
 
-    trendingNowMedia?.let { trendingAnime ->
+    currentSeasonMedia?.let { currentSeasonAnime ->
         LazyRow(
             modifier =
                 Modifier
@@ -157,7 +157,7 @@ fun AnimeContent(
                     .padding(16.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            items(trendingAnime) { anime ->
+            items(currentSeasonAnime) { anime ->
                 val painter =
                     rememberAsyncImagePainter(
                         model = anime.coverImage.large,

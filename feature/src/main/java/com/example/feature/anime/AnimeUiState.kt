@@ -5,9 +5,9 @@ import com.example.core.domain.model.airing.AiringSchedule
 import com.example.core.domain.model.media.Media
 
 data class AnimeUiState(
-    val currentSeasonMedia: List<Media>? = null,
-    val recentlyUpdatedMedia: List<AiringSchedule>? = null,
     val trendingNowMedia: List<Media>? = null,
+    val recentlyUpdatedMedia: List<AiringSchedule>? = null,
+    val currentSeasonMedia: List<Media>? = null,
     val popularMedia: List<Media>? = null,
     val nextSeasonMedia: List<Media>? = null,
     val nowAnimeSeason: AnimeSeason,

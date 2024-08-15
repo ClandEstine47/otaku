@@ -47,13 +47,11 @@ class AnimeViewModel
                     )
                 }
 
-                val currentSeasonDeferred =
+                val trendingNowResultDeferred =
                     async {
-                        mediaRepository.getSeasonalMedia(
+                        mediaRepository.getTrendingNowMedia(
                             pageNumber = 1,
                             perPage = 20,
-                            seasonYear = state.value.nowAnimeSeason.year,
-                            season = state.value.nowAnimeSeason.season,
                             mediaType = mediaType,
                         )
                     }
@@ -65,9 +63,19 @@ class AnimeViewModel
                             airingTimeInMs = (System.currentTimeMillis() / 1000 - 10000).toInt(),
                         )
                     }
-                val trendingNowResultDeferred =
+                val currentSeasonDeferred =
                     async {
-                        mediaRepository.getTrendingNowMedia(
+                        mediaRepository.getSeasonalMedia(
+                            pageNumber = 1,
+                            perPage = 20,
+                            seasonYear = state.value.nowAnimeSeason.year,
+                            season = state.value.nowAnimeSeason.season,
+                            mediaType = mediaType,
+                        )
+                    }
+                val popularResultDeferred =
+                    async {
+                        mediaRepository.getPopularMedia(
                             pageNumber = 1,
                             perPage = 20,
                             mediaType = mediaType,
@@ -83,41 +91,33 @@ class AnimeViewModel
                             mediaType = mediaType,
                         )
                     }
-                val popularResultDeferred =
-                    async {
-                        mediaRepository.getPopularMedia(
-                            pageNumber = 1,
-                            perPage = 20,
-                            mediaType = mediaType,
-                        )
-                    }
 
-                val currentSeasonResult = currentSeasonDeferred.await()
-                val recentlyUpdatedResult = recentlyUpdatedResultDeferred.await()
                 val trendingNowResult = trendingNowResultDeferred.await()
-                val nextSeasonResult = nextSeasonResultDeferred.await()
+                val recentlyUpdatedResult = recentlyUpdatedResultDeferred.await()
+                val currentSeasonResult = currentSeasonDeferred.await()
                 val popularResult = popularResultDeferred.await()
+                val nextSeasonResult = nextSeasonResultDeferred.await()
 
                 _state.update { currentState ->
                     when {
                         recentlyUpdatedResult.isSuccess && trendingNowResult.isSuccess && currentSeasonResult.isSuccess && nextSeasonResult.isSuccess && popularResult.isSuccess ->
                             currentState.copy(
-                                currentSeasonMedia = currentSeasonResult.getOrNull(),
-                                recentlyUpdatedMedia = recentlyUpdatedResult.getOrNull(),
                                 trendingNowMedia = trendingNowResult.getOrNull(),
-                                nextSeasonMedia = nextSeasonResult.getOrNull(),
+                                recentlyUpdatedMedia = recentlyUpdatedResult.getOrNull(),
+                                currentSeasonMedia = currentSeasonResult.getOrNull(),
                                 popularMedia = popularResult.getOrNull(),
+                                nextSeasonMedia = nextSeasonResult.getOrNull(),
                                 isLoading = false,
                                 error = null,
                             )
 
                         recentlyUpdatedResult.isFailure || trendingNowResult.isFailure || currentSeasonResult.isFailure || nextSeasonResult.isFailure || popularResult.isFailure ->
                             currentState.copy(
-                                currentSeasonMedia = null,
-                                recentlyUpdatedMedia = null,
                                 trendingNowMedia = null,
-                                nextSeasonMedia = null,
+                                recentlyUpdatedMedia = null,
+                                currentSeasonMedia = null,
                                 popularMedia = null,
+                                nextSeasonMedia = null,
                                 isLoading = false,
                                 error = recentlyUpdatedResult.exceptionOrNull()?.message ?: "An unknown error occurred",
                             )
