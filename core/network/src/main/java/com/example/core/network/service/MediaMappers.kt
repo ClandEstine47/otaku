@@ -62,6 +62,8 @@ fun TrendingNowQuery.Medium.toDomainMedia(): Media {
             ),
         isAdult = isAdult ?: false,
         type = type?.toDomainMediaType(),
+        description = description,
+        genres = genres,
         meanScore = meanScore ?: 0,
         isFavourite = isFavourite ?: false,
         format = format?.toDomainMediaFormat(),
@@ -98,7 +100,9 @@ fun SeasonalAnimeQuery.Medium.toDomainMedia(): Media {
         isAdult = isAdult ?: false,
         type = type?.toDomainMediaType(),
         meanScore = meanScore ?: 0,
-        isFavourite = isFavourite ?: false,
+        isFavourite = isFavourite,
+        description = description,
+        genres = genres,
         format = format?.toDomainMediaFormat(),
         bannerImage = bannerImage.orEmpty(),
         countryOfOrigin = countryOfOrigin.toString(),
@@ -124,11 +128,17 @@ fun RecentlyUpdatedQuery.CoverImage.toDomainMediaCoverImage(): MediaCoverImage {
 }
 
 fun TrendingNowQuery.CoverImage.toDomainMediaCoverImage(): MediaCoverImage {
-    return MediaCoverImage(large = large.orEmpty())
+    return MediaCoverImage(
+        large = large.orEmpty(),
+        extraLarge = extraLarge.orEmpty(),
+    )
 }
 
 fun SeasonalAnimeQuery.CoverImage.toDomainMediaCoverImage(): MediaCoverImage {
-    return MediaCoverImage(large = large.orEmpty())
+    return MediaCoverImage(
+        large = large.orEmpty(),
+        extraLarge = extraLarge.orEmpty(),
+    )
 }
 
 fun NetworkMediaStatus?.toDomainMediaStatus(): MediaStatus? {
@@ -185,5 +195,27 @@ fun MediaSeason.toNetworkMediaSeason(): com.example.core.network.type.MediaSeaso
         MediaSeason.SUMMER -> com.example.core.network.type.MediaSeason.SUMMER
         MediaSeason.FALL -> com.example.core.network.type.MediaSeason.FALL
         MediaSeason.UNKNOWN -> com.example.core.network.type.MediaSeason.UNKNOWN__
+    }
+}
+
+fun MediaType.toNetworkMediaType(): com.example.core.network.type.MediaType {
+    return when (this) {
+        MediaType.ANIME -> com.example.core.network.type.MediaType.ANIME
+        MediaType.MANGA -> com.example.core.network.type.MediaType.MANGA
+    }
+}
+
+fun MediaFormat.toNetworkMediaFormat(): com.example.core.network.type.MediaFormat {
+    return when (this) {
+        MediaFormat.TV -> com.example.core.network.type.MediaFormat.TV
+        MediaFormat.TV_SHORT -> com.example.core.network.type.MediaFormat.TV_SHORT
+        MediaFormat.MOVIE -> com.example.core.network.type.MediaFormat.MOVIE
+        MediaFormat.OVA -> com.example.core.network.type.MediaFormat.OVA
+        MediaFormat.ONA -> com.example.core.network.type.MediaFormat.ONA
+        MediaFormat.SPECIAL -> com.example.core.network.type.MediaFormat.SPECIAL
+        MediaFormat.MUSIC -> com.example.core.network.type.MediaFormat.MUSIC
+        MediaFormat.MANGA -> com.example.core.network.type.MediaFormat.MANGA
+        MediaFormat.NOVEL -> com.example.core.network.type.MediaFormat.NOVEL
+        MediaFormat.ONE_SHOT -> com.example.core.network.type.MediaFormat.ONE_SHOT
     }
 }

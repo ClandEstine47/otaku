@@ -5,7 +5,9 @@ import com.apollographql.apollo3.api.Optional
 import com.apollographql.apollo3.exception.ApolloException
 import com.example.core.domain.model.airing.AiringSchedule
 import com.example.core.domain.model.media.Media
+import com.example.core.domain.model.media.MediaFormat
 import com.example.core.domain.model.media.MediaSeason
+import com.example.core.domain.model.media.MediaType
 import com.example.core.domain.service.MediaService
 import com.example.core.network.RecentlyUpdatedQuery
 import com.example.core.network.SeasonalAnimeQuery
@@ -19,8 +21,10 @@ class MediaServiceImpl
     ) : MediaService {
         override suspend fun getSeasonalMediaList(
             pageNumber: Int,
+            perPage: Int,
             seasonYear: Int,
             season: MediaSeason,
+            mediaType: MediaType,
         ): Result<List<Media>> {
             return try {
                 val response =
@@ -28,8 +32,10 @@ class MediaServiceImpl
                         .query(
                             SeasonalAnimeQuery(
                                 page = pageNumber,
+                                perPage = Optional.present(perPage),
                                 seasonYear = Optional.present(seasonYear),
                                 season = Optional.present(season.toNetworkMediaSeason()),
+                                mediaType = Optional.present(mediaType.toNetworkMediaType()),
                             ),
                         )
                         .execute()
@@ -57,8 +63,9 @@ class MediaServiceImpl
             }
         }
 
-        override suspend fun getRecentlyUpdatedMediaList(
+        override suspend fun getRecentlyUpdatedAnimeList(
             pageNumber: Int,
+            perPage: Int,
             airingTimeInMs: Int,
         ): Result<List<AiringSchedule>> {
             return try {
@@ -67,6 +74,7 @@ class MediaServiceImpl
                         .query(
                             RecentlyUpdatedQuery(
                                 page = pageNumber,
+                                perPage = Optional.present(perPage),
                                 airingAtLesser = airingTimeInMs,
                             ),
                         )
@@ -84,6 +92,7 @@ class MediaServiceImpl
                         val airingSchedules =
                             response.data?.Page?.airingSchedules
                                 ?.mapNotNull { it?.toRecentlyUpdatedMedia() }
+                                ?.filter { it.media.type == MediaType.ANIME }
                                 ?: emptyList()
                         Result.success(airingSchedules)
                     }
@@ -95,13 +104,19 @@ class MediaServiceImpl
             }
         }
 
-        override suspend fun getTrendingNowMediaList(pageNumber: Int): Result<List<Media>> {
+        override suspend fun getTrendingNowMediaList(
+            pageNumber: Int,
+            perPage: Int,
+            mediaType: MediaType,
+        ): Result<List<Media>> {
             return try {
                 val response =
                     apolloClient
                         .query(
                             TrendingNowQuery(
                                 page = pageNumber,
+                                perPage = Optional.present(perPage),
+                                mediaType = Optional.present(mediaType.toNetworkMediaType()),
                             ),
                         )
                         .execute()
@@ -129,13 +144,23 @@ class MediaServiceImpl
             }
         }
 
-        override suspend fun getPopularMediaList(pageNumber: Int): Result<List<Media>> {
+        override suspend fun getPopularMediaList(
+            pageNumber: Int,
+            perPage: Int,
+            mediaType: MediaType,
+            mediaFormat: MediaFormat?,
+            countryOfOrigin: String?,
+        ): Result<List<Media>> {
             return try {
                 val response =
                     apolloClient
                         .query(
                             SeasonalAnimeQuery(
                                 page = pageNumber,
+                                perPage = Optional.present(perPage),
+                                mediaType = Optional.present(mediaType.toNetworkMediaType()),
+                                mediaFormat = Optional.presentIfNotNull(mediaFormat?.toNetworkMediaFormat()),
+                                countryOfOrigin = Optional.presentIfNotNull(countryOfOrigin),
                             ),
                         )
                         .execute()

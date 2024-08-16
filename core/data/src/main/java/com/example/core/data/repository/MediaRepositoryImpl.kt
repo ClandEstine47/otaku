@@ -2,7 +2,9 @@ package com.example.core.data.repository
 
 import com.example.core.domain.model.airing.AiringSchedule
 import com.example.core.domain.model.media.Media
+import com.example.core.domain.model.media.MediaFormat
 import com.example.core.domain.model.media.MediaSeason
+import com.example.core.domain.model.media.MediaType
 import com.example.core.domain.repository.MediaRepository
 import com.example.core.domain.service.MediaService
 import timber.log.Timber
@@ -15,41 +17,63 @@ class MediaRepositoryImpl
     ) : MediaRepository {
         override suspend fun getSeasonalMedia(
             pageNumber: Int,
+            perPage: Int,
             seasonYear: Int,
             season: MediaSeason,
+            mediaType: MediaType,
         ): Result<List<Media>> {
             return mediaService.getSeasonalMediaList(
                 pageNumber = pageNumber,
+                perPage = perPage,
                 seasonYear = seasonYear,
                 season = season,
+                mediaType = mediaType,
             ).onFailure { error ->
                 Timber.e(error, "Failed to get trending now media")
             }
         }
 
-        override suspend fun getRecentlyUpdatedMedia(
+        override suspend fun getRecentlyUpdatedAnimeList(
             pageNumber: Int,
+            perPage: Int,
             airingTimeInMs: Int,
         ): Result<List<AiringSchedule>> {
-            return mediaService.getRecentlyUpdatedMediaList(
+            return mediaService.getRecentlyUpdatedAnimeList(
                 pageNumber = pageNumber,
+                perPage = perPage,
                 airingTimeInMs = airingTimeInMs,
             ).onFailure { error ->
-                Timber.e(error, "Failed to get recently updated media")
+                Timber.e(error, "Failed to get recently updated anime")
             }
         }
 
-        override suspend fun getTrendingNowMedia(pageNumber: Int): Result<List<Media>> {
+        override suspend fun getTrendingNowMedia(
+            pageNumber: Int,
+            perPage: Int,
+            mediaType: MediaType,
+        ): Result<List<Media>> {
             return mediaService.getTrendingNowMediaList(
                 pageNumber = pageNumber,
+                perPage = perPage,
+                mediaType = mediaType,
             ).onFailure { error ->
                 Timber.e(error, "Failed to get trending now media")
             }
         }
 
-        override suspend fun getPopularMedia(pageNumber: Int): Result<List<Media>> {
+        override suspend fun getPopularMedia(
+            pageNumber: Int,
+            perPage: Int,
+            mediaType: MediaType,
+            mediaFormat: MediaFormat?,
+            countryOfOrigin: String?,
+        ): Result<List<Media>> {
             return mediaService.getPopularMediaList(
                 pageNumber = pageNumber,
+                perPage = perPage,
+                mediaType = mediaType,
+                mediaFormat = mediaFormat,
+                countryOfOrigin = countryOfOrigin,
             ).onFailure { error ->
                 Timber.e(error, "Failed to get trending now media")
             }

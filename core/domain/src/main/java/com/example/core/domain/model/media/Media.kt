@@ -1,6 +1,5 @@
 package com.example.core.domain.model.media
 
-import com.example.core.domain.model.Genre
 import com.example.core.domain.model.airing.AiringSchedule
 import com.example.core.domain.model.airing.AiringScheduleConnection
 import com.example.core.domain.model.character.CharacterConnection
@@ -16,7 +15,7 @@ data class Media(
     val type: MediaType? = null,
     val format: MediaFormat? = null,
     val status: MediaStatus? = null,
-    val description: String = "",
+    val description: String? = "",
     val startDate: FuzzyDate? = null,
     val endDate: FuzzyDate? = null,
     val season: MediaSeason? = null,
@@ -31,7 +30,7 @@ data class Media(
     val trailer: MediaTrailer? = null,
     val coverImage: MediaCoverImage = MediaCoverImage(),
     val bannerImage: String = "",
-    val genres: List<Genre> = listOf(),
+    val genres: List<String?>? = listOf(),
     val synonyms: List<String> = listOf(),
     val averageScore: Int = 0,
     val meanScore: Int = 0,

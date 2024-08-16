@@ -1,35 +1,29 @@
-package com.example.feature.anime
+package com.example.feature.manga
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.core.domain.model.media.MediaFormat
 import com.example.core.domain.model.media.MediaType
 import com.example.core.domain.repository.MediaRepository
-import com.example.feature.Utils.currentAnimeSeason
-import com.example.feature.Utils.nextAnimeSeason
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.LocalDateTime
 import javax.inject.Inject
 
 @HiltViewModel
-class AnimeViewModel
+class MangaViewModel
     @Inject
     constructor(
         private val mediaRepository: MediaRepository,
     ) : ViewModel() {
-        private val currentTime = LocalDateTime.now()
-        private val mediaType = MediaType.ANIME
+        private val mediaType = MediaType.MANGA
 
         private val _state =
             MutableStateFlow(
-                AnimeUiState(
-                    nowAnimeSeason = currentTime.currentAnimeSeason(),
-                    nextAnimeSeason = currentTime.nextAnimeSeason(),
-                ),
+                MangaUiState(),
             )
         val state = _state.asStateFlow()
 
@@ -55,71 +49,73 @@ class AnimeViewModel
                             mediaType = mediaType,
                         )
                     }
-                val recentlyUpdatedResultDeferred =
-                    async {
-                        mediaRepository.getRecentlyUpdatedAnimeList(
-                            pageNumber = 1,
-                            perPage = 20,
-                            airingTimeInMs = (System.currentTimeMillis() / 1000 - 10000).toInt(),
-                        )
-                    }
-                val currentSeasonDeferred =
-                    async {
-                        mediaRepository.getSeasonalMedia(
-                            pageNumber = 1,
-                            perPage = 20,
-                            seasonYear = state.value.nowAnimeSeason.year,
-                            season = state.value.nowAnimeSeason.season,
-                            mediaType = mediaType,
-                        )
-                    }
-                val popularResultDeferred =
+                val popularMangaResultDeferred =
                     async {
                         mediaRepository.getPopularMedia(
                             pageNumber = 1,
                             perPage = 20,
                             mediaType = mediaType,
+                            mediaFormat = MediaFormat.MANGA,
+                            countryOfOrigin = "JP",
                         )
                     }
-                val nextSeasonResultDeferred =
+                val popularManhwaResultDeferred =
                     async {
-                        mediaRepository.getSeasonalMedia(
+                        mediaRepository.getPopularMedia(
                             pageNumber = 1,
                             perPage = 20,
-                            seasonYear = state.value.nextAnimeSeason.year,
-                            season = state.value.nextAnimeSeason.season,
                             mediaType = mediaType,
+                            mediaFormat = MediaFormat.MANGA,
+                            countryOfOrigin = "KR",
+                        )
+                    }
+                val popularNovelResultDeferred =
+                    async {
+                        mediaRepository.getPopularMedia(
+                            pageNumber = 1,
+                            perPage = 20,
+                            mediaType = mediaType,
+                            mediaFormat = MediaFormat.NOVEL,
+                        )
+                    }
+                val popularOneShotResultDeferred =
+                    async {
+                        mediaRepository.getPopularMedia(
+                            pageNumber = 1,
+                            perPage = 20,
+                            mediaType = mediaType,
+                            mediaFormat = MediaFormat.ONE_SHOT,
                         )
                     }
 
                 val trendingNowResult = trendingNowResultDeferred.await()
-                val recentlyUpdatedResult = recentlyUpdatedResultDeferred.await()
-                val currentSeasonResult = currentSeasonDeferred.await()
-                val popularResult = popularResultDeferred.await()
-                val nextSeasonResult = nextSeasonResultDeferred.await()
+                val popularMangaResult = popularMangaResultDeferred.await()
+                val popularManhwaResult = popularManhwaResultDeferred.await()
+                val popularNovelResult = popularNovelResultDeferred.await()
+                val popularOneShotResult = popularOneShotResultDeferred.await()
 
                 _state.update { currentState ->
                     when {
-                        recentlyUpdatedResult.isSuccess && trendingNowResult.isSuccess && currentSeasonResult.isSuccess && nextSeasonResult.isSuccess && popularResult.isSuccess ->
+                        trendingNowResult.isSuccess && popularMangaResult.isSuccess && popularManhwaResult.isSuccess && popularNovelResult.isSuccess && popularOneShotResult.isSuccess ->
                             currentState.copy(
-                                trendingNowMedia = trendingNowResult.getOrNull(),
-                                recentlyUpdatedMedia = recentlyUpdatedResult.getOrNull(),
-                                currentSeasonMedia = currentSeasonResult.getOrNull(),
-                                popularMedia = popularResult.getOrNull(),
-                                nextSeasonMedia = nextSeasonResult.getOrNull(),
+                                trendingMangaList = trendingNowResult.getOrNull(),
+                                popularMangaList = popularMangaResult.getOrNull(),
+                                popularManhwaList = popularManhwaResult.getOrNull(),
+                                popularNovelList = popularNovelResult.getOrNull(),
+                                popularOneShotList = popularOneShotResult.getOrNull(),
                                 isLoading = false,
                                 error = null,
                             )
 
-                        recentlyUpdatedResult.isFailure || trendingNowResult.isFailure || currentSeasonResult.isFailure || nextSeasonResult.isFailure || popularResult.isFailure ->
+                        trendingNowResult.isFailure || popularMangaResult.isFailure || popularManhwaResult.isFailure || popularNovelResult.isFailure || popularOneShotResult.isFailure ->
                             currentState.copy(
-                                trendingNowMedia = null,
-                                recentlyUpdatedMedia = null,
-                                currentSeasonMedia = null,
-                                popularMedia = null,
-                                nextSeasonMedia = null,
+                                trendingMangaList = null,
+                                popularMangaList = null,
+                                popularManhwaList = null,
+                                popularNovelList = null,
+                                popularOneShotList = null,
                                 isLoading = false,
-                                error = recentlyUpdatedResult.exceptionOrNull()?.message ?: "An unknown error occurred",
+                                error = trendingNowResult.exceptionOrNull()?.message ?: "An unknown error occurred",
                             )
 
                         else ->

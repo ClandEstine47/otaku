@@ -1,8 +1,11 @@
 query SeasonalAnime(
     $page: Int!,
-    $perPage: Int = 25,
+    $perPage: Int,
     $season: MediaSeason,
-    $seasonYear: Int
+    $seasonYear: Int,
+    $mediaType: MediaType,
+    $mediaFormat: MediaFormat,
+    $countryOfOrigin: CountryCode
 ) {
     Page(
         page: $page,
@@ -16,6 +19,9 @@ query SeasonalAnime(
         media(
             season: $season,
             seasonYear: $seasonYear,
+            type: $mediaType,
+            format: $mediaFormat,
+            countryOfOrigin: $countryOfOrigin,
             sort: POPULARITY_DESC
         ) {
             id
@@ -26,6 +32,8 @@ query SeasonalAnime(
             nextAiringEpisode { episode }
             isAdult
             type
+            description
+            genres
             meanScore
             isFavourite
             format
@@ -33,6 +41,7 @@ query SeasonalAnime(
             countryOfOrigin
             coverImage {
                 large
+                extraLarge
             }
             title {
                 english

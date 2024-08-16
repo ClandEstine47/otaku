@@ -1,4 +1,4 @@
-package com.example.feature.anime
+package com.example.feature.manga
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,17 +22,21 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.rememberAsyncImagePainter
-import com.example.core.domain.model.airing.AiringSchedule
 import com.example.core.domain.model.media.Media
 import com.example.core.navigation.NavActionManager
 import com.example.feature.R
+import com.example.feature.anime.ExpandMediaListButton
+import com.example.feature.anime.ImageCard
+import com.example.feature.anime.InfiniteHorizontalPager
+import com.example.feature.anime.OtakuImageCardTitle
+import com.example.feature.anime.OtakuTitle
 
 @Composable
-fun AnimeView(
+fun MangaView(
     navActionManager: NavActionManager,
-    animeViewModel: AnimeViewModel = hiltViewModel(),
+    mangaViewModel: MangaViewModel = hiltViewModel(),
 ) {
-    val uiState by animeViewModel.state.collectAsStateWithLifecycle()
+    val uiState by mangaViewModel.state.collectAsStateWithLifecycle()
 
     Column(
         modifier =
@@ -53,29 +57,29 @@ fun AnimeView(
                 CircularProgressIndicator()
             }
         } else {
-            AnimeContent(
+            MangaContent(
                 navActionManager = navActionManager,
-                trendingNowMedia = uiState.trendingNowMedia,
-                recentlyUpdatedMedia = uiState.recentlyUpdatedMedia,
-                currentSeasonMedia = uiState.currentSeasonMedia,
-                popularNowMedia = uiState.popularMedia,
-                nextSeasonMedia = uiState.nextSeasonMedia,
+                trendingMangaList = uiState.trendingMangaList,
+                popularMangaList = uiState.popularMangaList,
+                popularManhwaList = uiState.popularManhwaList,
+                popularNovelList = uiState.popularNovelList,
+                popularOneShotList = uiState.popularOneShotList,
             )
         }
     }
 }
 
 @Composable
-fun AnimeContent(
+fun MangaContent(
     navActionManager: NavActionManager,
-    trendingNowMedia: List<Media>? = null,
-    recentlyUpdatedMedia: List<AiringSchedule>? = null,
-    currentSeasonMedia: List<Media>? = null,
-    popularNowMedia: List<Media>? = null,
-    nextSeasonMedia: List<Media>? = null,
+    trendingMangaList: List<Media>? = null,
+    popularMangaList: List<Media>? = null,
+    popularManhwaList: List<Media>? = null,
+    popularNovelList: List<Media>? = null,
+    popularOneShotList: List<Media>? = null,
 ) {
-    if (trendingNowMedia != null) {
-        InfiniteHorizontalPager(mediaList = trendingNowMedia)
+    if (trendingMangaList != null) {
+        InfiniteHorizontalPager(mediaList = trendingMangaList)
     }
 
     Spacer(modifier = Modifier.height(40.dp))
@@ -86,7 +90,7 @@ fun AnimeContent(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         OtakuTitle(
-            id = R.string.recently_updated,
+            id = R.string.popular_manga,
             modifier = Modifier.padding(start = 10.dp),
         )
 
@@ -98,7 +102,7 @@ fun AnimeContent(
         )
     }
 
-    recentlyUpdatedMedia?.let { recentlyUpdatedAnime ->
+    popularMangaList?.let { mangas ->
         LazyRow(
             modifier =
                 Modifier
@@ -106,10 +110,10 @@ fun AnimeContent(
                     .padding(16.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            items(recentlyUpdatedAnime) { anime ->
+            items(mangas) { manga ->
                 val painter =
                     rememberAsyncImagePainter(
-                        model = anime.media.coverImage.large,
+                        model = manga.coverImage.large,
                     )
 
                 Column(
@@ -118,14 +122,13 @@ fun AnimeContent(
                 ) {
                     ImageCard(
                         painter = painter,
-                        score = (anime.media.meanScore.toDouble()) / 10,
-                        isAnime = true,
-                        totalEpisodes = anime.media.episodes,
-                        releasedEpisodes = anime.episode,
-                        format = anime.media.format?.name,
+                        score = (manga.meanScore.toDouble()) / 10,
+                        isAnime = false,
+                        totalChapters = manga.chapters,
+                        format = manga.format?.name,
                     )
 
-                    OtakuImageCardTitle(title = anime.media.title.romaji)
+                    OtakuImageCardTitle(title = manga.title.romaji)
                 }
             }
         }
@@ -137,7 +140,7 @@ fun AnimeContent(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         OtakuTitle(
-            id = R.string.current_season,
+            id = R.string.popular_manhwa,
             modifier = Modifier.padding(start = 10.dp),
         )
 
@@ -149,7 +152,7 @@ fun AnimeContent(
         )
     }
 
-    currentSeasonMedia?.let { currentSeasonAnime ->
+    popularManhwaList?.let { manhwas ->
         LazyRow(
             modifier =
                 Modifier
@@ -157,10 +160,10 @@ fun AnimeContent(
                     .padding(16.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            items(currentSeasonAnime) { anime ->
+            items(manhwas) { manhwa ->
                 val painter =
                     rememberAsyncImagePainter(
-                        model = anime.coverImage.large,
+                        model = manhwa.coverImage.large,
                     )
 
                 Column(
@@ -169,14 +172,13 @@ fun AnimeContent(
                 ) {
                     ImageCard(
                         painter = painter,
-                        score = (anime.meanScore.toDouble()) / 10,
-                        isAnime = true,
-                        totalEpisodes = anime.episodes,
-                        releasedEpisodes = anime.nextAiringEpisode?.episode?.minus(1),
-                        format = anime.format?.name,
+                        score = (manhwa.meanScore.toDouble()) / 10,
+                        isAnime = false,
+                        totalChapters = manhwa.chapters,
+                        format = manhwa.format?.name,
                     )
 
-                    OtakuImageCardTitle(title = anime.title.romaji)
+                    OtakuImageCardTitle(title = manhwa.title.romaji)
                 }
             }
         }
@@ -188,7 +190,7 @@ fun AnimeContent(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         OtakuTitle(
-            id = R.string.popular_now,
+            id = R.string.popular_novel,
             modifier = Modifier.padding(start = 10.dp),
         )
 
@@ -200,7 +202,7 @@ fun AnimeContent(
         )
     }
 
-    popularNowMedia?.let { popularAnime ->
+    popularNovelList?.let { novels ->
         LazyRow(
             modifier =
                 Modifier
@@ -208,10 +210,10 @@ fun AnimeContent(
                     .padding(16.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            items(popularAnime) { anime ->
+            items(novels) { novel ->
                 val painter =
                     rememberAsyncImagePainter(
-                        model = anime.coverImage.large,
+                        model = novel.coverImage.large,
                     )
 
                 Column(
@@ -220,14 +222,13 @@ fun AnimeContent(
                 ) {
                     ImageCard(
                         painter = painter,
-                        score = (anime.meanScore.toDouble()) / 10,
-                        isAnime = true,
-                        totalEpisodes = anime.episodes,
-                        releasedEpisodes = anime.nextAiringEpisode?.episode?.minus(1),
-                        format = anime.format?.name,
+                        score = (novel.meanScore.toDouble()) / 10,
+                        isAnime = false,
+                        totalChapters = novel.chapters,
+                        format = novel.format?.name,
                     )
 
-                    OtakuImageCardTitle(title = anime.title.romaji)
+                    OtakuImageCardTitle(title = novel.title.romaji)
                 }
             }
         }
@@ -239,7 +240,7 @@ fun AnimeContent(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         OtakuTitle(
-            id = R.string.next_season,
+            id = R.string.popular_one_shot,
             modifier = Modifier.padding(start = 10.dp),
         )
 
@@ -251,7 +252,7 @@ fun AnimeContent(
         )
     }
 
-    nextSeasonMedia?.let { nextSeasonAnime ->
+    popularOneShotList?.let { oneShorts ->
         LazyRow(
             modifier =
                 Modifier
@@ -259,10 +260,10 @@ fun AnimeContent(
                     .padding(16.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            items(nextSeasonAnime) { anime ->
+            items(oneShorts) { oneShort ->
                 val painter =
                     rememberAsyncImagePainter(
-                        model = anime.coverImage.large,
+                        model = oneShort.coverImage.large,
                     )
 
                 Column(
@@ -271,15 +272,13 @@ fun AnimeContent(
                 ) {
                     ImageCard(
                         painter = painter,
-                        score = (anime.meanScore.toDouble()) / 10,
-                        isAnime = true,
-                        showScore = false,
-                        totalEpisodes = anime.episodes,
-                        releasedEpisodes = null,
-                        format = anime.format?.name,
+                        score = (oneShort.meanScore.toDouble()) / 10,
+                        isAnime = false,
+                        totalChapters = oneShort.chapters,
+                        format = oneShort.format?.name,
                     )
 
-                    OtakuImageCardTitle(title = anime.title.romaji)
+                    OtakuImageCardTitle(title = oneShort.title.romaji)
                 }
             }
         }

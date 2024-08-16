@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -39,19 +40,21 @@ fun ImageCard(
     showBottomBar: Boolean = true,
     score: Double? = null,
     showScore: Boolean = true,
+    isAnime: Boolean,
+    totalChapters: Int? = null,
     totalEpisodes: Int? = null,
     releasedEpisodes: Int? = null,
     format: String? = null,
 ) {
     Column(
         modifier =
-            Modifier
+            modifier
                 .width(100.dp)
                 .clip(RoundedCornerShape(8.dp)),
     ) {
         Box(
             modifier =
-                modifier
+                Modifier
                     .height(140.dp)
                     .fillMaxWidth(),
         ) {
@@ -126,7 +129,7 @@ fun ImageCard(
                                     text = releasedEpisodes.toString(),
                                     style = MaterialTheme.typography.labelSmall,
                                     fontWeight = FontWeight.Medium,
-                                    color = MaterialTheme.colorScheme.onBackground,
+                                    color = Color.White,
                                     modifier = Modifier.padding(2.dp),
                                 )
                             }
@@ -140,10 +143,10 @@ fun ImageCard(
                                     .background(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f)),
                         ) {
                             Text(
-                                text = (totalEpisodes ?: "?").toString(),
+                                text = ((if (isAnime) totalEpisodes else totalChapters) ?: "?").toString(),
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = FontWeight.Medium,
-                                color = MaterialTheme.colorScheme.onBackground,
+                                color = Color.White,
                                 modifier = Modifier.padding(2.dp),
                             )
                         }
@@ -171,6 +174,8 @@ fun ImageCardPreview() {
     ImageCard(
         painter = painterResource(id = R.drawable.anime_cover_preview),
         score = 8.9,
+        isAnime = true,
+        totalChapters = 190,
         totalEpisodes = 12,
         releasedEpisodes = 4,
         format = "MOVIE",
