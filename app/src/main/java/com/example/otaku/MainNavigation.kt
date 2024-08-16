@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -24,7 +23,9 @@ fun MainNavigation(
     NavHost(
         navController = navController,
         startDestination = OtakuScreen.AnimeTab,
-        modifier = Modifier.padding(8.dp),
+        modifier =
+            Modifier
+                .padding(bottom = padding.calculateBottomPadding()),
     ) {
         composable<OtakuScreen.AnimeTab> {
             AnimeView(navActionManager = navActionManager)
