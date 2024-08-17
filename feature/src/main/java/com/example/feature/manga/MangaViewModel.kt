@@ -55,7 +55,6 @@ class MangaViewModel
                             pageNumber = 1,
                             perPage = 20,
                             mediaType = mediaType,
-                            mediaFormat = MediaFormat.MANGA,
                             countryOfOrigin = "JP",
                         )
                     }
@@ -65,7 +64,6 @@ class MangaViewModel
                             pageNumber = 1,
                             perPage = 20,
                             mediaType = mediaType,
-                            mediaFormat = MediaFormat.MANGA,
                             countryOfOrigin = "KR",
                         )
                     }
