@@ -159,7 +159,7 @@ fun BannerItem(media: Media) {
                     verticalArrangement = Arrangement.Bottom,
                 ) {
                     OtakuTitle(
-                        title = media.title.romaji,
+                        title = media.title.english.ifBlank { media.title.romaji },
                         color = MaterialTheme.colorScheme.onBackground,
                     )
 
