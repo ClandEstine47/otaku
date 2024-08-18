@@ -125,7 +125,7 @@ fun AnimeContent(
                         format = anime.media.format?.name,
                     )
 
-                    OtakuImageCardTitle(title = anime.media.title.romaji)
+                    OtakuImageCardTitle(title = anime.media.title.english.ifBlank { anime.media.title.romaji })
                 }
             }
         }
@@ -176,7 +176,7 @@ fun AnimeContent(
                         format = anime.format?.name,
                     )
 
-                    OtakuImageCardTitle(title = anime.title.romaji)
+                    OtakuImageCardTitle(title = anime.title.english.ifBlank { anime.title.romaji })
                 }
             }
         }
@@ -227,7 +227,7 @@ fun AnimeContent(
                         format = anime.format?.name,
                     )
 
-                    OtakuImageCardTitle(title = anime.title.romaji)
+                    OtakuImageCardTitle(title = anime.title.english.ifBlank { anime.title.romaji })
                 }
             }
         }
@@ -279,7 +279,7 @@ fun AnimeContent(
                         format = anime.format?.name,
                     )
 
-                    OtakuImageCardTitle(title = anime.title.romaji)
+                    OtakuImageCardTitle(title = anime.title.english.ifBlank { anime.title.romaji })
                 }
             }
         }

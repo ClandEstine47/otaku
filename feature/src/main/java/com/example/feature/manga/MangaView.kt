@@ -128,7 +128,7 @@ fun MangaContent(
                         format = manga.format?.name,
                     )
 
-                    OtakuImageCardTitle(title = manga.title.romaji)
+                    OtakuImageCardTitle(title = manga.title.english.ifBlank { manga.title.romaji })
                 }
             }
         }
@@ -178,7 +178,7 @@ fun MangaContent(
                         format = manhwa.format?.name,
                     )
 
-                    OtakuImageCardTitle(title = manhwa.title.romaji)
+                    OtakuImageCardTitle(title = manhwa.title.english.ifBlank { manhwa.title.romaji })
                 }
             }
         }
@@ -228,7 +228,7 @@ fun MangaContent(
                         format = novel.format?.name,
                     )
 
-                    OtakuImageCardTitle(title = novel.title.romaji)
+                    OtakuImageCardTitle(title = novel.title.english.ifBlank { novel.title.romaji })
                 }
             }
         }
@@ -278,7 +278,7 @@ fun MangaContent(
                         format = oneShort.format?.name,
                     )
 
-                    OtakuImageCardTitle(title = oneShort.title.romaji)
+                    OtakuImageCardTitle(title = oneShort.title.english.ifBlank { oneShort.title.romaji })
                 }
             }
         }
