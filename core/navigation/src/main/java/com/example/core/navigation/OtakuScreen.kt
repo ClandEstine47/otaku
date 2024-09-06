@@ -8,4 +8,7 @@ sealed interface OtakuScreen {
 
     @Serializable
     data object MangaTab : OtakuScreen
+
+    @Serializable
+    data object MediaList : OtakuScreen
 }

@@ -10,6 +10,10 @@ import androidx.navigation.compose.rememberNavController
 class NavActionManager(
     private val navController: NavHostController,
 ) {
+    fun toMediaList() {
+        navController.navigate(OtakuScreen.MediaList)
+    }
+
     companion object {
         @Composable
         fun rememberNavActionManager(navController: NavHostController = rememberNavController()) =

@@ -12,6 +12,7 @@ import com.example.core.navigation.NavActionManager
 import com.example.core.navigation.OtakuScreen
 import com.example.feature.anime.AnimeView
 import com.example.feature.manga.MangaView
+import com.example.feature.medialist.MediaListView
 
 @Composable
 fun MainNavigation(
@@ -33,6 +34,10 @@ fun MainNavigation(
 
         composable<OtakuScreen.MangaTab> {
             MangaView(navActionManager = navActionManager)
+        }
+
+        composable<OtakuScreen.MediaList> {
+            MediaListView(navActionManager = navActionManager)
         }
     }
 }
