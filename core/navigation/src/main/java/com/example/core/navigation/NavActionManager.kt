@@ -5,13 +5,25 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.core.domain.model.MediaListContentType
+import com.example.core.domain.model.media.MediaType
 
 @Immutable
 class NavActionManager(
     private val navController: NavHostController,
 ) {
-    fun toMediaList() {
-        navController.navigate(OtakuScreen.MediaList)
+    fun toMediaList(
+        titleId: Int,
+        mediaType: MediaType,
+        contentType: MediaListContentType,
+    ) {
+        navController.navigate(
+            OtakuScreen.MediaList(
+                titleId = titleId,
+                mediaType = mediaType,
+                contentType = contentType,
+            ),
+        )
     }
 
     companion object {
