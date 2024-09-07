@@ -36,17 +36,17 @@ fun OtakuMain() {
                 OtakuScreen.MangaTab.toString(),
             )
 
-        LaunchedEffect(navBackStackEntry) {
-            val currentRoute = navBackStackEntry?.destination.toString().substringAfterLast('.')
-
-            showBottomBar = bottomNavBarRoutes.contains(currentRoute)
-        }
-
         val navBarItems =
             listOf(
                 NavBarItem(title = "Anime", iconEnabled = com.example.feature.R.drawable.anime_enabled, iconDisabled = com.example.feature.R.drawable.anime_disabled),
                 NavBarItem(title = "Manga", iconEnabled = com.example.feature.R.drawable.manga_enabled, iconDisabled = com.example.feature.R.drawable.manga_disabled),
             )
+
+        LaunchedEffect(navBackStackEntry) {
+            val currentRoute = navBackStackEntry?.destination.toString().substringAfterLast('.')
+
+            showBottomBar = bottomNavBarRoutes.contains(currentRoute)
+        }
 
         Surface(
             modifier = Modifier.fillMaxSize(),
