@@ -21,6 +21,7 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -34,6 +35,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.rememberAsyncImagePainter
 import com.example.core.domain.model.media.MediaType
 import com.example.core.navigation.NavActionManager
+import com.example.core.navigation.OtakuScreen
 import com.example.feature.R
 import com.example.feature.anime.ImageCard
 import com.example.feature.anime.OtakuImageCardTitle
@@ -46,12 +48,20 @@ enum class ViewType {
 
 @Composable
 fun MediaListView(
+    arguments: OtakuScreen.MediaList,
     navActionManager: NavActionManager,
     animeViewModel: MediaListViewViewModel = hiltViewModel(),
 ) {
     val uiState by animeViewModel.state.collectAsStateWithLifecycle()
     var viewType by rememberSaveable {
         mutableStateOf(ViewType.LIST)
+    }
+
+    LaunchedEffect(Unit) {
+        animeViewModel.loadMediaList(
+            mediaType = arguments.mediaType,
+            contentType = arguments.contentType,
+        )
     }
 
     Scaffold(
@@ -67,7 +77,7 @@ fun MediaListView(
                         .padding(start = 5.dp, bottom = 20.dp, end = 5.dp),
             ) {
                 OtakuTitle(
-                    id = R.string.popular_now,
+                    id = arguments.titleId,
                     style = MaterialTheme.typography.titleLarge,
                     modifier =
                         Modifier
