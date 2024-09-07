@@ -22,8 +22,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.rememberAsyncImagePainter
+import com.example.core.domain.model.MediaListContentType
 import com.example.core.domain.model.airing.AiringSchedule
 import com.example.core.domain.model.media.Media
+import com.example.core.domain.model.media.MediaType
 import com.example.core.navigation.NavActionManager
 import com.example.feature.R
 
@@ -93,7 +95,11 @@ fun AnimeContent(
         ExpandMediaListButton(
             modifier = Modifier,
             onButtonClick = {
-                // todo: update later
+                navActionManager.toMediaList(
+                    titleId = R.string.recently_updated,
+                    mediaType = MediaType.ANIME,
+                    contentType = MediaListContentType.RECENTLY_UPDATED,
+                )
             },
         )
     }
@@ -144,7 +150,11 @@ fun AnimeContent(
         ExpandMediaListButton(
             modifier = Modifier,
             onButtonClick = {
-                // todo: update later
+                navActionManager.toMediaList(
+                    titleId = R.string.current_season,
+                    mediaType = MediaType.ANIME,
+                    contentType = MediaListContentType.CURRENT_SEASON,
+                )
             },
         )
     }
@@ -195,7 +205,11 @@ fun AnimeContent(
         ExpandMediaListButton(
             modifier = Modifier,
             onButtonClick = {
-                // todo: update later
+                navActionManager.toMediaList(
+                    titleId = R.string.popular_now,
+                    mediaType = MediaType.ANIME,
+                    contentType = MediaListContentType.POPULAR_NOW,
+                )
             },
         )
     }
@@ -246,7 +260,11 @@ fun AnimeContent(
         ExpandMediaListButton(
             modifier = Modifier,
             onButtonClick = {
-                // todo: update later
+                navActionManager.toMediaList(
+                    titleId = R.string.next_season,
+                    mediaType = MediaType.ANIME,
+                    contentType = MediaListContentType.NEXT_SEASON,
+                )
             },
         )
     }
