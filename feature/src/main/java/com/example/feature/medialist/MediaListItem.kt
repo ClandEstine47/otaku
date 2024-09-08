@@ -245,7 +245,7 @@ fun MediaListItem(
                 isAnime = mediaItem.media.type == MediaType.ANIME,
                 totalChapters = mediaItem.media.chapters,
                 totalEpisodes = mediaItem.media.episodes,
-                releasedEpisodes = mediaItem.media.nextAiringEpisode?.episode?.minus(1),
+                releasedEpisodes = mediaItem.episode,
                 format = mediaItem.media.format?.name,
             )
 

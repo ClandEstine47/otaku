@@ -228,10 +228,10 @@ fun MediaGridViewContent(
                         }
                     }
                     is MediaListItem.ScheduleType -> {
-                        val media = mediaItem.schedule.media
+                        val media = mediaItem.schedule
                         val coverImage =
                             rememberAsyncImagePainter(
-                                model = media.coverImage.large,
+                                model = media.media.coverImage.large,
                             )
 
                         Column(
@@ -239,15 +239,15 @@ fun MediaGridViewContent(
                         ) {
                             ImageCard(
                                 painter = coverImage,
-                                score = (media.meanScore.toDouble()) / 10,
-                                isAnime = media.type == MediaType.ANIME,
-                                totalChapters = media.chapters,
-                                totalEpisodes = media.episodes,
-                                releasedEpisodes = media.nextAiringEpisode?.episode?.minus(1),
-                                format = media.format?.name,
+                                score = (media.media.meanScore.toDouble()) / 10,
+                                isAnime = media.media.type == MediaType.ANIME,
+                                totalChapters = media.media.chapters,
+                                totalEpisodes = media.media.episodes,
+                                releasedEpisodes = media.episode,
+                                format = media.media.format?.name,
                             )
 
-                            OtakuImageCardTitle(title = media.title.english.ifBlank { media.title.romaji })
+                            OtakuImageCardTitle(title = media.media.title.english.ifBlank { media.media.title.romaji })
                         }
                     }
                 }
