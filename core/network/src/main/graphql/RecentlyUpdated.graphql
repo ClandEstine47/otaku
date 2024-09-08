@@ -31,7 +31,7 @@ query RecentlyUpdated(
                 format
                 bannerImage
                 countryOfOrigin
-                coverImage { large }
+                coverImage { large extraLarge }
                 title { english romaji userPreferred }
                 mediaListEntry { progress private score(format: POINT_100) status }
             }

@@ -124,7 +124,7 @@ fun SeasonalAnimeQuery.Medium.toDomainMedia(): Media {
 }
 
 fun RecentlyUpdatedQuery.CoverImage.toDomainMediaCoverImage(): MediaCoverImage {
-    return MediaCoverImage(large = large.orEmpty())
+    return MediaCoverImage(large = large.orEmpty(), extraLarge = extraLarge.orEmpty())
 }
 
 fun TrendingNowQuery.CoverImage.toDomainMediaCoverImage(): MediaCoverImage {
