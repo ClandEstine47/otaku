@@ -26,6 +26,7 @@ query RecentlyUpdated(
                 nextAiringEpisode { episode }
                 isAdult
                 type
+                genres
                 meanScore
                 isFavourite
                 format

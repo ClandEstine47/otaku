@@ -27,6 +27,7 @@ fun RecentlyUpdatedQuery.Media.toDomainMedia(): Media {
         episodes = episodes,
         isAdult = isAdult ?: false,
         type = type?.toDomainMediaType(),
+        genres = genres,
         meanScore = meanScore ?: 0,
         isFavourite = isFavourite ?: false,
         format = format?.toDomainMediaFormat(),
