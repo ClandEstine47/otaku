@@ -1,6 +1,12 @@
 package com.example.core.domain.model.media
 
-enum class MediaType {
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
+
+@Parcelize
+@Serializable
+enum class MediaType : Parcelable {
     ANIME,
     MANGA,
 }

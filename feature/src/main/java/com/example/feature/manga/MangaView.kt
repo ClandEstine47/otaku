@@ -22,7 +22,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.rememberAsyncImagePainter
+import com.example.core.domain.model.MediaListContentType
 import com.example.core.domain.model.media.Media
+import com.example.core.domain.model.media.MediaType
 import com.example.core.navigation.NavActionManager
 import com.example.feature.R
 import com.example.feature.anime.ExpandMediaListButton
@@ -97,7 +99,11 @@ fun MangaContent(
         ExpandMediaListButton(
             modifier = Modifier,
             onButtonClick = {
-                // todo: update later
+                navActionManager.toMediaList(
+                    titleId = R.string.popular_manga,
+                    mediaType = MediaType.MANGA,
+                    contentType = MediaListContentType.POPULAR_MANGA,
+                )
             },
         )
     }
@@ -128,7 +134,7 @@ fun MangaContent(
                         format = manga.format?.name,
                     )
 
-                    OtakuImageCardTitle(title = manga.title.romaji)
+                    OtakuImageCardTitle(title = manga.title.english.ifBlank { manga.title.romaji })
                 }
             }
         }
@@ -147,7 +153,11 @@ fun MangaContent(
         ExpandMediaListButton(
             modifier = Modifier,
             onButtonClick = {
-                // todo: update later
+                navActionManager.toMediaList(
+                    titleId = R.string.popular_manhwa,
+                    mediaType = MediaType.MANGA,
+                    contentType = MediaListContentType.POPULAR_MANHWA,
+                )
             },
         )
     }
@@ -178,7 +188,7 @@ fun MangaContent(
                         format = manhwa.format?.name,
                     )
 
-                    OtakuImageCardTitle(title = manhwa.title.romaji)
+                    OtakuImageCardTitle(title = manhwa.title.english.ifBlank { manhwa.title.romaji })
                 }
             }
         }
@@ -197,7 +207,11 @@ fun MangaContent(
         ExpandMediaListButton(
             modifier = Modifier,
             onButtonClick = {
-                // todo: update later
+                navActionManager.toMediaList(
+                    titleId = R.string.popular_novel,
+                    mediaType = MediaType.MANGA,
+                    contentType = MediaListContentType.POPULAR_NOVEL,
+                )
             },
         )
     }
@@ -228,7 +242,7 @@ fun MangaContent(
                         format = novel.format?.name,
                     )
 
-                    OtakuImageCardTitle(title = novel.title.romaji)
+                    OtakuImageCardTitle(title = novel.title.english.ifBlank { novel.title.romaji })
                 }
             }
         }
@@ -247,7 +261,11 @@ fun MangaContent(
         ExpandMediaListButton(
             modifier = Modifier,
             onButtonClick = {
-                // todo: update later
+                navActionManager.toMediaList(
+                    titleId = R.string.popular_one_shot,
+                    mediaType = MediaType.MANGA,
+                    contentType = MediaListContentType.ONE_SHOT,
+                )
             },
         )
     }
@@ -278,7 +296,7 @@ fun MangaContent(
                         format = oneShort.format?.name,
                     )
 
-                    OtakuImageCardTitle(title = oneShort.title.romaji)
+                    OtakuImageCardTitle(title = oneShort.title.english.ifBlank { oneShort.title.romaji })
                 }
             }
         }

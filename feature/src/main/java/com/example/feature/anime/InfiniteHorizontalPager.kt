@@ -159,7 +159,7 @@ fun BannerItem(media: Media) {
                     verticalArrangement = Arrangement.Bottom,
                 ) {
                     OtakuTitle(
-                        title = media.title.romaji,
+                        title = media.title.english.ifBlank { media.title.romaji },
                         color = MaterialTheme.colorScheme.onBackground,
                     )
 
@@ -188,7 +188,7 @@ fun BannerItem(media: Media) {
                                 text = it,
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.Normal,
-                                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f),
+                                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                             )
@@ -197,7 +197,7 @@ fun BannerItem(media: Media) {
                                     text = " \u00B7 ",
                                     style = MaterialTheme.typography.bodyMedium,
                                     fontWeight = FontWeight.ExtraBold,
-                                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f),
+                                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
                                 )

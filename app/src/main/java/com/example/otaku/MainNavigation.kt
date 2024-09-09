@@ -7,11 +7,17 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
+import com.example.core.domain.model.MediaListContentType
+import com.example.core.domain.model.media.MediaType
+import com.example.core.navigation.CustomNavType
 import com.example.core.navigation.DeepLink
 import com.example.core.navigation.NavActionManager
 import com.example.core.navigation.OtakuScreen
 import com.example.feature.anime.AnimeView
 import com.example.feature.manga.MangaView
+import com.example.feature.medialist.MediaListView
+import kotlin.reflect.typeOf
 
 @Composable
 fun MainNavigation(
@@ -33,6 +39,19 @@ fun MainNavigation(
 
         composable<OtakuScreen.MangaTab> {
             MangaView(navActionManager = navActionManager)
+        }
+
+        composable<OtakuScreen.MediaList>(
+            typeMap =
+                mapOf(
+                    typeOf<MediaType>() to CustomNavType(MediaType::class.java, MediaType.serializer()),
+                    typeOf<MediaListContentType>() to CustomNavType(MediaListContentType::class.java, MediaListContentType.serializer()),
+                ),
+        ) {
+            MediaListView(
+                arguments = it.toRoute(),
+                navActionManager = navActionManager,
+            )
         }
     }
 }

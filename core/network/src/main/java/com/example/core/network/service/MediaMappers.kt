@@ -27,6 +27,7 @@ fun RecentlyUpdatedQuery.Media.toDomainMedia(): Media {
         episodes = episodes,
         isAdult = isAdult ?: false,
         type = type?.toDomainMediaType(),
+        genres = genres,
         meanScore = meanScore ?: 0,
         isFavourite = isFavourite ?: false,
         format = format?.toDomainMediaFormat(),
@@ -124,7 +125,7 @@ fun SeasonalAnimeQuery.Medium.toDomainMedia(): Media {
 }
 
 fun RecentlyUpdatedQuery.CoverImage.toDomainMediaCoverImage(): MediaCoverImage {
-    return MediaCoverImage(large = large.orEmpty())
+    return MediaCoverImage(large = large.orEmpty(), extraLarge = extraLarge.orEmpty())
 }
 
 fun TrendingNowQuery.CoverImage.toDomainMediaCoverImage(): MediaCoverImage {

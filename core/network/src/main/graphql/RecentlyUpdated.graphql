@@ -26,12 +26,13 @@ query RecentlyUpdated(
                 nextAiringEpisode { episode }
                 isAdult
                 type
+                genres
                 meanScore
                 isFavourite
                 format
                 bannerImage
                 countryOfOrigin
-                coverImage { large }
+                coverImage { large extraLarge }
                 title { english romaji userPreferred }
                 mediaListEntry { progress private score(format: POINT_100) status }
             }

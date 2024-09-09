@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.dagger.hilt)
     alias(libs.plugins.ksp)
@@ -57,6 +58,7 @@ android {
 dependencies {
 
     implementation(project(":core:navigation"))
+    implementation(project(":core:domain"))
     implementation(project(":feature"))
 
     implementation(libs.androidx.core.ktx)
@@ -85,4 +87,7 @@ dependencies {
 
     // desugar
     coreLibraryDesugaring(libs.desugar)
+
+    // serialization
+    implementation(libs.kotlinx.serialization.json)
 }

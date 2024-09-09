@@ -5,7 +5,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.core.navigation.NavActionManager
 import com.example.core.navigation.OtakuScreen
@@ -17,7 +23,18 @@ import com.example.otaku.ui.theme.OtakuTheme
 fun OtakuMain() {
     OtakuTheme {
         val navController = rememberNavController()
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
         val navActionManager = NavActionManager.rememberNavActionManager(navController)
+
+        var showBottomBar by rememberSaveable {
+            mutableStateOf(true)
+        }
+
+        val bottomNavBarRoutes =
+            listOf(
+                OtakuScreen.AnimeTab.toString(),
+                OtakuScreen.MangaTab.toString(),
+            )
 
         val navBarItems =
             listOf(
@@ -25,22 +42,30 @@ fun OtakuMain() {
                 NavBarItem(title = "Manga", iconEnabled = com.example.feature.R.drawable.manga_enabled, iconDisabled = com.example.feature.R.drawable.manga_disabled),
             )
 
+        LaunchedEffect(navBackStackEntry) {
+            val currentRoute = navBackStackEntry?.destination.toString().substringAfterLast('.')
+
+            showBottomBar = bottomNavBarRoutes.contains(currentRoute)
+        }
+
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background,
         ) {
             Scaffold(
                 bottomBar = {
-                    BottomNavBar(
-                        navBarItems = navBarItems,
-                        navigate = { title ->
-                            if (title == "Anime") {
-                                navController.navigate(OtakuScreen.AnimeTab)
-                            } else {
-                                navController.navigate(OtakuScreen.MangaTab)
-                            }
-                        },
-                    )
+                    if (showBottomBar) {
+                        BottomNavBar(
+                            navBarItems = navBarItems,
+                            navigate = { title ->
+                                if (title == "Anime") {
+                                    navController.navigate(OtakuScreen.AnimeTab)
+                                } else {
+                                    navController.navigate(OtakuScreen.MangaTab)
+                                }
+                            },
+                        )
+                    }
                 },
             ) { padding ->
                 MainNavigation(
