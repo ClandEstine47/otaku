@@ -18,7 +18,8 @@ interface MediaRepository {
     suspend fun getRecentlyUpdatedAnimeList(
         pageNumber: Int,
         perPage: Int,
-        airingTimeInMs: Int,
+        airingAtLesser: Int,
+        airingAtGreater: Int,
     ): Result<List<AiringSchedule>>
 
     suspend fun getTrendingNowMedia(

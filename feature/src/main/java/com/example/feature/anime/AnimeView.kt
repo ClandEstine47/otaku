@@ -96,7 +96,7 @@ fun AnimeContent(
             modifier = Modifier,
             onButtonClick = {
                 navActionManager.toMediaList(
-                    titleId = R.string.recently_updated,
+                    titleId = R.string.calendar,
                     mediaType = MediaType.ANIME,
                     contentType = MediaListContentType.RECENTLY_UPDATED,
                 )

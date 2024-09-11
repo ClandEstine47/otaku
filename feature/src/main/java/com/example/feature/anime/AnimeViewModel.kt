@@ -60,7 +60,8 @@ class AnimeViewModel
                         mediaRepository.getRecentlyUpdatedAnimeList(
                             pageNumber = 1,
                             perPage = 20,
-                            airingTimeInMs = (System.currentTimeMillis() / 1000 - 10000).toInt(),
+                            airingAtLesser = (System.currentTimeMillis() / 1000 - 10000).toInt(),
+                            airingAtGreater = 0,
                         )
                     }
                 val currentSeasonDeferred =

@@ -36,12 +36,14 @@ class MediaRepositoryImpl
         override suspend fun getRecentlyUpdatedAnimeList(
             pageNumber: Int,
             perPage: Int,
-            airingTimeInMs: Int,
+            airingAtLesser: Int,
+            airingAtGreater: Int,
         ): Result<List<AiringSchedule>> {
             return mediaService.getRecentlyUpdatedAnimeList(
                 pageNumber = pageNumber,
                 perPage = perPage,
-                airingTimeInMs = airingTimeInMs,
+                airingAtLesser = airingAtLesser,
+                airingAtGreater = airingAtGreater,
             ).onFailure { error ->
                 Timber.e(error, "Failed to get recently updated anime")
             }
