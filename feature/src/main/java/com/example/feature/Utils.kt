@@ -4,8 +4,12 @@ import com.example.core.domain.model.AnimeSeason
 import com.example.core.domain.model.media.MediaSeason
 import java.time.LocalDateTime
 import java.time.Month
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
 object Utils {
+    private val defaultZoneOffset get() = ZonedDateTime.now(ZoneId.systemDefault()).offset
+
     private fun LocalDateTime.season(): MediaSeason {
         return when (this.month) {
             Month.JANUARY, Month.FEBRUARY, Month.DECEMBER -> MediaSeason.WINTER
@@ -37,6 +41,23 @@ object Utils {
                 )
 
             else -> current
+        }
+    }
+
+    /**
+     * @param dayOffset Integer representing the day offset from today (0 for today, 1 for tomorrow, etc.)
+     * @param isEndOfDay Boolean to determine if the end of the day timestamp is needed
+     * @returns the requested day's timestamp (start or end of the day)
+     */
+    fun LocalDateTime.getDayTimestamp(
+        dayOffset: Int,
+        isEndOfDay: Boolean,
+    ): Long {
+        val targetDate = this.plusDays(dayOffset.toLong()).toLocalDate()
+        return if (isEndOfDay) {
+            targetDate.plusDays(1).atStartOfDay().minusNanos(1).toInstant(defaultZoneOffset).epochSecond
+        } else {
+            targetDate.atStartOfDay().toInstant(defaultZoneOffset).epochSecond
         }
     }
 }
