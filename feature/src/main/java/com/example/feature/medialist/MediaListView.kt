@@ -5,8 +5,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -219,6 +221,44 @@ fun MediaListView(
                         }
                     },
                 )
+            } else {
+                Row(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(20.dp, Alignment.CenterHorizontally),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    // Previous Button
+                    PageSelectorButton(
+                        buttonIcon = "<",
+                        enabled = (uiState.pageNumber > 1 && !uiState.isLoading),
+                        onClick = {
+                            mediaListViewModel.decreasePageNumber()
+                            mediaListViewModel.loadMediaList(
+                                mediaType = arguments.mediaType,
+                                contentType = arguments.contentType,
+                            )
+                        },
+                    )
+
+                    PageNumberButton(pageNumber = uiState.pageNumber)
+
+                    // Next Button
+                    PageSelectorButton(
+                        buttonIcon = ">",
+                        enabled = (uiState.hasNextPage == true && !uiState.isLoading),
+                        onClick = {
+                            mediaListViewModel.increasePageNumber()
+                            mediaListViewModel.loadMediaList(
+                                mediaType = arguments.mediaType,
+                                contentType = arguments.contentType,
+                            )
+                        },
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(15.dp))
             }
 
             HorizontalPager(

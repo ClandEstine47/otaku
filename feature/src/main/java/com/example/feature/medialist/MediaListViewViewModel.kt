@@ -58,7 +58,7 @@ class MediaListViewViewModel
                                 val endOfDay = currentTime.getDayTimestamp(dayOffset = _state.value.dayOffset, isEndOfDay = true)
 
                                 mediaRepository.getRecentlyUpdatedAnimeList(
-                                    pageNumber = 1,
+                                    pageNumber = _state.value.pageNumber,
                                     perPage = 30,
                                     airingAtLesser = endOfDay.toInt(),
                                     airingAtGreater = startOfDay.toInt(),
@@ -66,7 +66,7 @@ class MediaListViewViewModel
                             }
                             MediaListContentType.CURRENT_SEASON -> {
                                 mediaRepository.getSeasonalMedia(
-                                    pageNumber = 1,
+                                    pageNumber = _state.value.pageNumber,
                                     perPage = 21,
                                     seasonYear = currentAnimeSeason.year,
                                     season = currentAnimeSeason.season,
@@ -75,14 +75,14 @@ class MediaListViewViewModel
                             }
                             MediaListContentType.POPULAR_NOW -> {
                                 mediaRepository.getPopularMedia(
-                                    pageNumber = 1,
+                                    pageNumber = _state.value.pageNumber,
                                     perPage = 21,
                                     mediaType = mediaType,
                                 )
                             }
                             MediaListContentType.NEXT_SEASON -> {
                                 mediaRepository.getSeasonalMedia(
-                                    pageNumber = 1,
+                                    pageNumber = _state.value.pageNumber,
                                     perPage = 21,
                                     seasonYear = nextAnimeSeason.year,
                                     season = nextAnimeSeason.season,
@@ -91,7 +91,7 @@ class MediaListViewViewModel
                             }
                             MediaListContentType.POPULAR_MANGA -> {
                                 mediaRepository.getPopularMedia(
-                                    pageNumber = 1,
+                                    pageNumber = _state.value.pageNumber,
                                     perPage = 21,
                                     mediaType = mediaType,
                                     countryOfOrigin = "JP",
@@ -99,7 +99,7 @@ class MediaListViewViewModel
                             }
                             MediaListContentType.POPULAR_MANHWA -> {
                                 mediaRepository.getPopularMedia(
-                                    pageNumber = 1,
+                                    pageNumber = _state.value.pageNumber,
                                     perPage = 21,
                                     mediaType = mediaType,
                                     countryOfOrigin = "KR",
@@ -107,7 +107,7 @@ class MediaListViewViewModel
                             }
                             MediaListContentType.POPULAR_NOVEL -> {
                                 mediaRepository.getPopularMedia(
-                                    pageNumber = 1,
+                                    pageNumber = _state.value.pageNumber,
                                     perPage = 21,
                                     mediaType = mediaType,
                                     mediaFormat = MediaFormat.NOVEL,
@@ -115,7 +115,7 @@ class MediaListViewViewModel
                             }
                             MediaListContentType.ONE_SHOT -> {
                                 mediaRepository.getPopularMedia(
-                                    pageNumber = 1,
+                                    pageNumber = _state.value.pageNumber,
                                     perPage = 21,
                                     mediaType = mediaType,
                                     mediaFormat = MediaFormat.ONE_SHOT,
@@ -229,6 +229,20 @@ class MediaListViewViewModel
             _state.update {
                 it.copy(
                     dayOffset = value,
+                )
+            }
+
+        fun increasePageNumber() =
+            _state.update {
+                it.copy(
+                    pageNumber = _state.value.pageNumber + 1,
+                )
+            }
+
+        fun decreasePageNumber() =
+            _state.update {
+                it.copy(
+                    pageNumber = _state.value.pageNumber - 1,
                 )
             }
 
