@@ -1,5 +1,6 @@
 package com.example.core.domain.repository
 
+import com.example.core.domain.model.Page
 import com.example.core.domain.model.airing.AiringSchedule
 import com.example.core.domain.model.media.Media
 import com.example.core.domain.model.media.MediaFormat
@@ -13,20 +14,20 @@ interface MediaRepository {
         seasonYear: Int,
         season: MediaSeason,
         mediaType: MediaType,
-    ): Result<List<Media>>
+    ): Result<Page<Media>>
 
     suspend fun getRecentlyUpdatedAnimeList(
         pageNumber: Int,
         perPage: Int,
         airingAtLesser: Int,
         airingAtGreater: Int,
-    ): Result<List<AiringSchedule>>
+    ): Result<Page<AiringSchedule>>
 
     suspend fun getTrendingNowMedia(
         pageNumber: Int,
         perPage: Int,
         mediaType: MediaType,
-    ): Result<List<Media>>
+    ): Result<Page<Media>>
 
     suspend fun getPopularMedia(
         pageNumber: Int,
@@ -34,5 +35,5 @@ interface MediaRepository {
         mediaType: MediaType,
         mediaFormat: MediaFormat? = null,
         countryOfOrigin: String? = null,
-    ): Result<List<Media>>
+    ): Result<Page<Media>>
 }

@@ -131,7 +131,7 @@ class MediaListViewViewModel
                         mediaListResult.isSuccess -> {
                             val mediaListByPage = currentState.mediaListByPage.toMutableList()
                             mediaListByPage[0] =
-                                mediaListResult.getOrNull()?.map { media ->
+                                mediaListResult.getOrNull()?.data?.map { media ->
                                     when (media) {
                                         is Media -> {
                                             MediaListItem.MediaListType(media)
@@ -148,6 +148,7 @@ class MediaListViewViewModel
                             currentState.copy(
                                 mediaListByPage = mediaListByPage,
                                 isLoading = false,
+                                hasNextPage = mediaListResult.getOrNull()?.pageInfo?.hasNextPage,
                                 error = null,
                             )
                         }
@@ -194,13 +195,14 @@ class MediaListViewViewModel
                                 val mediaListByPage = currentState.mediaListByPage.toMutableList()
 
                                 mediaListByPage[dayIndex] =
-                                    mediaListResult.getOrNull()?.map { media ->
+                                    mediaListResult.getOrNull()?.data?.map { media ->
                                         MediaListItem.ScheduleType(media)
                                     }
 
                                 currentState.copy(
                                     mediaListByPage = mediaListByPage,
                                     isLoading = false,
+                                    hasNextPage = mediaListResult.getOrNull()?.pageInfo?.hasNextPage,
                                     error = null,
                                 )
                             }

@@ -103,11 +103,11 @@ class AnimeViewModel
                     when {
                         recentlyUpdatedResult.isSuccess && trendingNowResult.isSuccess && currentSeasonResult.isSuccess && nextSeasonResult.isSuccess && popularResult.isSuccess ->
                             currentState.copy(
-                                trendingNowMedia = trendingNowResult.getOrNull(),
-                                recentlyUpdatedMedia = recentlyUpdatedResult.getOrNull(),
-                                currentSeasonMedia = currentSeasonResult.getOrNull(),
-                                popularMedia = popularResult.getOrNull(),
-                                nextSeasonMedia = nextSeasonResult.getOrNull(),
+                                trendingNowMedia = trendingNowResult.getOrNull()?.data,
+                                recentlyUpdatedMedia = recentlyUpdatedResult.getOrNull()?.data,
+                                currentSeasonMedia = currentSeasonResult.getOrNull()?.data,
+                                popularMedia = popularResult.getOrNull()?.data,
+                                nextSeasonMedia = nextSeasonResult.getOrNull()?.data,
                                 isLoading = false,
                                 error = null,
                             )

@@ -6,6 +6,7 @@ import com.example.core.domain.model.media.Media
 data class MediaListUiState(
     val mediaListByPage: List<List<MediaListItem>?> = List(7) { emptyList() },
     val dayOffset: Int = 0,
+    val hasNextPage: Boolean? = false,
     val isLoading: Boolean = false,
     val error: String? = null,
 )

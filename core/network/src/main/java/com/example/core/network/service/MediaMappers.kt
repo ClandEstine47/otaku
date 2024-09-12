@@ -1,5 +1,6 @@
 package com.example.core.network.service
 
+import com.example.core.domain.model.PageInfo
 import com.example.core.domain.model.airing.AiringSchedule
 import com.example.core.domain.model.media.*
 import com.example.core.network.RecentlyUpdatedQuery
@@ -50,6 +51,14 @@ fun RecentlyUpdatedQuery.Media.toDomainMedia(): Media {
     )
 }
 
+fun RecentlyUpdatedQuery.PageInfo.toDomainPageInfo(): PageInfo {
+    return PageInfo(
+        total = total,
+        currentPage = currentPage,
+        hasNextPage = hasNextPage,
+    )
+}
+
 fun TrendingNowQuery.Medium.toDomainMedia(): Media {
     return Media(
         idAniList = id,
@@ -84,6 +93,22 @@ fun TrendingNowQuery.Medium.toDomainMedia(): Media {
                 score = mediaListEntry?.score ?: 0.0,
                 status = mediaListEntry?.status?.toDomainMediaListStatus(),
             ),
+    )
+}
+
+fun TrendingNowQuery.PageInfo.toDomainPageInfo(): PageInfo {
+    return PageInfo(
+        total = total,
+        currentPage = currentPage,
+        hasNextPage = hasNextPage,
+    )
+}
+
+fun SeasonalAnimeQuery.PageInfo.toDomainPageInfo(): PageInfo {
+    return PageInfo(
+        total = total,
+        currentPage = currentPage,
+        hasNextPage = hasNextPage,
     )
 }
 
