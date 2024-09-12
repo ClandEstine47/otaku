@@ -3,10 +3,12 @@ package com.example.feature.medialist
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -167,8 +169,7 @@ fun MediaListView(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             PrimaryScrollableTabRow(
-                modifier =
-                    Modifier.padding(bottom = 10.dp),
+                modifier = Modifier.padding(bottom = 10.dp),
                 containerColor = MaterialTheme.colorScheme.background,
                 edgePadding = 5.dp,
                 selectedTabIndex = selectedTabIndex,
@@ -183,6 +184,7 @@ fun MediaListView(
                     HorizontalDivider(color = MaterialTheme.colorScheme.background)
                 },
                 tabs = {
+                    val tabWidthModifier = Modifier.width(IntrinsicSize.Max)
                     daysSorted.forEachIndexed { index, day ->
                         val isCurrentTabSelected = selectedTabIndex == index
 
@@ -194,14 +196,20 @@ fun MediaListView(
                                     pagerState.animateScrollToPage(index)
                                 }
                             },
+                            modifier = tabWidthModifier,
                         ) {
-                            OtakuTitle(
+                            Box(
                                 modifier =
                                     Modifier
-                                        .padding(bottom = 6.dp),
-                                title = stringResource(id = day.stringRes),
-                                color = if (isCurrentTabSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground,
-                            )
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                OtakuTitle(
+                                    title = stringResource(id = day.stringRes),
+                                    color = if (isCurrentTabSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground,
+                                )
+                            }
                         }
                     }
                 },
