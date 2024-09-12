@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.rememberAsyncImagePainter
+import com.example.core.domain.model.MediaListContentType
 import com.example.core.domain.model.media.MediaType
 import com.example.core.navigation.NavActionManager
 import com.example.core.navigation.OtakuScreen
@@ -77,7 +78,8 @@ fun MediaListView(
     var selectedTabIndex by rememberSaveable {
         mutableIntStateOf(0)
     }
-    val pagerState = rememberPagerState(initialPage = selectedTabIndex) { daysSorted.size }
+    val isCalendarMediaList = arguments.contentType == MediaListContentType.RECENTLY_UPDATED
+    val pagerState = rememberPagerState(initialPage = selectedTabIndex) { if (isCalendarMediaList) daysSorted.size else 1 }
 
     LaunchedEffect(Unit) {
         mediaListViewModel.loadMediaList(
@@ -87,10 +89,12 @@ fun MediaListView(
     }
 
     LaunchedEffect(pagerState) {
-        snapshotFlow { pagerState.currentPage }.collect { page ->
-            mediaListViewModel.setDayOffset(page)
-            mediaListViewModel.loadMediaListByDay(dayIndex = page)
-            selectedTabIndex = page
+        if (isCalendarMediaList) {
+            snapshotFlow { pagerState.currentPage }.collect { page ->
+                mediaListViewModel.setDayOffset(page)
+                mediaListViewModel.loadMediaListByDay(dayIndex = page)
+                selectedTabIndex = page
+            }
         }
     }
 
@@ -168,52 +172,54 @@ fun MediaListView(
                     .padding(5.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            PrimaryScrollableTabRow(
-                modifier = Modifier.padding(bottom = 10.dp),
-                containerColor = MaterialTheme.colorScheme.background,
-                edgePadding = 5.dp,
-                selectedTabIndex = selectedTabIndex,
-                indicator = {
-                    SecondaryIndicator(
-                        Modifier
-                            .tabIndicatorOffset(selectedTabIndex = selectedTabIndex, matchContentSize = true),
-                        height = 3.dp,
-                    )
-                },
-                divider = {
-                    HorizontalDivider(color = MaterialTheme.colorScheme.background)
-                },
-                tabs = {
-                    val tabWidthModifier = Modifier.width(IntrinsicSize.Max)
-                    daysSorted.forEachIndexed { index, day ->
-                        val isCurrentTabSelected = selectedTabIndex == index
+            if (isCalendarMediaList) {
+                PrimaryScrollableTabRow(
+                    modifier = Modifier.padding(bottom = 10.dp),
+                    containerColor = MaterialTheme.colorScheme.background,
+                    edgePadding = 5.dp,
+                    selectedTabIndex = selectedTabIndex,
+                    indicator = {
+                        SecondaryIndicator(
+                            Modifier
+                                .tabIndicatorOffset(selectedTabIndex = selectedTabIndex, matchContentSize = true),
+                            height = 3.dp,
+                        )
+                    },
+                    divider = {
+                        HorizontalDivider(color = MaterialTheme.colorScheme.background)
+                    },
+                    tabs = {
+                        val tabWidthModifier = Modifier.width(IntrinsicSize.Max)
+                        daysSorted.forEachIndexed { index, day ->
+                            val isCurrentTabSelected = selectedTabIndex == index
 
-                        Tab(
-                            selected = isCurrentTabSelected,
-                            onClick = {
-                                selectedTabIndex = index
-                                coroutineScope.launch {
-                                    pagerState.animateScrollToPage(index)
-                                }
-                            },
-                            modifier = tabWidthModifier,
-                        ) {
-                            Box(
-                                modifier =
-                                    Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                                contentAlignment = Alignment.Center,
+                            Tab(
+                                selected = isCurrentTabSelected,
+                                onClick = {
+                                    selectedTabIndex = index
+                                    coroutineScope.launch {
+                                        pagerState.animateScrollToPage(index)
+                                    }
+                                },
+                                modifier = tabWidthModifier,
                             ) {
-                                OtakuTitle(
-                                    title = stringResource(id = day.stringRes),
-                                    color = if (isCurrentTabSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground,
-                                )
+                                Box(
+                                    modifier =
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                                    contentAlignment = Alignment.Center,
+                                ) {
+                                    OtakuTitle(
+                                        title = stringResource(id = day.stringRes),
+                                        color = if (isCurrentTabSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground,
+                                    )
+                                }
                             }
                         }
-                    }
-                },
-            )
+                    },
+                )
+            }
 
             HorizontalPager(
                 state = pagerState,
