@@ -67,7 +67,7 @@ class MediaListViewViewModel
                             MediaListContentType.CURRENT_SEASON -> {
                                 mediaRepository.getSeasonalMedia(
                                     pageNumber = 1,
-                                    perPage = 20,
+                                    perPage = 21,
                                     seasonYear = currentAnimeSeason.year,
                                     season = currentAnimeSeason.season,
                                     mediaType = mediaType,
@@ -76,14 +76,14 @@ class MediaListViewViewModel
                             MediaListContentType.POPULAR_NOW -> {
                                 mediaRepository.getPopularMedia(
                                     pageNumber = 1,
-                                    perPage = 20,
+                                    perPage = 21,
                                     mediaType = mediaType,
                                 )
                             }
                             MediaListContentType.NEXT_SEASON -> {
                                 mediaRepository.getSeasonalMedia(
                                     pageNumber = 1,
-                                    perPage = 20,
+                                    perPage = 21,
                                     seasonYear = nextAnimeSeason.year,
                                     season = nextAnimeSeason.season,
                                     mediaType = mediaType,
@@ -92,7 +92,7 @@ class MediaListViewViewModel
                             MediaListContentType.POPULAR_MANGA -> {
                                 mediaRepository.getPopularMedia(
                                     pageNumber = 1,
-                                    perPage = 20,
+                                    perPage = 21,
                                     mediaType = mediaType,
                                     countryOfOrigin = "JP",
                                 )
@@ -100,7 +100,7 @@ class MediaListViewViewModel
                             MediaListContentType.POPULAR_MANHWA -> {
                                 mediaRepository.getPopularMedia(
                                     pageNumber = 1,
-                                    perPage = 20,
+                                    perPage = 21,
                                     mediaType = mediaType,
                                     countryOfOrigin = "KR",
                                 )
@@ -108,7 +108,7 @@ class MediaListViewViewModel
                             MediaListContentType.POPULAR_NOVEL -> {
                                 mediaRepository.getPopularMedia(
                                     pageNumber = 1,
-                                    perPage = 20,
+                                    perPage = 21,
                                     mediaType = mediaType,
                                     mediaFormat = MediaFormat.NOVEL,
                                 )
@@ -116,7 +116,7 @@ class MediaListViewViewModel
                             MediaListContentType.ONE_SHOT -> {
                                 mediaRepository.getPopularMedia(
                                     pageNumber = 1,
-                                    perPage = 20,
+                                    perPage = 21,
                                     mediaType = mediaType,
                                     mediaFormat = MediaFormat.ONE_SHOT,
                                 )
