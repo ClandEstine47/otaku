@@ -85,4 +85,7 @@ dependencies {
 
     // compose rich editor
     implementation(libs.rich.editor.compose)
+
+    // haze
+    implementation(libs.haze)
 }

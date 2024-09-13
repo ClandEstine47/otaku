@@ -90,4 +90,7 @@ dependencies {
 
     // serialization
     implementation(libs.kotlinx.serialization.json)
+
+    // haze
+    implementation(libs.haze)
 }
