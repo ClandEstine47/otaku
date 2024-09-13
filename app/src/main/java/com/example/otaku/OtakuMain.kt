@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -18,6 +19,7 @@ import com.example.core.navigation.OtakuScreen
 import com.example.feature.BottomNavBar
 import com.example.feature.NavBarItem
 import com.example.otaku.ui.theme.OtakuTheme
+import dev.chrisbanes.haze.HazeState
 
 @Composable
 fun OtakuMain() {
@@ -25,6 +27,7 @@ fun OtakuMain() {
         val navController = rememberNavController()
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val navActionManager = NavActionManager.rememberNavActionManager(navController)
+        val hazeState = remember { HazeState() }
 
         var showBottomBar by rememberSaveable {
             mutableStateOf(true)
@@ -57,6 +60,7 @@ fun OtakuMain() {
                     if (showBottomBar) {
                         BottomNavBar(
                             navBarItems = navBarItems,
+                            hazeState = hazeState,
                             navigate = { title ->
                                 if (title == "Anime") {
                                     navController.navigate(OtakuScreen.AnimeTab)
@@ -73,6 +77,7 @@ fun OtakuMain() {
                     navActionManager = navActionManager,
                     deepLink = null,
                     padding = padding,
+                    hazeState = hazeState,
                 )
             }
         }
