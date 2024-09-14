@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -166,7 +167,7 @@ fun BannerItem(media: Media) {
                     Spacer(modifier = Modifier.height(5.dp))
 
                     OtakuTitle(
-                        title = media.status?.name ?: "-",
+                        title = media.status?.stringRes?.let { stringResource(id = it) } ?: "-",
                         color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.titleSmall,
                     )
