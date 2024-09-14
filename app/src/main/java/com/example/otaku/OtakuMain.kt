@@ -41,8 +41,8 @@ fun OtakuMain() {
 
         val navBarItems =
             listOf(
-                NavBarItem(title = "Anime", iconEnabled = com.example.feature.R.drawable.anime_enabled, iconDisabled = com.example.feature.R.drawable.anime_disabled),
-                NavBarItem(title = "Manga", iconEnabled = com.example.feature.R.drawable.manga_enabled, iconDisabled = com.example.feature.R.drawable.manga_disabled),
+                NavBarItem(title = "ANIME", iconEnabled = com.example.feature.R.drawable.anime_enabled, iconDisabled = com.example.feature.R.drawable.anime_disabled),
+                NavBarItem(title = "MANGA", iconEnabled = com.example.feature.R.drawable.manga_enabled, iconDisabled = com.example.feature.R.drawable.manga_disabled),
             )
 
         LaunchedEffect(navBackStackEntry) {

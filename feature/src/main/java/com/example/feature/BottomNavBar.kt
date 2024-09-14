@@ -142,7 +142,7 @@ fun BottomNavBar(
                                     }
                                 },
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center,
+                        verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.CenterVertically),
                     ) {
                         Icon(
                             painter = painterResource(id = if (selectedTabIndex == index) navBarItem.iconEnabled else navBarItem.iconDisabled),
@@ -153,7 +153,7 @@ fun BottomNavBar(
                             text = navBarItem.title,
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onBackground,
-                            fontWeight = FontWeight.Bold,
+                            fontWeight = FontWeight.ExtraBold,
                         )
                     }
                 }
