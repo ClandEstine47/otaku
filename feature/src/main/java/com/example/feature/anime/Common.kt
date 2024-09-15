@@ -2,7 +2,9 @@ package com.example.feature.anime
 
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -70,6 +72,7 @@ fun ExpandMediaListButton(
     onButtonClick: () -> Unit,
 ) {
     IconButton(
+        modifier = modifier,
         onClick = {
             onButtonClick()
         },
@@ -78,5 +81,38 @@ fun ExpandMediaListButton(
             imageVector = Icons.AutoMirrored.Default.ArrowForward,
             contentDescription = "expand media list",
         )
+    }
+}
+
+@Composable
+fun BackButton(
+    modifier: Modifier = Modifier,
+    onButtonClick: () -> Unit,
+) {
+    IconButton(
+        modifier = modifier,
+        onClick = {
+            onButtonClick()
+        },
+    ) {
+        Icon(
+            imageVector = Icons.AutoMirrored.Default.ArrowBack,
+            contentDescription = "go back",
+        )
+    }
+}
+
+@Composable
+fun ShareButton(
+    modifier: Modifier = Modifier,
+    onButtonClick: () -> Unit,
+) {
+    IconButton(
+        modifier = modifier,
+        onClick = {
+            onButtonClick()
+        },
+    ) {
+        Icon(imageVector = Icons.Default.Share, contentDescription = "share")
     }
 }
