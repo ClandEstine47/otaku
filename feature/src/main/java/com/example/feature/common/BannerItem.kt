@@ -2,6 +2,7 @@ package com.example.feature.common
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -21,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -28,6 +30,8 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.example.core.domain.model.media.Media
+import com.example.core.domain.model.media.MediaRankType
+import com.example.feature.R
 import com.example.feature.anime.BannerCard
 import com.example.feature.anime.ImageCard
 import com.example.feature.anime.OtakuTitle
@@ -38,6 +42,7 @@ import com.example.feature.mediadetail.ExpandableHtmlText
 @Composable
 fun BannerItem(
     media: Media,
+    rankingVisibility: Boolean = false,
     showDescription: Boolean = false,
     onBannerItemClick: (mediaId: Int) -> Unit,
 ) {
@@ -122,6 +127,50 @@ fun BannerItem(
                         color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.titleSmall,
                     )
+                }
+            }
+
+            if (rankingVisibility) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(50.dp, Alignment.Start),
+                ) {
+                    val highestRatedRanking = media.rankings?.firstOrNull { ranking -> ranking.allTime == true && ranking.type == MediaRankType.RATED }?.rank ?: 0
+                    val mostPopularRanking = media.rankings?.firstOrNull { ranking -> ranking.allTime == true && ranking.type == MediaRankType.POPULAR }?.rank ?: 0
+
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.star),
+                            contentDescription = "Highest rated all time",
+                        )
+
+                        OtakuTitle(
+                            title = "#$highestRatedRanking",
+                            fontWeight = FontWeight.Light,
+                            style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.onBackground,
+                        )
+                    }
+
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.flame),
+                            contentDescription = "Most popular all time",
+                        )
+
+                        OtakuTitle(
+                            title = "#$mostPopularRanking",
+                            fontWeight = FontWeight.Light,
+                            style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.onBackground,
+                        )
+                    }
                 }
             }
 
