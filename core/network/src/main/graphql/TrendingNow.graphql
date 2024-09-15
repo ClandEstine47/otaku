@@ -46,6 +46,12 @@ query TrendingNow(
                 score(format: POINT_100)
                 status
             }
+            rankings {
+                id
+                rank
+                allTime
+                type
+            }
         }
     }
 }

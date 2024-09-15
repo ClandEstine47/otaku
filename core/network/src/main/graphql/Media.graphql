@@ -43,5 +43,14 @@ query Media(
             color
             icon
         }
+        popularity
+        trending
+        favourites
+        rankings {
+            id
+            rank
+            allTime
+            type
+        }
     }
 }

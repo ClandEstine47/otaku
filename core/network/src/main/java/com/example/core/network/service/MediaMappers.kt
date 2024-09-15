@@ -9,6 +9,7 @@ import com.example.core.network.SeasonalAnimeQuery
 import com.example.core.network.TrendingNowQuery
 import com.example.core.network.type.MediaFormat as NetworkMediaFormat
 import com.example.core.network.type.MediaListStatus as NetworkMediaListStatus
+import com.example.core.network.type.MediaRankType as NetworkMediaRankType
 import com.example.core.network.type.MediaStatus as NetworkMediaStatus
 import com.example.core.network.type.MediaType as NetworkMediaType
 
@@ -76,7 +77,8 @@ fun TrendingNowQuery.Medium.toDomainMedia(): Media {
         description = description,
         genres = genres,
         meanScore = meanScore ?: 0,
-        isFavourite = isFavourite ?: false,
+        isFavourite = isFavourite,
+        rankings = rankings?.map { it?.toDomainRankings() ?: MediaRank() },
         format = format?.toDomainMediaFormat(),
         bannerImage = bannerImage.orEmpty(),
         countryOfOrigin = countryOfOrigin.toString(),
@@ -169,6 +171,10 @@ fun MediaQuery.Media.toDomainMedia(): Media {
         genres = genres,
         meanScore = meanScore ?: 0,
         isFavourite = isFavourite,
+        popularity = popularity,
+        trending = trending,
+        favourites = favourites,
+        rankings = rankings?.map { it?.toDomainRankings() ?: MediaRank() },
         format = format?.toDomainMediaFormat(),
         bannerImage = bannerImage.orEmpty(),
         countryOfOrigin = countryOfOrigin.toString(),
@@ -204,6 +210,32 @@ fun MediaQuery.ExternalLink.toDomainExternalLink(): MediaExternalLink {
         color = color,
         icon = icon,
     )
+}
+
+fun TrendingNowQuery.Ranking.toDomainRankings(): MediaRank {
+    return MediaRank(
+        id = id,
+        rank = rank,
+        allTime = allTime,
+        type = type.toDomainMediaRankType(),
+    )
+}
+
+fun MediaQuery.Ranking.toDomainRankings(): MediaRank {
+    return MediaRank(
+        id = id,
+        rank = rank,
+        allTime = allTime,
+        type = type.toDomainMediaRankType(),
+    )
+}
+
+fun NetworkMediaRankType.toDomainMediaRankType(): MediaRankType {
+    return when (this) {
+        NetworkMediaRankType.RATED -> MediaRankType.RATED
+        NetworkMediaRankType.POPULAR -> MediaRankType.POPULAR
+        NetworkMediaRankType.UNKNOWN__ -> MediaRankType.UNKNOWN
+    }
 }
 
 fun RecentlyUpdatedQuery.CoverImage.toDomainMediaCoverImage(): MediaCoverImage {
