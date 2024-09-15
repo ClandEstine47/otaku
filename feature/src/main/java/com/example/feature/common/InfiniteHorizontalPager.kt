@@ -21,7 +21,10 @@ import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun InfiniteHorizontalPager(mediaList: List<Media>) {
+fun InfiniteHorizontalPager(
+    mediaList: List<Media>,
+    onBannerItemClick: (mediaId: Int) -> Unit,
+) {
     val pagerState = rememberPagerState { Int.MAX_VALUE }
 
     // infinite scroll
@@ -66,7 +69,12 @@ fun InfiniteHorizontalPager(mediaList: List<Media>) {
                 mediaList.getOrNull(
                     index % (mediaList.size),
                 )?.let { media ->
-                    BannerItem(media = media)
+                    BannerItem(
+                        media = media,
+                        onBannerItemClick = { mediaId ->
+                            onBannerItemClick(mediaId)
+                        },
+                    )
                 }
             }
         }

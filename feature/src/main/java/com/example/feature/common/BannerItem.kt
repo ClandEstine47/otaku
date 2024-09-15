@@ -1,5 +1,9 @@
 package com.example.feature.common
 
+import android.annotation.SuppressLint
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -28,10 +33,13 @@ import com.example.feature.anime.ImageCard
 import com.example.feature.anime.OtakuTitle
 import com.example.feature.mediadetail.ExpandableHtmlText
 
+@OptIn(ExperimentalFoundationApi::class)
+@SuppressLint("RememberReturnType")
 @Composable
 fun BannerItem(
     media: Media,
     showDescription: Boolean = false,
+    onBannerItemClick: (mediaId: Int) -> Unit,
 ) {
     val bannerPainter =
         rememberAsyncImagePainter(
@@ -70,7 +78,14 @@ fun BannerItem(
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .padding(top = 150.dp),
+                        .padding(top = 150.dp)
+                        .combinedClickable(
+                            onClick = {
+                                onBannerItemClick(media.idAniList)
+                            },
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null,
+                        ),
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
             ) {
                 Column(
