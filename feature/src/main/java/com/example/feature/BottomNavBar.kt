@@ -50,6 +50,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.core.domain.model.media.MediaType
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeChild
 
@@ -57,7 +58,7 @@ import dev.chrisbanes.haze.hazeChild
 fun BottomNavBar(
     navBarItems: List<NavBarItem>,
     hazeState: HazeState,
-    navigate: (String) -> Unit,
+    navigate: (MediaType) -> Unit,
 ) {
     var selectedTabIndex by rememberSaveable {
         mutableIntStateOf(0)
@@ -138,7 +139,7 @@ fun BottomNavBar(
                                 .pointerInput(Unit) {
                                     detectTapGestures {
                                         selectedTabIndex = index
-                                        navigate(navBarItem.title)
+                                        navigate(navBarItem.mediaType)
                                     }
                                 },
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -150,7 +151,7 @@ fun BottomNavBar(
                             contentDescription = "NavBar Icon",
                         )
                         Text(
-                            text = navBarItem.title,
+                            text = navBarItem.mediaType.name.uppercase(),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onBackground,
                             fontWeight = FontWeight.ExtraBold,
@@ -220,7 +221,7 @@ fun BottomNavBar(
 }
 
 data class NavBarItem(
-    val title: String,
+    val mediaType: MediaType,
     val iconEnabled: Int,
     val iconDisabled: Int,
 )

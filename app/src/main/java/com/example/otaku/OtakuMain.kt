@@ -14,6 +14,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.core.domain.model.media.MediaType
 import com.example.core.navigation.NavActionManager
 import com.example.core.navigation.OtakuScreen
 import com.example.feature.BottomNavBar
@@ -41,8 +42,8 @@ fun OtakuMain() {
 
         val navBarItems =
             listOf(
-                NavBarItem(title = "ANIME", iconEnabled = com.example.feature.R.drawable.anime_enabled, iconDisabled = com.example.feature.R.drawable.anime_disabled),
-                NavBarItem(title = "MANGA", iconEnabled = com.example.feature.R.drawable.manga_enabled, iconDisabled = com.example.feature.R.drawable.manga_disabled),
+                NavBarItem(mediaType = MediaType.ANIME, iconEnabled = com.example.feature.R.drawable.anime_enabled, iconDisabled = com.example.feature.R.drawable.anime_disabled),
+                NavBarItem(mediaType = MediaType.MANGA, iconEnabled = com.example.feature.R.drawable.manga_enabled, iconDisabled = com.example.feature.R.drawable.manga_disabled),
             )
 
         LaunchedEffect(navBackStackEntry) {
@@ -61,11 +62,14 @@ fun OtakuMain() {
                         BottomNavBar(
                             navBarItems = navBarItems,
                             hazeState = hazeState,
-                            navigate = { title ->
-                                if (title == "Anime") {
-                                    navController.navigate(OtakuScreen.AnimeTab)
-                                } else {
-                                    navController.navigate(OtakuScreen.MangaTab)
+                            navigate = { mediaType ->
+                                when (mediaType) {
+                                    MediaType.ANIME -> {
+                                        navController.navigate(OtakuScreen.AnimeTab)
+                                    }
+                                    MediaType.MANGA -> {
+                                        navController.navigate(OtakuScreen.MangaTab)
+                                    }
                                 }
                             },
                         )

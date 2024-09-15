@@ -43,7 +43,7 @@ import com.example.feature.mediadetail.ExpandableHtmlText
 fun BannerItem(
     media: Media,
     rankingVisibility: Boolean = false,
-    showDescription: Boolean = false,
+    descriptionVisibility: Boolean = false,
     onBannerItemClick: (mediaId: Int) -> Unit,
 ) {
     val bannerPainter =
@@ -207,7 +207,7 @@ fun BannerItem(
                     }
                 }
             }
-            if (showDescription) {
+            if (descriptionVisibility) {
                 ExpandableHtmlText(html = media.description ?: "")
             }
         }
