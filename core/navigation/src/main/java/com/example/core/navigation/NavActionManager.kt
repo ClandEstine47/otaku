@@ -26,6 +26,18 @@ class NavActionManager(
         )
     }
 
+    fun toMediaDetail(
+        id: Int,
+        mediaType: MediaType,
+    ) {
+        navController.navigate(
+            OtakuScreen.MediaDetail(
+                id = id,
+                mediaType = mediaType,
+            ),
+        )
+    }
+
     companion object {
         @Composable
         fun rememberNavActionManager(navController: NavHostController = rememberNavController()) =
