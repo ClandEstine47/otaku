@@ -2,10 +2,13 @@ package com.example.feature
 
 import com.example.core.domain.model.AnimeSeason
 import com.example.core.domain.model.media.MediaSeason
+import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.Month
 import java.time.ZoneId
 import java.time.ZonedDateTime
+import java.util.Date
+import java.util.Locale
 
 object Utils {
     private val defaultZoneOffset get() = ZonedDateTime.now(ZoneId.systemDefault()).offset
@@ -59,5 +62,11 @@ object Utils {
         } else {
             targetDate.atStartOfDay().toInstant(defaultZoneOffset).epochSecond
         }
+    }
+
+    fun displayInDayDateTimeFormat(seconds: Int): String {
+        val dateFormat = SimpleDateFormat("E, dd MMM yyyy, hh:mm a", Locale.getDefault())
+        val date = Date(seconds * 1000L)
+        return dateFormat.format(date)
     }
 }
