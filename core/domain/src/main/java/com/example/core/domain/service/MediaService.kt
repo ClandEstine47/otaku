@@ -36,4 +36,8 @@ interface MediaService {
         mediaFormat: MediaFormat?,
         countryOfOrigin: String?,
     ): Result<Page<Media>>
+
+    suspend fun getMediaById(
+        id: Int,
+    ): Result<Media>
 }

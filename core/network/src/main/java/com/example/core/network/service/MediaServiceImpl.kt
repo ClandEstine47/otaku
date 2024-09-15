@@ -10,6 +10,7 @@ import com.example.core.domain.model.media.MediaFormat
 import com.example.core.domain.model.media.MediaSeason
 import com.example.core.domain.model.media.MediaType
 import com.example.core.domain.service.MediaService
+import com.example.core.network.MediaQuery
 import com.example.core.network.RecentlyUpdatedQuery
 import com.example.core.network.SeasonalAnimeQuery
 import com.example.core.network.TrendingNowQuery
@@ -205,6 +206,39 @@ class MediaServiceImpl
                                 pageInfo = pageInfo,
                                 data = popularMedia,
                             ),
+                        )
+                    }
+                }
+            } catch (e: ApolloException) {
+                Result.failure(e)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+
+        override suspend fun getMediaById(id: Int): Result<Media> {
+            return try {
+                val response =
+                    apolloClient
+                        .query(
+                            MediaQuery(
+                                id = id,
+                            ),
+                        ).execute()
+
+                when {
+                    response.hasErrors() -> {
+                        val errorMessage =
+                            response.errors?.joinToString("; ") { it.message }
+                                ?: "Unknown GraphQL error"
+                        Result.failure(Exception(errorMessage))
+                    }
+
+                    else -> {
+                        val media =
+                            response.data?.Media?.toDomainMedia() ?: Media()
+                        Result.success(
+                            media,
                         )
                     }
                 }

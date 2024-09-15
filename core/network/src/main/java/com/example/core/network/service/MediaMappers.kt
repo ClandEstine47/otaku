@@ -3,6 +3,7 @@ package com.example.core.network.service
 import com.example.core.domain.model.PageInfo
 import com.example.core.domain.model.airing.AiringSchedule
 import com.example.core.domain.model.media.*
+import com.example.core.network.MediaQuery
 import com.example.core.network.RecentlyUpdatedQuery
 import com.example.core.network.SeasonalAnimeQuery
 import com.example.core.network.TrendingNowQuery
@@ -149,6 +150,62 @@ fun SeasonalAnimeQuery.Medium.toDomainMedia(): Media {
     )
 }
 
+fun MediaQuery.Media.toDomainMedia(): Media {
+    return Media(
+        idAniList = id,
+        idMal = idMal,
+        status = status?.toDomainMediaStatus(),
+        chapters = chapters,
+        episodes = episodes,
+        nextAiringEpisode =
+            AiringSchedule(
+                airingAt = nextAiringEpisode?.airingAt,
+                timeUntilAiring = nextAiringEpisode?.timeUntilAiring,
+                episode = nextAiringEpisode?.episode,
+            ),
+        isAdult = isAdult ?: false,
+        type = type?.toDomainMediaType(),
+        description = description,
+        genres = genres,
+        meanScore = meanScore ?: 0,
+        isFavourite = isFavourite,
+        format = format?.toDomainMediaFormat(),
+        bannerImage = bannerImage.orEmpty(),
+        countryOfOrigin = countryOfOrigin.toString(),
+        coverImage = coverImage?.toDomainMediaCoverImage() ?: MediaCoverImage(),
+        title =
+            MediaTitle(
+                english = title?.english ?: "",
+                romaji = title?.romaji ?: "",
+                native = title?.native ?: "",
+                userPreferred = title?.userPreferred ?: "",
+            ),
+        mediaListEntry =
+            MediaList(
+                progress = mediaListEntry?.progress ?: 0,
+                private = mediaListEntry?.private ?: false,
+                score = mediaListEntry?.score ?: 0.0,
+                status = mediaListEntry?.status?.toDomainMediaListStatus(),
+            ),
+        trailer =
+            MediaTrailer(
+                id = trailer?.id,
+                site = trailer?.site,
+                thumbnail = trailer?.thumbnail,
+            ),
+        externalLinks = externalLinks?.map { it?.toDomainExternalLink() ?: MediaExternalLink() },
+    )
+}
+
+fun MediaQuery.ExternalLink.toDomainExternalLink(): MediaExternalLink {
+    return MediaExternalLink(
+        url = url,
+        site = site,
+        color = color,
+        icon = icon,
+    )
+}
+
 fun RecentlyUpdatedQuery.CoverImage.toDomainMediaCoverImage(): MediaCoverImage {
     return MediaCoverImage(large = large.orEmpty(), extraLarge = extraLarge.orEmpty())
 }
@@ -161,6 +218,13 @@ fun TrendingNowQuery.CoverImage.toDomainMediaCoverImage(): MediaCoverImage {
 }
 
 fun SeasonalAnimeQuery.CoverImage.toDomainMediaCoverImage(): MediaCoverImage {
+    return MediaCoverImage(
+        large = large.orEmpty(),
+        extraLarge = extraLarge.orEmpty(),
+    )
+}
+
+fun MediaQuery.CoverImage.toDomainMediaCoverImage(): MediaCoverImage {
     return MediaCoverImage(
         large = large.orEmpty(),
         extraLarge = extraLarge.orEmpty(),

@@ -81,4 +81,12 @@ class MediaRepositoryImpl
                 Timber.e(error, "Failed to get trending now media")
             }
         }
+
+        override suspend fun getMediaById(id: Int): Result<Media> {
+            return mediaService.getMediaById(
+                id = id,
+            ).onFailure { error ->
+                Timber.e(error, "Failed to get media")
+            }
+        }
     }

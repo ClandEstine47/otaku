@@ -36,4 +36,8 @@ interface MediaRepository {
         mediaFormat: MediaFormat? = null,
         countryOfOrigin: String? = null,
     ): Result<Page<Media>>
+
+    suspend fun getMediaById(
+        id: Int,
+    ): Result<Media>
 }

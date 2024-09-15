@@ -46,7 +46,7 @@ data class Media(
     val isAdult: Boolean = false,
     val nextAiringEpisode: AiringSchedule? = null,
     val airingSchedule: AiringScheduleConnection = AiringScheduleConnection(),
-    val externalLinks: List<MediaExternalLink> = listOf(),
+    val externalLinks: List<MediaExternalLink>? = listOf(),
     val rankings: List<MediaRank> = listOf(),
     val recommendations: RecommendationConnection = RecommendationConnection(),
     val stats: MediaStats? = null,
