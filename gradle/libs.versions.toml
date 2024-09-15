@@ -26,6 +26,7 @@ spotless = "6.25.0"
 timber = "5.0.1"
 richEditor = "1.0.0-rc06"
 haze = "0.7.3"
+androidYoutubePlayer = "12.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidxCore" }
@@ -57,6 +58,7 @@ coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coi
 desugar = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar" }
 rich-editor-compose = { group = "com.mohamedrejeb.richeditor", name = "richeditor-compose", version.ref = "richEditor" }
 haze = { group = "dev.chrisbanes.haze", name = "haze", version.ref = "haze" }
+android-youtube-player = { group = "com.pierfrancescosoffritti.androidyoutubeplayer", name = "core", version.ref = "androidYoutubePlayer" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

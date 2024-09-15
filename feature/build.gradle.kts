@@ -88,4 +88,7 @@ dependencies {
 
     // haze
     implementation(libs.haze)
+
+    // youtube player
+    implementation(libs.android.youtube.player)
 }
