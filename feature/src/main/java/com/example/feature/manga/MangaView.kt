@@ -1,6 +1,7 @@
 package com.example.feature.manga
 
 import android.os.Build
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,9 +32,9 @@ import com.example.core.navigation.NavActionManager
 import com.example.feature.R
 import com.example.feature.anime.ExpandMediaListButton
 import com.example.feature.anime.ImageCard
-import com.example.feature.anime.InfiniteHorizontalPager
 import com.example.feature.anime.OtakuImageCardTitle
 import com.example.feature.anime.OtakuTitle
+import com.example.feature.common.InfiniteHorizontalPager
 import dev.chrisbanes.haze.HazeDefaults
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
@@ -98,8 +99,18 @@ fun MangaContent(
     popularNovelList: List<Media>? = null,
     popularOneShotList: List<Media>? = null,
 ) {
+    val mediaType = MediaType.MANGA
+
     if (trendingMangaList != null) {
-        InfiniteHorizontalPager(mediaList = trendingMangaList)
+        InfiniteHorizontalPager(
+            mediaList = trendingMangaList,
+            onBannerItemClick = { mediaId ->
+                navActionManager.toMediaDetail(
+                    id = mediaId,
+                    mediaType = mediaType,
+                )
+            },
+        )
     }
 
     Spacer(modifier = Modifier.height(40.dp))
@@ -143,6 +154,14 @@ fun MangaContent(
                 Column(
                     horizontalAlignment = Alignment.Start,
                     verticalArrangement = Arrangement.spacedBy(3.dp),
+                    modifier =
+                        Modifier
+                            .clickable {
+                                navActionManager.toMediaDetail(
+                                    id = manga.idAniList,
+                                    mediaType = mediaType,
+                                )
+                            },
                 ) {
                     ImageCard(
                         painter = painter,
@@ -197,6 +216,14 @@ fun MangaContent(
                 Column(
                     horizontalAlignment = Alignment.Start,
                     verticalArrangement = Arrangement.spacedBy(3.dp),
+                    modifier =
+                        Modifier
+                            .clickable {
+                                navActionManager.toMediaDetail(
+                                    id = manhwa.idAniList,
+                                    mediaType = mediaType,
+                                )
+                            },
                 ) {
                     ImageCard(
                         painter = painter,
@@ -251,6 +278,14 @@ fun MangaContent(
                 Column(
                     horizontalAlignment = Alignment.Start,
                     verticalArrangement = Arrangement.spacedBy(3.dp),
+                    modifier =
+                        Modifier
+                            .clickable {
+                                navActionManager.toMediaDetail(
+                                    id = novel.idAniList,
+                                    mediaType = mediaType,
+                                )
+                            },
                 ) {
                     ImageCard(
                         painter = painter,
@@ -305,6 +340,14 @@ fun MangaContent(
                 Column(
                     horizontalAlignment = Alignment.Start,
                     verticalArrangement = Arrangement.spacedBy(3.dp),
+                    modifier =
+                        Modifier
+                            .clickable {
+                                navActionManager.toMediaDetail(
+                                    id = oneShort.idAniList,
+                                    mediaType = mediaType,
+                                )
+                            },
                 ) {
                     ImageCard(
                         painter = painter,

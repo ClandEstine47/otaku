@@ -1,6 +1,7 @@
 package com.example.feature.anime
 
 import android.os.Build
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,6 +31,7 @@ import com.example.core.domain.model.media.Media
 import com.example.core.domain.model.media.MediaType
 import com.example.core.navigation.NavActionManager
 import com.example.feature.R
+import com.example.feature.common.InfiniteHorizontalPager
 import dev.chrisbanes.haze.HazeDefaults
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
@@ -94,8 +96,18 @@ fun AnimeContent(
     popularNowMedia: List<Media>? = null,
     nextSeasonMedia: List<Media>? = null,
 ) {
+    val mediaType = MediaType.ANIME
+
     if (trendingNowMedia != null) {
-        InfiniteHorizontalPager(mediaList = trendingNowMedia)
+        InfiniteHorizontalPager(
+            mediaList = trendingNowMedia,
+            onBannerItemClick = { mediaId ->
+                navActionManager.toMediaDetail(
+                    id = mediaId,
+                    mediaType = mediaType,
+                )
+            },
+        )
     }
 
     Spacer(modifier = Modifier.height(40.dp))
@@ -139,6 +151,13 @@ fun AnimeContent(
                 Column(
                     horizontalAlignment = Alignment.Start,
                     verticalArrangement = Arrangement.spacedBy(3.dp),
+                    modifier =
+                        Modifier.clickable {
+                            navActionManager.toMediaDetail(
+                                id = anime.media.idAniList,
+                                mediaType = mediaType,
+                            )
+                        },
                 ) {
                     ImageCard(
                         painter = painter,
@@ -194,6 +213,14 @@ fun AnimeContent(
                 Column(
                     horizontalAlignment = Alignment.Start,
                     verticalArrangement = Arrangement.spacedBy(3.dp),
+                    modifier =
+                        Modifier
+                            .clickable {
+                                navActionManager.toMediaDetail(
+                                    id = anime.idAniList,
+                                    mediaType = mediaType,
+                                )
+                            },
                 ) {
                     ImageCard(
                         painter = painter,
@@ -249,6 +276,14 @@ fun AnimeContent(
                 Column(
                     horizontalAlignment = Alignment.Start,
                     verticalArrangement = Arrangement.spacedBy(3.dp),
+                    modifier =
+                        Modifier
+                            .clickable {
+                                navActionManager.toMediaDetail(
+                                    id = anime.idAniList,
+                                    mediaType = mediaType,
+                                )
+                            },
                 ) {
                     ImageCard(
                         painter = painter,
@@ -304,6 +339,14 @@ fun AnimeContent(
                 Column(
                     horizontalAlignment = Alignment.Start,
                     verticalArrangement = Arrangement.spacedBy(3.dp),
+                    modifier =
+                        Modifier
+                            .clickable {
+                                navActionManager.toMediaDetail(
+                                    id = anime.idAniList,
+                                    mediaType = mediaType,
+                                )
+                            },
                 ) {
                     ImageCard(
                         painter = painter,
