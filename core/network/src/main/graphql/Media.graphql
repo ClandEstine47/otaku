@@ -1,0 +1,47 @@
+query Media(
+    $id: Int!
+) {
+    Media(id: $id) {
+        id
+        idMal
+        status
+        chapters
+        episodes
+        nextAiringEpisode {
+            airingAt
+            timeUntilAiring
+            episode
+        }
+        isAdult
+        type
+        genres
+        meanScore
+        description
+        isFavourite
+        format
+        bannerImage
+        countryOfOrigin
+        coverImage {
+            large
+            extraLarge
+        }
+        title {
+            english
+            romaji
+            native
+            userPreferred
+        }
+        mediaListEntry { progress private score(format: POINT_100) status }
+        trailer {
+            id
+            site
+            thumbnail
+        }
+        externalLinks {
+            url
+            site
+            color
+            icon
+        }
+    }
+}
