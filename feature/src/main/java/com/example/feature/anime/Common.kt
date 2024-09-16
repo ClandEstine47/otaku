@@ -1,5 +1,6 @@
 package com.example.feature.anime
 
+import android.content.Intent
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -12,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -109,12 +111,19 @@ fun BackButton(
 @Composable
 fun ShareButton(
     modifier: Modifier = Modifier,
-    onButtonClick: () -> Unit,
+    url: String,
 ) {
+    val context = LocalContext.current
+    val sendIntent =
+        Intent(Intent.ACTION_SEND).apply {
+            putExtra(Intent.EXTRA_TEXT, url)
+            type = "text/plain"
+        }
+    val shareIntent = Intent.createChooser(sendIntent, null)
     IconButton(
         modifier = modifier,
         onClick = {
-            onButtonClick()
+            context.startActivity(shareIntent)
         },
     ) {
         Icon(imageVector = Icons.Default.Share, contentDescription = "share")

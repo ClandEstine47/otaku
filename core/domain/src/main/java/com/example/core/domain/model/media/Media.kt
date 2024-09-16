@@ -50,6 +50,6 @@ data class Media(
     val rankings: List<MediaRank>? = listOf(),
     val recommendations: RecommendationConnection = RecommendationConnection(),
     val stats: MediaStats? = null,
-    val siteUrl: String = "",
+    val siteUrl: String? = "",
     val mediaListEntry: MediaList? = null,
 )

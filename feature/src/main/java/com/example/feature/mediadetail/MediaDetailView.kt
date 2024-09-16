@@ -113,9 +113,7 @@ fun MediaDetailContent(
                 actions = {
                     ShareButton(
                         modifier = Modifier,
-                        onButtonClick = {
-                            // todo: share
-                        },
+                        url = mediaDetail?.siteUrl.orEmpty(),
                     )
                 },
                 colors =

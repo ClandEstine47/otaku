@@ -52,5 +52,6 @@ query Media(
             allTime
             type
         }
+        siteUrl
     }
 }

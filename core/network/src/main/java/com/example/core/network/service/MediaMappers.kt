@@ -200,6 +200,7 @@ fun MediaQuery.Media.toDomainMedia(): Media {
                 thumbnail = trailer?.thumbnail,
             ),
         externalLinks = externalLinks?.map { it?.toDomainExternalLink() ?: MediaExternalLink() },
+        siteUrl = siteUrl,
     )
 }
 
