@@ -4,7 +4,10 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -60,6 +63,7 @@ fun HtmlText(
     )
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ExpandableHtmlText(
     html: String,
@@ -85,7 +89,16 @@ fun ExpandableHtmlText(
                 ),
     ) {
         Box(
-            modifier = Modifier.fillMaxWidth(),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .combinedClickable(
+                        onClick = {
+                            expanded = !expanded
+                        },
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                    ),
         ) {
             HtmlText(
                 html = html,
