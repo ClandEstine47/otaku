@@ -11,7 +11,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
@@ -23,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -89,12 +89,14 @@ fun MediaDetailContent(
     }
 
     Scaffold(
+        modifier = Modifier.nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
         topBar = {
             TopAppBar(
                 title = {
                     if (isTopAppBarScrolled) {
-                        Text(
-                            text = "TITLE",
+                        OtakuTitle(
+                            title = mediaDetail?.title?.english?.ifBlank { mediaDetail.title.romaji } ?: "",
+                            color = MaterialTheme.colorScheme.onBackground,
                             overflow = TextOverflow.Ellipsis,
                             maxLines = 1,
                         )
@@ -104,7 +106,7 @@ fun MediaDetailContent(
                     BackButton(
                         modifier = Modifier,
                         onButtonClick = {
-                            // todo: navigate back
+                            navActionManager.navigateBack()
                         },
                     )
                 },
@@ -124,55 +126,56 @@ fun MediaDetailContent(
                 scrollBehavior = topAppBarScrollBehavior,
             )
         },
-    ) { innerPadding ->
-        Column(
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .padding(bottom = innerPadding.calculateBottomPadding())
-                    .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(20.dp),
-            horizontalAlignment = Alignment.Start,
-        ) {
-            mediaDetail?.let { media ->
-                BannerItem(
-                    media = media,
-                    rankingVisibility = true,
-                    descriptionVisibility = true,
-                    onBannerItemClick = {},
-                )
+        content = { innerPadding ->
+            Column(
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(bottom = innerPadding.calculateBottomPadding())
+                        .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(20.dp),
+                horizontalAlignment = Alignment.Start,
+            ) {
+                mediaDetail?.let { media ->
+                    BannerItem(
+                        media = media,
+                        rankingVisibility = true,
+                        descriptionVisibility = true,
+                        onBannerItemClick = {},
+                    )
 
-                Column(
-                    modifier = Modifier.padding(horizontal = 10.dp),
-                    verticalArrangement = Arrangement.spacedBy(20.dp),
-                ) {
-                    /* if (media.status == MediaStatus.RELEASING) {
-                        val releaseDate = "Ep. ${media.nextAiringEpisode?.episode} on ${Utils.displayInDayDateTimeFormat(media.nextAiringEpisode?.airingAt ?: 0)}"
+                    Column(
+                        modifier = Modifier.padding(horizontal = 10.dp),
+                        verticalArrangement = Arrangement.spacedBy(20.dp),
+                    ) {
+                        /* if (media.status == MediaStatus.RELEASING) {
+                            val releaseDate = "Ep. ${media.nextAiringEpisode?.episode} on ${Utils.displayInDayDateTimeFormat(media.nextAiringEpisode?.airingAt ?: 0)}"
 
-                        OtakuTitle(
-                            title = releaseDate,
-                            color = MaterialTheme.colorScheme.onBackground,
-                            fontWeight = FontWeight.Normal,
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                        )
-                    } */
+                            OtakuTitle(
+                                title = releaseDate,
+                                color = MaterialTheme.colorScheme.onBackground,
+                                fontWeight = FontWeight.Normal,
+                                modifier = Modifier.align(Alignment.CenterHorizontally),
+                            )
+                        } */
 
-                    media.trailer?.let { trailer ->
-                        trailer.id?.let { videoId ->
-                            trailer.thumbnail?.let { thumbnailUrl ->
-                                OtakuTitle(id = R.string.trailer)
+                        media.trailer?.let { trailer ->
+                            trailer.id?.let { videoId ->
+                                trailer.thumbnail?.let { thumbnailUrl ->
+                                    OtakuTitle(id = R.string.trailer)
 
-                                YouTubePlayer(
-                                    videoId = videoId,
-                                    thumbnailUrl = thumbnailUrl,
-                                )
+                                    YouTubePlayer(
+                                        videoId = videoId,
+                                        thumbnailUrl = thumbnailUrl,
+                                    )
+                                }
                             }
                         }
-                    }
 
-                    OtakuTitle(id = R.string.info)
+                        OtakuTitle(id = R.string.info)
+                    }
                 }
             }
-        }
-    }
+        },
+    )
 }

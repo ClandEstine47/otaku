@@ -12,6 +12,10 @@ import com.example.core.domain.model.media.MediaType
 class NavActionManager(
     private val navController: NavHostController,
 ) {
+    fun navigateBack() {
+        navController.navigateUp()
+    }
+
     fun toMediaList(
         titleId: Int,
         mediaType: MediaType,

@@ -38,6 +38,8 @@ fun OtakuTitle(
     modifier: Modifier = Modifier,
     title: String,
     color: Color,
+    overflow: TextOverflow = TextOverflow.Clip,
+    maxLines: Int = Int.MAX_VALUE,
     style: TextStyle = MaterialTheme.typography.titleMedium,
     fontWeight: FontWeight = FontWeight.Bold,
 ) {
@@ -47,6 +49,8 @@ fun OtakuTitle(
         style = style,
         fontWeight = fontWeight,
         color = color,
+        overflow = overflow,
+        maxLines = maxLines,
     )
 }
 
