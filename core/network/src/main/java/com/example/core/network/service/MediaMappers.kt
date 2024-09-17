@@ -15,6 +15,7 @@ import com.example.core.network.MediaQuery.Studios as NetworkStudios
 import com.example.core.network.type.MediaFormat as NetworkMediaFormat
 import com.example.core.network.type.MediaListStatus as NetworkMediaListStatus
 import com.example.core.network.type.MediaRankType as NetworkMediaRankType
+import com.example.core.network.type.MediaRelation as NetworkMediaRelation
 import com.example.core.network.type.MediaSeason as NetworkMediaSeason
 import com.example.core.network.type.MediaSource as NetworkMediaSource
 import com.example.core.network.type.MediaStatus as NetworkMediaStatus
@@ -227,7 +228,65 @@ fun MediaQuery.Media.toDomainMedia(): Media {
         siteUrl = siteUrl,
         studios = studios?.toDomainStudios(),
         tags = tags?.map { it?.toDomainMediaTag() ?: MediaTag() },
+        relations =
+            MediaConnection(
+                edges = relations?.toDomainMediaRelations(),
+            ),
     )
+}
+
+fun MediaQuery.Relations.toDomainMediaRelations(): List<MediaEdge>? {
+    return edges?.map { edge -> edge?.toDomainMediaEdge() ?: MediaEdge() }
+}
+
+fun MediaQuery.Edge1.toDomainMediaEdge(): MediaEdge {
+    return MediaEdge(
+        relationType = relationType?.toDomainMediaRelation(),
+        node =
+            Media(
+                idAniList = node?.id ?: 0,
+                idMal = node?.idMal,
+                title =
+                    MediaTitle(
+                        english = node?.title?.english ?: "",
+                        romaji = node?.title?.romaji ?: "",
+                    ),
+                type = node?.type.toDomainMediaType(),
+                format = node?.format.toDomainMediaFormat(),
+                status = node?.status.toDomainMediaStatus(),
+                episodes = node?.episodes,
+                chapters = node?.chapters,
+                volumes = node?.volumes,
+                coverImage =
+                    MediaCoverImage(
+                        large = node?.coverImage?.large ?: "",
+                    ),
+                meanScore = node?.meanScore ?: 0,
+                nextAiringEpisode =
+                    AiringSchedule(
+                        episode = node?.nextAiringEpisode?.episode,
+                    ),
+            ),
+    )
+}
+
+fun NetworkMediaRelation.toDomainMediaRelation(): MediaRelation {
+    return when (this) {
+        NetworkMediaRelation.ADAPTATION -> MediaRelation.ADAPTATION
+        NetworkMediaRelation.PREQUEL -> MediaRelation.PREQUEL
+        NetworkMediaRelation.SEQUEL -> MediaRelation.SEQUEL
+        NetworkMediaRelation.PARENT -> MediaRelation.PARENT
+        NetworkMediaRelation.SIDE_STORY -> MediaRelation.SIDE_STORY
+        NetworkMediaRelation.CHARACTER -> MediaRelation.CHARACTER
+        NetworkMediaRelation.SUMMARY -> MediaRelation.SUMMARY
+        NetworkMediaRelation.ALTERNATIVE -> MediaRelation.ALTERNATIVE
+        NetworkMediaRelation.SPIN_OFF -> MediaRelation.SPIN_OFF
+        NetworkMediaRelation.OTHER -> MediaRelation.OTHER
+        NetworkMediaRelation.SOURCE -> MediaRelation.SOURCE
+        NetworkMediaRelation.COMPILATION -> MediaRelation.COMPILATION
+        NetworkMediaRelation.CONTAINS -> MediaRelation.CONTAINS
+        NetworkMediaRelation.UNKNOWN__ -> MediaRelation.UNKNOWN
+    }
 }
 
 fun MediaQuery.ExternalLink.toDomainExternalLink(): MediaExternalLink {

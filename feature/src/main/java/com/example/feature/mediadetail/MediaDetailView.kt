@@ -210,11 +210,12 @@ fun MediaDetailContent(
                             )
                         }
 
-                        OtakuTitle(id = R.string.opening_themes)
-                        OtakuTitle(id = R.string.ending_themes)
+                        // Media Relations
+                        MediaRelations(mediaConnection = media.relations)
                     }
                 }
             }
         },
     )
 }
+

@@ -12,4 +12,18 @@
     <string name="not_yet_released">NOT YET RELEASED</string>
     <string name="cancelled">CANCELLED</string>
     <string name="hiatus">HIATUS</string>
+    <string name="adaptation">ADAPTATION</string>
+    <string name="prequel">PREQUEL</string>
+    <string name="sequel">SEQUEL</string>
+    <string name="parent">PARENT</string>
+    <string name="side_story">SIDE STORY</string>
+    <string name="character">CHARACTER</string>
+    <string name="summary">SUMMARY</string>
+    <string name="alternative">ALTERNATIVE</string>
+    <string name="spin_off">SPIN OFF</string>
+    <string name="other">OTHER</string>
+    <string name="source">SOURCE</string>
+    <string name="compilation">COMPILATION</string>
+    <string name="contains">CONTAINS</string>
+    <string name="unknown">UNKNOWN</string>
 </resources>

@@ -81,5 +81,31 @@ query Media(
                 }
             }
         }
+        relations {
+            edges {
+                relationType
+                node {
+                    id
+                    idMal
+                    title {
+                        english
+                        romaji
+                    }
+                    type
+                    format
+                    status
+                    episodes
+                    chapters
+                    volumes
+                    coverImage {
+                        large
+                    }
+                    meanScore
+                    nextAiringEpisode {
+                        episode
+                    }
+                }
+            }
+        }
     }
 }
