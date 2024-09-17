@@ -7,6 +7,19 @@ query Media(
         status
         chapters
         episodes
+        duration
+        startDate {
+            year
+            month
+            day
+        }
+        endDate {
+            year
+            month
+            day
+        }
+        season
+        seasonYear
         nextAiringEpisode {
             airingAt
             timeUntilAiring
@@ -17,6 +30,8 @@ query Media(
         genres
         meanScore
         description
+        synonyms
+        source
         isFavourite
         format
         bannerImage
@@ -52,6 +67,19 @@ query Media(
             allTime
             type
         }
+        tags {
+            name
+            rank
+            isGeneralSpoiler
+        }
         siteUrl
+        studios {
+            edges {
+                isMain
+                node {
+                    name
+                }
+            }
+        }
     }
 }

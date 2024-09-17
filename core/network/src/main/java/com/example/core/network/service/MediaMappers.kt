@@ -2,14 +2,21 @@ package com.example.core.network.service
 
 import com.example.core.domain.model.PageInfo
 import com.example.core.domain.model.airing.AiringSchedule
+import com.example.core.domain.model.common.FuzzyDate
 import com.example.core.domain.model.media.*
+import com.example.core.domain.model.studio.Studio
+import com.example.core.domain.model.studio.StudioConnection
+import com.example.core.domain.model.studio.StudioEdge
 import com.example.core.network.MediaQuery
 import com.example.core.network.RecentlyUpdatedQuery
 import com.example.core.network.SeasonalAnimeQuery
 import com.example.core.network.TrendingNowQuery
+import com.example.core.network.MediaQuery.Studios as NetworkStudios
 import com.example.core.network.type.MediaFormat as NetworkMediaFormat
 import com.example.core.network.type.MediaListStatus as NetworkMediaListStatus
 import com.example.core.network.type.MediaRankType as NetworkMediaRankType
+import com.example.core.network.type.MediaSeason as NetworkMediaSeason
+import com.example.core.network.type.MediaSource as NetworkMediaSource
 import com.example.core.network.type.MediaStatus as NetworkMediaStatus
 import com.example.core.network.type.MediaType as NetworkMediaType
 
@@ -159,15 +166,32 @@ fun MediaQuery.Media.toDomainMedia(): Media {
         status = status?.toDomainMediaStatus(),
         chapters = chapters,
         episodes = episodes,
+        duration = duration,
+        startDate =
+            FuzzyDate(
+                year = startDate?.year,
+                month = startDate?.month,
+                day = startDate?.day,
+            ),
+        endDate =
+            FuzzyDate(
+                year = endDate?.year,
+                month = endDate?.month,
+                day = endDate?.day,
+            ),
         nextAiringEpisode =
             AiringSchedule(
                 airingAt = nextAiringEpisode?.airingAt,
                 timeUntilAiring = nextAiringEpisode?.timeUntilAiring,
                 episode = nextAiringEpisode?.episode,
             ),
+        season = season?.toDomainMediaSeason(),
+        seasonYear = seasonYear,
         isAdult = isAdult ?: false,
         type = type?.toDomainMediaType(),
         description = description,
+        source = source?.toDomainMediaSource(),
+        synonyms = synonyms?.filterNotNull(),
         genres = genres,
         meanScore = meanScore ?: 0,
         isFavourite = isFavourite,
@@ -201,6 +225,8 @@ fun MediaQuery.Media.toDomainMedia(): Media {
             ),
         externalLinks = externalLinks?.map { it?.toDomainExternalLink() ?: MediaExternalLink() },
         siteUrl = siteUrl,
+        studios = studios?.toDomainStudios(),
+        tags = tags?.map { it?.toDomainMediaTag() ?: MediaTag() },
     )
 }
 
@@ -237,6 +263,51 @@ fun NetworkMediaRankType.toDomainMediaRankType(): MediaRankType {
         NetworkMediaRankType.POPULAR -> MediaRankType.POPULAR
         NetworkMediaRankType.UNKNOWN__ -> MediaRankType.UNKNOWN
     }
+}
+
+fun NetworkStudios.toDomainStudios(): StudioConnection {
+    return StudioConnection(
+        edges = edges?.map { edge -> edge?.toDomainEdge() ?: StudioEdge() },
+    )
+}
+
+fun MediaQuery.Edge.toDomainEdge(): StudioEdge {
+    return StudioEdge(
+        isMain = isMain,
+        node =
+            Studio(
+                name = node?.name ?: "",
+            ),
+    )
+}
+
+fun NetworkMediaSource.toDomainMediaSource(): MediaSource {
+    return when (this) {
+        NetworkMediaSource.ORIGINAL -> MediaSource.ORIGINAL
+        NetworkMediaSource.MANGA -> MediaSource.MANGA
+        NetworkMediaSource.LIGHT_NOVEL -> MediaSource.LIGHT_NOVEL
+        NetworkMediaSource.VISUAL_NOVEL -> MediaSource.VISUAL_NOVEL
+        NetworkMediaSource.VIDEO_GAME -> MediaSource.VIDEO_GAME
+        NetworkMediaSource.OTHER -> MediaSource.OTHER
+        NetworkMediaSource.NOVEL -> MediaSource.NOVEL
+        NetworkMediaSource.DOUJINSHI -> MediaSource.DOUJINSHI
+        NetworkMediaSource.ANIME -> MediaSource.ANIME
+        NetworkMediaSource.WEB_NOVEL -> MediaSource.WEB_NOVEL
+        NetworkMediaSource.LIVE_ACTION -> MediaSource.LIVE_ACTION
+        NetworkMediaSource.GAME -> MediaSource.GAME
+        NetworkMediaSource.COMIC -> MediaSource.COMIC
+        NetworkMediaSource.MULTIMEDIA_PROJECT -> MediaSource.MULTIMEDIA_PROJECT
+        NetworkMediaSource.PICTURE_BOOK -> MediaSource.PICTURE_BOOK
+        NetworkMediaSource.UNKNOWN__ -> MediaSource.UNKNOWN
+    }
+}
+
+fun MediaQuery.Tag.toDomainMediaTag(): MediaTag {
+    return MediaTag(
+        name = name,
+        rank = rank,
+        isGeneralSpoiler = isGeneralSpoiler,
+    )
 }
 
 fun RecentlyUpdatedQuery.CoverImage.toDomainMediaCoverImage(): MediaCoverImage {
@@ -311,13 +382,23 @@ fun NetworkMediaListStatus?.toDomainMediaListStatus(): MediaListStatus? {
     }
 }
 
-fun MediaSeason.toNetworkMediaSeason(): com.example.core.network.type.MediaSeason {
+fun NetworkMediaSeason.toDomainMediaSeason(): MediaSeason {
     return when (this) {
-        MediaSeason.WINTER -> com.example.core.network.type.MediaSeason.WINTER
-        MediaSeason.SPRING -> com.example.core.network.type.MediaSeason.SPRING
-        MediaSeason.SUMMER -> com.example.core.network.type.MediaSeason.SUMMER
-        MediaSeason.FALL -> com.example.core.network.type.MediaSeason.FALL
-        MediaSeason.UNKNOWN -> com.example.core.network.type.MediaSeason.UNKNOWN__
+        NetworkMediaSeason.WINTER -> MediaSeason.WINTER
+        NetworkMediaSeason.SPRING -> MediaSeason.SPRING
+        NetworkMediaSeason.SUMMER -> MediaSeason.SUMMER
+        NetworkMediaSeason.FALL -> MediaSeason.FALL
+        NetworkMediaSeason.UNKNOWN__ -> MediaSeason.UNKNOWN
+    }
+}
+
+fun MediaSeason.toNetworkMediaSeason(): NetworkMediaSeason {
+    return when (this) {
+        MediaSeason.WINTER -> NetworkMediaSeason.WINTER
+        MediaSeason.SPRING -> NetworkMediaSeason.SPRING
+        MediaSeason.SUMMER -> NetworkMediaSeason.SUMMER
+        MediaSeason.FALL -> NetworkMediaSeason.FALL
+        MediaSeason.UNKNOWN -> NetworkMediaSeason.UNKNOWN__
     }
 }
 
