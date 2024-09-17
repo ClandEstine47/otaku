@@ -7,6 +7,7 @@ import java.time.LocalDateTime
 import java.time.Month
 import java.time.ZoneId
 import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 
@@ -68,5 +69,16 @@ object Utils {
         val dateFormat = SimpleDateFormat("E, dd MMM yyyy, hh:mm a", Locale.getDefault())
         val date = Date(seconds * 1000L)
         return dateFormat.format(date)
+    }
+
+    fun formatDateToText(
+        year: Int,
+        month: Int,
+        day: Int,
+    ): String {
+        val dateTime = LocalDateTime.of(year, month, day, 0, 0)
+        val formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy")
+
+        return dateTime.format(formatter)
     }
 }

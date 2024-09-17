@@ -1,9 +1,12 @@
 package com.example.feature.mediadetail
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -18,7 +21,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -87,6 +93,9 @@ fun MediaDetailContent(
     val isTopAppBarScrolled by remember {
         derivedStateOf { topAppBarScrollBehavior.state.overlappedFraction == 1f }
     }
+    var showSpoilerTags by rememberSaveable {
+        mutableStateOf(false)
+    }
 
     Scaffold(
         modifier = Modifier.nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
@@ -144,7 +153,7 @@ fun MediaDetailContent(
 
                     Column(
                         modifier = Modifier.padding(horizontal = 10.dp),
-                        verticalArrangement = Arrangement.spacedBy(20.dp),
+                        verticalArrangement = Arrangement.spacedBy(30.dp),
                     ) {
                         /* if (media.status == MediaStatus.RELEASING) {
                             val releaseDate = "Ep. ${media.nextAiringEpisode?.episode} on ${Utils.displayInDayDateTimeFormat(media.nextAiringEpisode?.airingAt ?: 0)}"
@@ -171,6 +180,38 @@ fun MediaDetailContent(
                         }
 
                         OtakuTitle(id = R.string.info)
+
+                        MediaInfo(
+                            media = media,
+                        )
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                        ) {
+                            OtakuTitle(id = R.string.tags)
+                            OtakuTitle(
+                                id = R.string.show_spoilers,
+                                color = if (showSpoilerTags) MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f) else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f),
+                                modifier =
+                                    Modifier.clickable {
+                                        showSpoilerTags = !showSpoilerTags
+                                    },
+                            )
+                        }
+
+                        media.tags?.let { mediaTags ->
+                            val spoilerFreeTags =
+                                mediaTags.filter { tag ->
+                                    tag.isGeneralSpoiler != true
+                                }
+                            MediaTags(
+                                tags = if (showSpoilerTags) mediaTags else spoilerFreeTags,
+                            )
+                        }
+
+                        OtakuTitle(id = R.string.opening_themes)
+                        OtakuTitle(id = R.string.ending_themes)
                     }
                 }
             }

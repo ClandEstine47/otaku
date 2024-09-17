@@ -17,6 +17,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
@@ -26,12 +27,14 @@ fun OtakuTitle(
     id: Int,
     style: TextStyle = MaterialTheme.typography.titleMedium,
     fontWeight: FontWeight = FontWeight.Bold,
+    color: Color = MaterialTheme.colorScheme.onBackground,
 ) {
     Text(
         text = stringResource(id = id),
         modifier = modifier,
         style = style,
         fontWeight = fontWeight,
+        color = color,
     )
 }
 
@@ -39,9 +42,10 @@ fun OtakuTitle(
 fun OtakuTitle(
     modifier: Modifier = Modifier,
     title: String,
-    color: Color,
+    color: Color = MaterialTheme.colorScheme.onBackground,
     overflow: TextOverflow = TextOverflow.Clip,
     maxLines: Int = Int.MAX_VALUE,
+    textAlign: TextAlign = TextAlign.Unspecified,
     style: TextStyle = MaterialTheme.typography.titleMedium,
     fontWeight: FontWeight = FontWeight.Bold,
 ) {
@@ -53,6 +57,7 @@ fun OtakuTitle(
         color = color,
         overflow = overflow,
         maxLines = maxLines,
+        textAlign = textAlign,
     )
 }
 

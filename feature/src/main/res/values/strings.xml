@@ -12,4 +12,25 @@
     <string name="calendar">Calendar</string>
     <string name="trailer">Trailer</string>
     <string name="info">Info</string>
+    <string name="title_romaji">Romaji</string>
+    <string name="title_english">English</string>
+    <string name="title_native">Native</string>
+    <string name="synonyms">Synonyms</string>
+    <string name="mean_score">Mean Score</string>
+    <string name="status">Status</string>
+    <string name="format">Format</string>
+    <string name="episodes">Episodes</string>
+    <string name="episode_duration">Episode Duration</string>
+    <string name="source">Source</string>
+    <string name="start_date">Start Date</string>
+    <string name="end_date">End Date</string>
+    <string name="season">Season</string>
+    <string name="studios">Studios</string>
+    <string name="producers">Producers</string>
+    <string name="popularity">Popularity</string>
+    <string name="favourites">Favourites</string>
+    <string name="tags">Tags</string>
+    <string name="opening_themes">Opening Themes</string>
+    <string name="ending_themes">Ending Themes</string>
+    <string name="show_spoilers">Show Spoilers</string>
 </resources>
