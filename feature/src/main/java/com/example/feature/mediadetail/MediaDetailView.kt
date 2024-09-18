@@ -211,11 +211,13 @@ fun MediaDetailContent(
                         }
 
                         // Media Relations
-                        MediaRelations(mediaConnection = media.relations)
+                        MediaRelations(
+                            mediaConnection = media.relations,
+                            navActionManager = navActionManager,
+                        )
                     }
                 }
             }
         },
     )
 }
-

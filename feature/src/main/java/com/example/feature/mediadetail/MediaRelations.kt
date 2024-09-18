@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.example.core.domain.model.media.MediaConnection
 import com.example.core.domain.model.media.MediaType
+import com.example.core.navigation.NavActionManager
 import com.example.feature.R
 import com.example.feature.anime.ImageCard
 import com.example.feature.anime.OtakuImageCardTitle
@@ -26,13 +27,14 @@ import com.example.feature.anime.OtakuTitle
 @Composable
 fun MediaRelations(
     mediaConnection: MediaConnection,
+    navActionManager: NavActionManager,
 ) {
     OtakuTitle(id = R.string.relations)
 
     LazyRow(
         modifier =
-        Modifier
-            .fillMaxWidth(),
+            Modifier
+                .fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         mediaConnection.edges?.let { medias ->
@@ -46,10 +48,15 @@ fun MediaRelations(
                     horizontalAlignment = Alignment.Start,
                     verticalArrangement = Arrangement.spacedBy(3.dp),
                     modifier =
-                    Modifier
-                        .clickable {
-                            // todo: navigate to media detail
-                        },
+                        Modifier
+                            .clickable {
+                                media.node.type?.let { type ->
+                                    navActionManager.toMediaDetail(
+                                        id = media.node.idAniList,
+                                        mediaType = type,
+                                    )
+                                }
+                            },
                 ) {
                     ImageCard(
                         painter = painter,
