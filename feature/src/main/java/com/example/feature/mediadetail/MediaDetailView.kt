@@ -215,9 +215,16 @@ fun MediaDetailContent(
                             mediaConnection = media.relations,
                             navActionManager = navActionManager,
                         )
+
+                        // Media Recommendations
+                        MediaRecommendations(
+                            mediaRecommendation = media.recommendations,
+                            navActionManager = navActionManager,
+                        )
                     }
                 }
             }
         },
     )
 }
+

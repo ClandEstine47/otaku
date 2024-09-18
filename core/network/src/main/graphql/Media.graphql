@@ -1,5 +1,7 @@
 query Media(
     $id: Int!
+    $page:Int = 1,
+    $perPage:Int = 10
 ) {
     Media(id: $id) {
         id
@@ -103,6 +105,36 @@ query Media(
                     meanScore
                     nextAiringEpisode {
                         episode
+                    }
+                }
+            }
+        }
+        recommendations(
+            page:$page
+            perPage: $perPage
+        ) {
+            edges {
+                node {
+                    mediaRecommendation {
+                        id
+                        idMal
+                        title {
+                            english
+                            romaji
+                        }
+                        type
+                        format
+                        status
+                        episodes
+                        chapters
+                        volumes
+                        coverImage {
+                            large
+                        }
+                        meanScore
+                        nextAiringEpisode {
+                            episode
+                        }
                     }
                 }
             }

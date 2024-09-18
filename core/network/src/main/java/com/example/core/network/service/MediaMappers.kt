@@ -4,6 +4,8 @@ import com.example.core.domain.model.PageInfo
 import com.example.core.domain.model.airing.AiringSchedule
 import com.example.core.domain.model.common.FuzzyDate
 import com.example.core.domain.model.media.*
+import com.example.core.domain.model.recommendation.Recommendation
+import com.example.core.domain.model.recommendation.RecommendationConnection
 import com.example.core.domain.model.studio.Studio
 import com.example.core.domain.model.studio.StudioConnection
 import com.example.core.domain.model.studio.StudioEdge
@@ -231,6 +233,41 @@ fun MediaQuery.Media.toDomainMedia(): Media {
         relations =
             MediaConnection(
                 edges = relations?.toDomainMediaRelations(),
+            ),
+        recommendations =
+            RecommendationConnection(
+                nodes = recommendations?.toDomainMediaRecommendations(),
+            ),
+    )
+}
+
+fun MediaQuery.Recommendations.toDomainMediaRecommendations(): List<Recommendation>? {
+    return edges?.map { edge -> Recommendation(mediaRecommendation = edge?.node?.mediaRecommendation?.toDomainMediaRecommendation()) }
+}
+
+fun MediaQuery.MediaRecommendation.toDomainMediaRecommendation(): Media {
+    return Media(
+        idAniList = id,
+        idMal = idMal,
+        title =
+            MediaTitle(
+                english = title?.english ?: "",
+                romaji = title?.romaji ?: "",
+            ),
+        type = type.toDomainMediaType(),
+        format = format.toDomainMediaFormat(),
+        status = status.toDomainMediaStatus(),
+        episodes = episodes,
+        chapters = chapters,
+        volumes = volumes,
+        coverImage =
+            MediaCoverImage(
+                large = coverImage?.large ?: "",
+            ),
+        meanScore = meanScore ?: 0,
+        nextAiringEpisode =
+            AiringSchedule(
+                episode = nextAiringEpisode?.episode,
             ),
     )
 }
