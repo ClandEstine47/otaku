@@ -42,8 +42,8 @@ fun MediaRecommendations(
 
     LazyRow(
         modifier =
-        Modifier
-            .fillMaxWidth(),
+            Modifier
+                .fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         mediaRecommendation.nodes?.let { medias ->
@@ -57,17 +57,17 @@ fun MediaRecommendations(
                     horizontalAlignment = Alignment.Start,
                     verticalArrangement = Arrangement.spacedBy(3.dp),
                     modifier =
-                    Modifier
-                        .clickable {
-                            media.mediaRecommendation?.type?.let { type ->
-                                media.mediaRecommendation?.idAniList?.let { id ->
-                                    navActionManager.toMediaDetail(
-                                        id = id,
-                                        mediaType = type,
-                                    )
+                        Modifier
+                            .clickable {
+                                media.mediaRecommendation?.type?.let { type ->
+                                    media.mediaRecommendation?.idAniList?.let { id ->
+                                        navActionManager.toMediaDetail(
+                                            id = id,
+                                            mediaType = type,
+                                        )
+                                    }
                                 }
-                            }
-                        },
+                            },
                 ) {
                     ImageCard(
                         painter = painter,
@@ -75,14 +75,18 @@ fun MediaRecommendations(
                         isAnime = media.mediaRecommendation?.type == MediaType.ANIME,
                         totalChapters = media.mediaRecommendation?.chapters,
                         totalEpisodes = media.mediaRecommendation?.episodes,
-                        releasedEpisodes = media.mediaRecommendation?.nextAiringEpisode?.episode?.minus(
-                            1
-                        ),
+                        releasedEpisodes =
+                            media.mediaRecommendation?.nextAiringEpisode?.episode?.minus(
+                                1,
+                            ),
                         format = media.mediaRecommendation?.format?.name,
                     )
 
-                    OtakuImageCardTitle(title = media.mediaRecommendation?.title?.english?.ifBlank { media.mediaRecommendation?.title?.romaji }
-                        ?: "")
+                    OtakuImageCardTitle(
+                        title =
+                            media.mediaRecommendation?.title?.english?.ifBlank { media.mediaRecommendation?.title?.romaji }
+                                ?: "",
+                    )
                 }
             }
         }

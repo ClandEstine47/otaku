@@ -221,10 +221,16 @@ fun MediaDetailContent(
                             mediaRecommendation = media.recommendations,
                             navActionManager = navActionManager,
                         )
+
+                        // External Links
+                        media.externalLinks?.let { links ->
+                            MediaExternalLinks(
+                                externalLinks = links,
+                            )
+                        }
                     }
                 }
             }
         },
     )
 }
-
