@@ -3,12 +3,14 @@ package com.example.core.network.service
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.Optional
 import com.apollographql.apollo3.exception.ApolloException
+import com.example.core.domain.model.Page
 import com.example.core.domain.model.airing.AiringSchedule
 import com.example.core.domain.model.media.Media
 import com.example.core.domain.model.media.MediaFormat
 import com.example.core.domain.model.media.MediaSeason
 import com.example.core.domain.model.media.MediaType
 import com.example.core.domain.service.MediaService
+import com.example.core.network.MediaQuery
 import com.example.core.network.RecentlyUpdatedQuery
 import com.example.core.network.SeasonalAnimeQuery
 import com.example.core.network.TrendingNowQuery
@@ -25,7 +27,7 @@ class MediaServiceImpl
             seasonYear: Int,
             season: MediaSeason,
             mediaType: MediaType,
-        ): Result<List<Media>> {
+        ): Result<Page<Media>> {
             return try {
                 val response =
                     apolloClient
@@ -49,11 +51,17 @@ class MediaServiceImpl
                     }
 
                     else -> {
+                        val pageInfo = response.data?.Page?.pageInfo?.toDomainPageInfo()
                         val seasonalMedia =
                             response.data?.Page?.media
                                 ?.mapNotNull { it?.toDomainMedia() }
                                 ?: emptyList()
-                        Result.success(seasonalMedia)
+                        Result.success(
+                            Page(
+                                pageInfo = pageInfo,
+                                data = seasonalMedia,
+                            ),
+                        )
                     }
                 }
             } catch (e: ApolloException) {
@@ -66,8 +74,9 @@ class MediaServiceImpl
         override suspend fun getRecentlyUpdatedAnimeList(
             pageNumber: Int,
             perPage: Int,
-            airingTimeInMs: Int,
-        ): Result<List<AiringSchedule>> {
+            airingAtLesser: Int,
+            airingAtGreater: Int,
+        ): Result<Page<AiringSchedule>> {
             return try {
                 val response =
                     apolloClient
@@ -75,7 +84,8 @@ class MediaServiceImpl
                             RecentlyUpdatedQuery(
                                 page = pageNumber,
                                 perPage = Optional.present(perPage),
-                                airingAtLesser = airingTimeInMs,
+                                airingAtLesser = airingAtLesser,
+                                airingAtGreater = Optional.present(airingAtGreater),
                             ),
                         )
                         .execute()
@@ -89,12 +99,18 @@ class MediaServiceImpl
                     }
 
                     else -> {
+                        val pageInfo = response.data?.Page?.pageInfo?.toDomainPageInfo()
                         val airingSchedules =
                             response.data?.Page?.airingSchedules
                                 ?.mapNotNull { it?.toRecentlyUpdatedMedia() }
                                 ?.filter { it.media.type == MediaType.ANIME }
                                 ?: emptyList()
-                        Result.success(airingSchedules)
+                        Result.success(
+                            Page(
+                                pageInfo = pageInfo,
+                                data = airingSchedules,
+                            ),
+                        )
                     }
                 }
             } catch (e: ApolloException) {
@@ -108,7 +124,7 @@ class MediaServiceImpl
             pageNumber: Int,
             perPage: Int,
             mediaType: MediaType,
-        ): Result<List<Media>> {
+        ): Result<Page<Media>> {
             return try {
                 val response =
                     apolloClient
@@ -130,11 +146,17 @@ class MediaServiceImpl
                     }
 
                     else -> {
+                        val pageInfo = response.data?.Page?.pageInfo?.toDomainPageInfo()
                         val trendingNow =
                             response.data?.Page?.media
                                 ?.mapNotNull { it?.toDomainMedia() }
                                 ?: emptyList()
-                        Result.success(trendingNow)
+                        Result.success(
+                            Page(
+                                pageInfo = pageInfo,
+                                data = trendingNow,
+                            ),
+                        )
                     }
                 }
             } catch (e: ApolloException) {
@@ -150,7 +172,7 @@ class MediaServiceImpl
             mediaType: MediaType,
             mediaFormat: MediaFormat?,
             countryOfOrigin: String?,
-        ): Result<List<Media>> {
+        ): Result<Page<Media>> {
             return try {
                 val response =
                     apolloClient
@@ -174,11 +196,50 @@ class MediaServiceImpl
                     }
 
                     else -> {
+                        val pageInfo = response.data?.Page?.pageInfo?.toDomainPageInfo()
                         val popularMedia =
                             response.data?.Page?.media
                                 ?.mapNotNull { it?.toDomainMedia() }
                                 ?: emptyList()
-                        Result.success(popularMedia)
+                        Result.success(
+                            Page(
+                                pageInfo = pageInfo,
+                                data = popularMedia,
+                            ),
+                        )
+                    }
+                }
+            } catch (e: ApolloException) {
+                Result.failure(e)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+
+        override suspend fun getMediaById(id: Int): Result<Media> {
+            return try {
+                val response =
+                    apolloClient
+                        .query(
+                            MediaQuery(
+                                id = id,
+                            ),
+                        ).execute()
+
+                when {
+                    response.hasErrors() -> {
+                        val errorMessage =
+                            response.errors?.joinToString("; ") { it.message }
+                                ?: "Unknown GraphQL error"
+                        Result.failure(Exception(errorMessage))
+                    }
+
+                    else -> {
+                        val media =
+                            response.data?.Media?.toDomainMedia() ?: Media()
+                        Result.success(
+                            media,
+                        )
                     }
                 }
             } catch (e: ApolloException) {

@@ -1,5 +1,7 @@
 package com.example.feature.anime
 
+import android.os.Build
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,6 +16,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -28,17 +31,34 @@ import com.example.core.domain.model.media.Media
 import com.example.core.domain.model.media.MediaType
 import com.example.core.navigation.NavActionManager
 import com.example.feature.R
+import com.example.feature.common.InfiniteHorizontalPager
+import dev.chrisbanes.haze.HazeDefaults
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.HazeStyle
+import dev.chrisbanes.haze.haze
 
 @Composable
 fun AnimeView(
     navActionManager: NavActionManager,
+    hazeState: HazeState,
     animeViewModel: AnimeViewModel = hiltViewModel(),
 ) {
     val uiState by animeViewModel.state.collectAsStateWithLifecycle()
 
+    /**
+     * Haze blur effect working only for API 32+
+     */
     Column(
         modifier =
             Modifier
+                .haze(
+                    hazeState,
+                    HazeStyle(
+                        tint = MaterialTheme.colorScheme.background.copy(alpha = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.TIRAMISU) .2f else .8f),
+                        blurRadius = 30.dp,
+                        noiseFactor = HazeDefaults.noiseFactor,
+                    ),
+                )
                 .fillMaxSize()
                 .absolutePadding()
                 .verticalScroll(rememberScrollState()),
@@ -76,8 +96,18 @@ fun AnimeContent(
     popularNowMedia: List<Media>? = null,
     nextSeasonMedia: List<Media>? = null,
 ) {
+    val mediaType = MediaType.ANIME
+
     if (trendingNowMedia != null) {
-        InfiniteHorizontalPager(mediaList = trendingNowMedia)
+        InfiniteHorizontalPager(
+            mediaList = trendingNowMedia,
+            onBannerItemClick = { mediaId ->
+                navActionManager.toMediaDetail(
+                    id = mediaId,
+                    mediaType = mediaType,
+                )
+            },
+        )
     }
 
     Spacer(modifier = Modifier.height(40.dp))
@@ -96,7 +126,7 @@ fun AnimeContent(
             modifier = Modifier,
             onButtonClick = {
                 navActionManager.toMediaList(
-                    titleId = R.string.recently_updated,
+                    titleId = R.string.calendar,
                     mediaType = MediaType.ANIME,
                     contentType = MediaListContentType.RECENTLY_UPDATED,
                 )
@@ -121,6 +151,13 @@ fun AnimeContent(
                 Column(
                     horizontalAlignment = Alignment.Start,
                     verticalArrangement = Arrangement.spacedBy(3.dp),
+                    modifier =
+                        Modifier.clickable {
+                            navActionManager.toMediaDetail(
+                                id = anime.media.idAniList,
+                                mediaType = mediaType,
+                            )
+                        },
                 ) {
                     ImageCard(
                         painter = painter,
@@ -176,6 +213,14 @@ fun AnimeContent(
                 Column(
                     horizontalAlignment = Alignment.Start,
                     verticalArrangement = Arrangement.spacedBy(3.dp),
+                    modifier =
+                        Modifier
+                            .clickable {
+                                navActionManager.toMediaDetail(
+                                    id = anime.idAniList,
+                                    mediaType = mediaType,
+                                )
+                            },
                 ) {
                     ImageCard(
                         painter = painter,
@@ -231,6 +276,14 @@ fun AnimeContent(
                 Column(
                     horizontalAlignment = Alignment.Start,
                     verticalArrangement = Arrangement.spacedBy(3.dp),
+                    modifier =
+                        Modifier
+                            .clickable {
+                                navActionManager.toMediaDetail(
+                                    id = anime.idAniList,
+                                    mediaType = mediaType,
+                                )
+                            },
                 ) {
                     ImageCard(
                         painter = painter,
@@ -286,6 +339,14 @@ fun AnimeContent(
                 Column(
                     horizontalAlignment = Alignment.Start,
                     verticalArrangement = Arrangement.spacedBy(3.dp),
+                    modifier =
+                        Modifier
+                            .clickable {
+                                navActionManager.toMediaDetail(
+                                    id = anime.idAniList,
+                                    mediaType = mediaType,
+                                )
+                            },
                 ) {
                     ImageCard(
                         painter = painter,
@@ -302,4 +363,6 @@ fun AnimeContent(
             }
         }
     }
+
+    Spacer(modifier = Modifier.height(100.dp))
 }

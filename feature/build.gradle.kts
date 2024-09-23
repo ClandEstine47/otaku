@@ -85,4 +85,10 @@ dependencies {
 
     // compose rich editor
     implementation(libs.rich.editor.compose)
+
+    // haze
+    implementation(libs.haze)
+
+    // youtube player
+    implementation(libs.android.youtube.player)
 }

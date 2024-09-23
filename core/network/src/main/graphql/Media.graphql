@@ -1,0 +1,143 @@
+query Media(
+    $id: Int!
+    $page:Int = 1,
+    $perPage:Int = 10
+) {
+    Media(id: $id) {
+        id
+        idMal
+        status
+        chapters
+        episodes
+        duration
+        startDate {
+            year
+            month
+            day
+        }
+        endDate {
+            year
+            month
+            day
+        }
+        season
+        seasonYear
+        nextAiringEpisode {
+            airingAt
+            timeUntilAiring
+            episode
+        }
+        isAdult
+        type
+        genres
+        meanScore
+        description
+        synonyms
+        source
+        isFavourite
+        format
+        bannerImage
+        countryOfOrigin
+        coverImage {
+            large
+            extraLarge
+        }
+        title {
+            english
+            romaji
+            native
+            userPreferred
+        }
+        mediaListEntry { progress private score(format: POINT_100) status }
+        trailer {
+            id
+            site
+            thumbnail
+        }
+        externalLinks {
+            url
+            site
+            color
+            icon
+        }
+        popularity
+        trending
+        favourites
+        rankings {
+            id
+            rank
+            allTime
+            type
+        }
+        tags {
+            name
+            rank
+            isGeneralSpoiler
+        }
+        siteUrl
+        studios {
+            edges {
+                isMain
+                node {
+                    name
+                }
+            }
+        }
+        relations {
+            edges {
+                relationType
+                node {
+                    id
+                    idMal
+                    title {
+                        english
+                        romaji
+                    }
+                    type
+                    format
+                    status
+                    episodes
+                    chapters
+                    volumes
+                    coverImage {
+                        large
+                    }
+                    meanScore
+                    nextAiringEpisode {
+                        episode
+                    }
+                }
+            }
+        }
+        recommendations(
+            page:$page
+            perPage: $perPage
+        ) {
+            edges {
+                node {
+                    mediaRecommendation {
+                        id
+                        idMal
+                        title {
+                            english
+                            romaji
+                        }
+                        type
+                        format
+                        status
+                        episodes
+                        chapters
+                        volumes
+                        coverImage {
+                            large
+                        }
+                        meanScore
+                        nextAiringEpisode {
+                            episode
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

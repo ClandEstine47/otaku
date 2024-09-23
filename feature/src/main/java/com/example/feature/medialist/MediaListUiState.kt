@@ -4,7 +4,10 @@ import com.example.core.domain.model.airing.AiringSchedule
 import com.example.core.domain.model.media.Media
 
 data class MediaListUiState(
-    val mediaList: List<MediaListItem>? = null,
+    val mediaListByPage: List<List<MediaListItem>?> = List(7) { emptyList() },
+    val dayOffset: Int = 0,
+    val hasNextPage: Boolean? = false,
+    val pageNumber: Int = 1,
     val isLoading: Boolean = false,
     val error: String? = null,
 )

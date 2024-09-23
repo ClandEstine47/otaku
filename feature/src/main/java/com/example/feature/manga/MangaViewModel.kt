@@ -96,11 +96,11 @@ class MangaViewModel
                     when {
                         trendingNowResult.isSuccess && popularMangaResult.isSuccess && popularManhwaResult.isSuccess && popularNovelResult.isSuccess && popularOneShotResult.isSuccess ->
                             currentState.copy(
-                                trendingMangaList = trendingNowResult.getOrNull(),
-                                popularMangaList = popularMangaResult.getOrNull(),
-                                popularManhwaList = popularManhwaResult.getOrNull(),
-                                popularNovelList = popularNovelResult.getOrNull(),
-                                popularOneShotList = popularOneShotResult.getOrNull(),
+                                trendingMangaList = trendingNowResult.getOrNull()?.data,
+                                popularMangaList = popularMangaResult.getOrNull()?.data,
+                                popularManhwaList = popularManhwaResult.getOrNull()?.data,
+                                popularNovelList = popularNovelResult.getOrNull()?.data,
+                                popularOneShotList = popularOneShotResult.getOrNull()?.data,
                                 isLoading = false,
                                 error = null,
                             )

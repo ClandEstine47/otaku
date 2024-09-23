@@ -1,5 +1,6 @@
 package com.example.core.data.repository
 
+import com.example.core.domain.model.Page
 import com.example.core.domain.model.airing.AiringSchedule
 import com.example.core.domain.model.media.Media
 import com.example.core.domain.model.media.MediaFormat
@@ -21,7 +22,7 @@ class MediaRepositoryImpl
             seasonYear: Int,
             season: MediaSeason,
             mediaType: MediaType,
-        ): Result<List<Media>> {
+        ): Result<Page<Media>> {
             return mediaService.getSeasonalMediaList(
                 pageNumber = pageNumber,
                 perPage = perPage,
@@ -36,12 +37,14 @@ class MediaRepositoryImpl
         override suspend fun getRecentlyUpdatedAnimeList(
             pageNumber: Int,
             perPage: Int,
-            airingTimeInMs: Int,
-        ): Result<List<AiringSchedule>> {
+            airingAtLesser: Int,
+            airingAtGreater: Int,
+        ): Result<Page<AiringSchedule>> {
             return mediaService.getRecentlyUpdatedAnimeList(
                 pageNumber = pageNumber,
                 perPage = perPage,
-                airingTimeInMs = airingTimeInMs,
+                airingAtLesser = airingAtLesser,
+                airingAtGreater = airingAtGreater,
             ).onFailure { error ->
                 Timber.e(error, "Failed to get recently updated anime")
             }
@@ -51,7 +54,7 @@ class MediaRepositoryImpl
             pageNumber: Int,
             perPage: Int,
             mediaType: MediaType,
-        ): Result<List<Media>> {
+        ): Result<Page<Media>> {
             return mediaService.getTrendingNowMediaList(
                 pageNumber = pageNumber,
                 perPage = perPage,
@@ -67,7 +70,7 @@ class MediaRepositoryImpl
             mediaType: MediaType,
             mediaFormat: MediaFormat?,
             countryOfOrigin: String?,
-        ): Result<List<Media>> {
+        ): Result<Page<Media>> {
             return mediaService.getPopularMediaList(
                 pageNumber = pageNumber,
                 perPage = perPage,
@@ -76,6 +79,14 @@ class MediaRepositoryImpl
                 countryOfOrigin = countryOfOrigin,
             ).onFailure { error ->
                 Timber.e(error, "Failed to get trending now media")
+            }
+        }
+
+        override suspend fun getMediaById(id: Int): Result<Media> {
+            return mediaService.getMediaById(
+                id = id,
+            ).onFailure { error ->
+                Timber.e(error, "Failed to get media")
             }
         }
     }

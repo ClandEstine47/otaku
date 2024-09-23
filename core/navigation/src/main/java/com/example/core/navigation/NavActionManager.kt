@@ -12,6 +12,10 @@ import com.example.core.domain.model.media.MediaType
 class NavActionManager(
     private val navController: NavHostController,
 ) {
+    fun navigateBack() {
+        navController.navigateUp()
+    }
+
     fun toMediaList(
         titleId: Int,
         mediaType: MediaType,
@@ -22,6 +26,18 @@ class NavActionManager(
                 titleId = titleId,
                 mediaType = mediaType,
                 contentType = contentType,
+            ),
+        )
+    }
+
+    fun toMediaDetail(
+        id: Int,
+        mediaType: MediaType,
+    ) {
+        navController.navigate(
+            OtakuScreen.MediaDetail(
+                id = id,
+                mediaType = mediaType,
             ),
         )
     }

@@ -4,8 +4,8 @@ import com.example.core.domain.model.media.Media
 
 data class AiringSchedule(
     val id: Int = 0,
-    val airingAt: Int = 0,
-    val timeUntilAiring: Int = 0,
+    val airingAt: Int? = 0,
+    val timeUntilAiring: Int? = 0,
     val episode: Int? = null,
     val media: Media = Media(),
 )

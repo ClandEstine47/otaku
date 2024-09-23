@@ -1,7 +1,6 @@
 package com.example.otaku
 
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -16,7 +15,9 @@ import com.example.core.navigation.NavActionManager
 import com.example.core.navigation.OtakuScreen
 import com.example.feature.anime.AnimeView
 import com.example.feature.manga.MangaView
+import com.example.feature.mediadetail.MediaDetailView
 import com.example.feature.medialist.MediaListView
+import dev.chrisbanes.haze.HazeState
 import kotlin.reflect.typeOf
 
 @Composable
@@ -25,20 +26,26 @@ fun MainNavigation(
     navActionManager: NavActionManager,
     deepLink: DeepLink?,
     padding: PaddingValues,
+    hazeState: HazeState,
 ) {
     NavHost(
         navController = navController,
         startDestination = OtakuScreen.AnimeTab,
         modifier =
-            Modifier
-                .padding(bottom = padding.calculateBottomPadding()),
+        Modifier,
     ) {
         composable<OtakuScreen.AnimeTab> {
-            AnimeView(navActionManager = navActionManager)
+            AnimeView(
+                navActionManager = navActionManager,
+                hazeState = hazeState,
+            )
         }
 
         composable<OtakuScreen.MangaTab> {
-            MangaView(navActionManager = navActionManager)
+            MangaView(
+                navActionManager = navActionManager,
+                hazeState = hazeState,
+            )
         }
 
         composable<OtakuScreen.MediaList>(
@@ -49,6 +56,18 @@ fun MainNavigation(
                 ),
         ) {
             MediaListView(
+                arguments = it.toRoute(),
+                navActionManager = navActionManager,
+            )
+        }
+
+        composable<OtakuScreen.MediaDetail>(
+            typeMap =
+                mapOf(
+                    typeOf<MediaType>() to CustomNavType(MediaType::class.java, MediaType.serializer()),
+                ),
+        ) {
+            MediaDetailView(
                 arguments = it.toRoute(),
                 navActionManager = navActionManager,
             )
