@@ -1,5 +1,6 @@
 package com.example.feature.medialist
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -308,10 +309,26 @@ fun MediaListViewContent(
             items(mediaList) { mediaItem ->
                 when (mediaItem) {
                     is MediaListItem.MediaListType -> {
-                        MediaListItem(mediaItem = mediaItem.media)
+                        MediaListItem(
+                            mediaItem = mediaItem.media,
+                            onClick = { id, type ->
+                                navActionManager.toMediaDetail(
+                                    id = id,
+                                    mediaType = type,
+                                )
+                            },
+                        )
                     }
                     is MediaListItem.ScheduleType -> {
-                        MediaListItem(mediaItem = mediaItem.schedule)
+                        MediaListItem(
+                            mediaItem = mediaItem.schedule,
+                            onClick = { id, type ->
+                                navActionManager.toMediaDetail(
+                                    id = id,
+                                    mediaType = type,
+                                )
+                            },
+                        )
                     }
                 }
             }
@@ -342,6 +359,15 @@ fun MediaGridViewContent(
 
                         Column(
                             verticalArrangement = Arrangement.spacedBy(3.dp),
+                            modifier =
+                                Modifier.clickable {
+                                    media.type?.let { type ->
+                                        navActionManager.toMediaDetail(
+                                            id = media.idAniList,
+                                            mediaType = type,
+                                        )
+                                    }
+                                },
                         ) {
                             ImageCard(
                                 painter = coverImage,
@@ -365,6 +391,15 @@ fun MediaGridViewContent(
 
                         Column(
                             verticalArrangement = Arrangement.spacedBy(3.dp),
+                            modifier =
+                                Modifier.clickable {
+                                    media.media.type?.let { type ->
+                                        navActionManager.toMediaDetail(
+                                            id = media.media.idAniList,
+                                            mediaType = type,
+                                        )
+                                    }
+                                },
                         ) {
                             ImageCard(
                                 painter = coverImage,
