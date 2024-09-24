@@ -16,6 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.core.domain.model.media.Media
+import com.example.core.domain.model.media.MediaStatus
 import com.example.feature.R
 import com.example.feature.Utils
 import com.example.feature.anime.OtakuTitle
@@ -25,6 +26,8 @@ fun MediaInfo(
     media: Media,
 ) {
     val meanScore = (media.meanScore.toDouble() / 10)
+    val isReleasing = media.status == MediaStatus.RELEASING
+    val episodes = ((if (isReleasing) "${media.nextAiringEpisode?.episode?.minus(1) ?: "?"} | ${media.episodes ?: "?"}" else media.episodes) ?: "?").toString()
     val startDate =
         if (media.startDate?.isNull() == true) {
             "?"
@@ -98,7 +101,7 @@ fun MediaInfo(
         TagItem(key = R.string.mean_score, value = "$meanScore | 10")
         TagItem(key = R.string.status, value = media.status?.name ?: "-")
         TagItem(key = R.string.format, value = media.format?.name ?: "-")
-        TagItem(key = R.string.episodes, value = (media.episodes ?: "?").toString())
+        TagItem(key = R.string.episodes, value = episodes)
         TagItem(key = R.string.episode_duration, value = "${media.duration ?: "?"} mins")
         TagItem(key = R.string.source, value = media.source?.name ?: "-")
         TagItem(key = R.string.start_date, value = startDate)

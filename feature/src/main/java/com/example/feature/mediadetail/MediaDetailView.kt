@@ -179,8 +179,8 @@ fun MediaDetailContent(
                             }
                         }
 
+                        // Media Info
                         OtakuTitle(id = R.string.info)
-
                         MediaInfo(
                             media = media,
                         )
