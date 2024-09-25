@@ -1,6 +1,8 @@
 package com.example.core.network.service
 
 import com.example.core.domain.model.PageInfo
+import com.example.core.domain.model.ScoreDistribution
+import com.example.core.domain.model.StatusDistribution
 import com.example.core.domain.model.airing.AiringSchedule
 import com.example.core.domain.model.common.FuzzyDate
 import com.example.core.domain.model.media.*
@@ -238,6 +240,25 @@ fun MediaQuery.Media.toDomainMedia(): Media {
             RecommendationConnection(
                 nodes = recommendations?.toDomainMediaRecommendations(),
             ),
+        stats =
+            MediaStats(
+                scoreDistribution = stats?.scoreDistribution?.map { it?.toDomainScoreDistribution() ?: ScoreDistribution() },
+                statusDistribution = stats?.statusDistribution?.map { it?.toDomainStatusDistribution() ?: StatusDistribution() },
+            ),
+    )
+}
+
+fun MediaQuery.ScoreDistribution.toDomainScoreDistribution(): ScoreDistribution {
+    return ScoreDistribution(
+        score = score,
+        amount = amount,
+    )
+}
+
+fun MediaQuery.StatusDistribution.toDomainStatusDistribution(): StatusDistribution {
+    return StatusDistribution(
+        status = status.toDomainMediaListStatus(),
+        amount = amount,
     )
 }
 

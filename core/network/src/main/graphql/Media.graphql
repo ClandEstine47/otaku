@@ -139,5 +139,15 @@ query Media(
                 }
             }
         }
+        stats {
+            scoreDistribution {
+                score
+                amount
+            }
+            statusDistribution {
+                status
+                amount
+            }
+        }
     }
 }
