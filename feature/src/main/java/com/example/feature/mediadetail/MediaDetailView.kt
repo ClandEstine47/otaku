@@ -1,12 +1,16 @@
 package com.example.feature.mediadetail
 
+import android.annotation.SuppressLint
+import android.os.Build
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -41,6 +45,10 @@ import com.example.feature.anime.BackButton
 import com.example.feature.anime.OtakuTitle
 import com.example.feature.anime.ShareButton
 import com.example.feature.common.BannerItem
+import dev.chrisbanes.haze.HazeDefaults
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.HazeStyle
+import dev.chrisbanes.haze.haze
 
 @Composable
 fun MediaDetailView(
@@ -80,12 +88,14 @@ fun MediaDetailView(
     }
 }
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MediaDetailContent(
     navActionManager: NavActionManager,
     mediaDetail: Media?,
 ) {
+    val hazeState = remember { HazeState() }
     val topAppBarScrollBehavior =
         TopAppBarDefaults.pinnedScrollBehavior(
             rememberTopAppBarState(),
@@ -93,9 +103,17 @@ fun MediaDetailContent(
     val isTopAppBarScrolled by remember {
         derivedStateOf { topAppBarScrollBehavior.state.overlappedFraction == 1f }
     }
-    var showSpoilerTags by rememberSaveable {
-        mutableStateOf(false)
+    var currentBottomTab by rememberSaveable {
+        mutableStateOf(MediaDetailType.INFO)
     }
+
+    val navBarItems =
+        listOf(
+            MediaDetailNavBarItem(mediaDetailType = MediaDetailType.INFO, icon = R.drawable.info),
+            MediaDetailNavBarItem(mediaDetailType = MediaDetailType.GROUP, icon = R.drawable.group),
+            MediaDetailNavBarItem(mediaDetailType = MediaDetailType.STATS, icon = R.drawable.stats),
+            MediaDetailNavBarItem(mediaDetailType = MediaDetailType.SOCIAL, icon = R.drawable.social),
+        )
 
     Scaffold(
         modifier = Modifier.nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
@@ -133,12 +151,35 @@ fun MediaDetailContent(
                 scrollBehavior = topAppBarScrollBehavior,
             )
         },
-        content = { innerPadding ->
+        bottomBar = {
+            MediaDetailBottomNavBar(
+                navBarItems = navBarItems,
+                hazeState = hazeState,
+                navigate = { mediaDetailType ->
+                    currentBottomTab =
+                        when (mediaDetailType) {
+                            MediaDetailType.INFO -> MediaDetailType.INFO
+                            MediaDetailType.GROUP -> MediaDetailType.GROUP
+                            MediaDetailType.STATS -> MediaDetailType.STATS
+                            MediaDetailType.SOCIAL -> MediaDetailType.SOCIAL
+                        }
+                },
+            )
+        },
+        content = {
             Column(
                 modifier =
                     Modifier
+                        .haze(
+                            hazeState,
+                            HazeStyle(
+                                tint = MaterialTheme.colorScheme.background.copy(alpha = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.TIRAMISU) .2f else .8f),
+                                blurRadius = 30.dp,
+                                noiseFactor = HazeDefaults.noiseFactor,
+                            ),
+                        )
                         .fillMaxSize()
-                        .padding(bottom = innerPadding.calculateBottomPadding())
+                        .absolutePadding()
                         .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(20.dp),
                 horizontalAlignment = Alignment.Start,
@@ -166,71 +207,95 @@ fun MediaDetailContent(
                             )
                         } */
 
-                        media.trailer?.let { trailer ->
-                            trailer.id?.let { videoId ->
-                                trailer.thumbnail?.let { thumbnailUrl ->
-                                    OtakuTitle(id = R.string.trailer)
-
-                                    YouTubePlayer(
-                                        videoId = videoId,
-                                        thumbnailUrl = thumbnailUrl,
-                                    )
-                                }
+                        when (currentBottomTab) {
+                            MediaDetailType.INFO -> {
+                                MediaInfoTab(media, navActionManager)
                             }
-                        }
-
-                        // Media Info
-                        OtakuTitle(id = R.string.info)
-                        MediaInfo(
-                            media = media,
-                        )
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                        ) {
-                            OtakuTitle(id = R.string.tags)
-                            OtakuTitle(
-                                id = R.string.show_spoilers,
-                                color = if (showSpoilerTags) MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f) else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f),
-                                modifier =
-                                    Modifier.clickable {
-                                        showSpoilerTags = !showSpoilerTags
-                                    },
-                            )
-                        }
-
-                        media.tags?.let { mediaTags ->
-                            val spoilerFreeTags =
-                                mediaTags.filter { tag ->
-                                    tag.isGeneralSpoiler != true
-                                }
-                            MediaTags(
-                                tags = if (showSpoilerTags) mediaTags else spoilerFreeTags,
-                            )
-                        }
-
-                        // Media Relations
-                        MediaRelations(
-                            mediaConnection = media.relations,
-                            navActionManager = navActionManager,
-                        )
-
-                        // Media Recommendations
-                        MediaRecommendations(
-                            mediaRecommendation = media.recommendations,
-                            navActionManager = navActionManager,
-                        )
-
-                        // External Links
-                        media.externalLinks?.let { links ->
-                            MediaExternalLinks(
-                                externalLinks = links,
-                            )
+                            MediaDetailType.GROUP -> {}
+                            MediaDetailType.STATS -> {}
+                            MediaDetailType.SOCIAL -> {}
                         }
                     }
                 }
+
+                Spacer(modifier = Modifier.height(100.dp))
             }
         },
     )
+}
+
+@Composable
+private fun MediaInfoTab(
+    media: Media,
+    navActionManager: NavActionManager,
+) {
+    var showSpoilerTags by remember {
+        mutableStateOf(false)
+    }
+    media.trailer?.let { trailer ->
+        trailer.id?.let { videoId ->
+            trailer.thumbnail?.let { thumbnailUrl ->
+                OtakuTitle(id = R.string.trailer)
+
+                YouTubePlayer(
+                    videoId = videoId,
+                    thumbnailUrl = thumbnailUrl,
+                )
+            }
+        }
+    }
+
+    // Media Info
+    OtakuTitle(id = R.string.info)
+    MediaInfo(
+        media = media,
+    )
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        OtakuTitle(id = R.string.tags)
+        OtakuTitle(
+            id = R.string.show_spoilers,
+            color = if (showSpoilerTags) MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f) else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f),
+            modifier =
+                Modifier.clickable {
+                    showSpoilerTags = !showSpoilerTags
+                },
+        )
+    }
+
+    media.tags?.let { mediaTags ->
+        val spoilerFreeTags =
+            mediaTags.filter { tag ->
+                tag.isGeneralSpoiler != true
+            }
+        MediaTags(
+            tags = if (showSpoilerTags) mediaTags else spoilerFreeTags,
+        )
+    }
+
+    // Media Relations
+    MediaRelations(
+        mediaConnection = media.relations,
+        navActionManager = navActionManager,
+    )
+
+    // Media Recommendations
+    MediaRecommendations(
+        mediaRecommendation = media.recommendations,
+        navActionManager = navActionManager,
+    )
+
+    // External Links
+    media.externalLinks?.let { links ->
+        MediaExternalLinks(
+            externalLinks = links,
+        )
+    }
+}
+
+@Composable
+fun MediaGroupTab() {
 }
