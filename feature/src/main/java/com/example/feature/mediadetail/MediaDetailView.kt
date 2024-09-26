@@ -209,9 +209,11 @@ fun MediaDetailContent(
 
                         when (currentBottomTab) {
                             MediaDetailType.INFO -> {
-                                MediaInfoTab(media, navActionManager)
+                                MediaInfoTab(media = media, navActionManager = navActionManager)
                             }
-                            MediaDetailType.GROUP -> {}
+                            MediaDetailType.GROUP -> {
+                                MediaGroupTab(media = media, navActionManager = navActionManager)
+                            }
                             MediaDetailType.STATS -> {}
                             MediaDetailType.SOCIAL -> {}
                         }
@@ -297,5 +299,19 @@ private fun MediaInfoTab(
 }
 
 @Composable
-fun MediaGroupTab() {
+fun MediaGroupTab(
+    media: Media,
+    navActionManager: NavActionManager,
+) {
+    // Media Characters
+    MediaCharacters(
+        characters = media.characters,
+        navActionManager = navActionManager,
+    )
+
+    // Media Staffs
+    MediaStaffs(
+        staffs = media.staff,
+        navActionManager = navActionManager,
+    )
 }
