@@ -4,9 +4,9 @@ import com.example.core.domain.model.common.FuzzyDate
 import com.example.core.domain.model.media.MediaConnection
 
 data class Character(
-    val id: Int = 0,
-    val name: CharacterName = CharacterName(),
-    val image: CharacterImage = CharacterImage(),
+    val id: Int? = 0,
+    val name: CharacterName? = CharacterName(),
+    val image: CharacterImage? = CharacterImage(),
     val description: String = "",
     val gender: String = "",
     val dateOfBirth: FuzzyDate? = null,

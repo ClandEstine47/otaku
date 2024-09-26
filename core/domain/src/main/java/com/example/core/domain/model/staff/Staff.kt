@@ -5,7 +5,7 @@ import com.example.core.domain.model.common.FuzzyDate
 import com.example.core.domain.model.media.MediaConnection
 
 data class Staff(
-    val id: Int = 0,
+    val id: Int? = 0,
     val name: StaffName = StaffName(),
     val language: String = "",
     val image: StaffImage = StaffImage(),

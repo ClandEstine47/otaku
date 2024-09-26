@@ -149,5 +149,44 @@ query Media(
                 amount
             }
         }
+        characters(
+            page: $page
+            perPage:$perPage
+            sort: FAVOURITES_DESC
+        ) {
+            edges {
+                role
+                node {
+                    id
+                    name {
+                        full
+                    }
+                    image {
+                        large
+                        medium
+                    }
+                }
+            }
+        }
+        staff(
+            page: $page
+            perPage:$perPage
+            sort: RELEVANCE
+        ) {
+            edges {
+                role
+                node {
+                    id
+                    name {
+                        full
+                    }
+                    image {
+                        medium
+                        large
+                    }
+
+                }
+            }
+        }
     }
 }

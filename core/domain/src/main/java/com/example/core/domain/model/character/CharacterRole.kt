@@ -4,4 +4,5 @@ enum class CharacterRole {
     MAIN,
     SUPPORTING,
     BACKGROUND,
+    UNKNOWN,
 }

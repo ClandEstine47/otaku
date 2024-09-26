@@ -4,10 +4,21 @@ import com.example.core.domain.model.PageInfo
 import com.example.core.domain.model.ScoreDistribution
 import com.example.core.domain.model.StatusDistribution
 import com.example.core.domain.model.airing.AiringSchedule
+import com.example.core.domain.model.character.Character
+import com.example.core.domain.model.character.CharacterConnection
+import com.example.core.domain.model.character.CharacterEdge
+import com.example.core.domain.model.character.CharacterImage
+import com.example.core.domain.model.character.CharacterName
+import com.example.core.domain.model.character.CharacterRole
 import com.example.core.domain.model.common.FuzzyDate
 import com.example.core.domain.model.media.*
 import com.example.core.domain.model.recommendation.Recommendation
 import com.example.core.domain.model.recommendation.RecommendationConnection
+import com.example.core.domain.model.staff.Staff
+import com.example.core.domain.model.staff.StaffConnection
+import com.example.core.domain.model.staff.StaffEdge
+import com.example.core.domain.model.staff.StaffImage
+import com.example.core.domain.model.staff.StaffName
 import com.example.core.domain.model.studio.Studio
 import com.example.core.domain.model.studio.StudioConnection
 import com.example.core.domain.model.studio.StudioEdge
@@ -16,6 +27,7 @@ import com.example.core.network.RecentlyUpdatedQuery
 import com.example.core.network.SeasonalAnimeQuery
 import com.example.core.network.TrendingNowQuery
 import com.example.core.network.MediaQuery.Studios as NetworkStudios
+import com.example.core.network.type.CharacterRole as NetworkCharacterRole
 import com.example.core.network.type.MediaFormat as NetworkMediaFormat
 import com.example.core.network.type.MediaListStatus as NetworkMediaListStatus
 import com.example.core.network.type.MediaRankType as NetworkMediaRankType
@@ -245,6 +257,14 @@ fun MediaQuery.Media.toDomainMedia(): Media {
                 scoreDistribution = stats?.scoreDistribution?.map { it?.toDomainScoreDistribution() ?: ScoreDistribution() },
                 statusDistribution = stats?.statusDistribution?.map { it?.toDomainStatusDistribution() ?: StatusDistribution() },
             ),
+        characters =
+            CharacterConnection(
+                edges = characters?.toDomainCharacters(),
+            ),
+        staff =
+            StaffConnection(
+                edges = staff?.toDomainStaffs(),
+            ),
     )
 }
 
@@ -260,6 +280,57 @@ fun MediaQuery.StatusDistribution.toDomainStatusDistribution(): StatusDistributi
         status = status.toDomainMediaListStatus(),
         amount = amount,
     )
+}
+
+fun NetworkCharacterRole.toDomainCharacterRole(): CharacterRole {
+    return when (this) {
+        NetworkCharacterRole.MAIN -> CharacterRole.MAIN
+        NetworkCharacterRole.SUPPORTING -> CharacterRole.SUPPORTING
+        NetworkCharacterRole.BACKGROUND -> CharacterRole.BACKGROUND
+        NetworkCharacterRole.UNKNOWN__ -> CharacterRole.UNKNOWN
+    }
+}
+
+fun MediaQuery.Characters.toDomainCharacters(): List<CharacterEdge>? {
+    return edges?.map { edge ->
+        CharacterEdge(
+            role = edge?.role?.toDomainCharacterRole(),
+            node =
+                Character(
+                    id = edge?.node?.id,
+                    name =
+                        CharacterName(
+                            full = edge?.node?.name?.full,
+                        ),
+                    image =
+                        CharacterImage(
+                            medium = edge?.node?.image?.medium,
+                            large = edge?.node?.image?.large,
+                        ),
+                ),
+        )
+    }
+}
+
+fun MediaQuery.Staff.toDomainStaffs(): List<StaffEdge>? {
+    return edges?.map { edge ->
+        StaffEdge(
+            role = edge?.role,
+            node =
+                Staff(
+                    id = edge?.node?.id,
+                    name =
+                        StaffName(
+                            full = edge?.node?.name?.full,
+                        ),
+                    image =
+                        StaffImage(
+                            medium = edge?.node?.image?.medium,
+                            large = edge?.node?.image?.large,
+                        ),
+                ),
+        )
+    }
 }
 
 fun MediaQuery.Recommendations.toDomainMediaRecommendations(): List<Recommendation>? {
