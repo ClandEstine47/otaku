@@ -211,6 +211,7 @@ fun MediaQuery.Media.toDomainMedia(): Media {
         synonyms = synonyms?.filterNotNull(),
         genres = genres,
         meanScore = meanScore ?: 0,
+        averageScore = averageScore ?: 0,
         isFavourite = isFavourite,
         popularity = popularity,
         trending = trending,

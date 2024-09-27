@@ -37,37 +37,17 @@ import com.example.feature.anime.OtakuTitle
 @Composable
 fun StatusDistributionChart(
     data: Map<String, Int>,
+    colors: List<Color>,
     radiusOuter: Dp = 140.dp,
     chartBarWidth: Dp = 70.dp,
     animDuration: Int = 2000,
 ) {
-    val pieChartColor1 = Color(0xFF03045e)
-    val pieChartColor2 = Color(0xFF0077b6)
-    val pieChartColor3 = Color(0xFF00b4d8)
-    val pieChartColor4 = Color(0xFF90e0ef)
-    val pieChartColor5 = Color(0xFFcaf0f8)
-
     val totalSum = data.values.sum()
     val floatValue = mutableListOf<Float>()
 
-    // To set the value of each Arc according to
-    // the value given in the data, we have used a simple formula.
-    // For a detailed explanation check out the Medium Article.
-    // The link is in the about section and readme file of this GitHub Repository
     data.values.forEachIndexed { index, values ->
         floatValue.add(index, 360 * values.toFloat() / totalSum.toFloat())
     }
-
-    // add the colors as per the number of data(no. of pie chart entries)
-    // so that each data will get a color
-    val colors =
-        listOf(
-            pieChartColor1,
-            pieChartColor2,
-            pieChartColor3,
-            pieChartColor4,
-            pieChartColor5,
-        )
 
     var animationPlayed by remember { mutableStateOf(false) }
 
@@ -84,8 +64,6 @@ fun StatusDistributionChart(
             ),
     )
 
-    // if you want to stabilize the Pie Chart you can use value -90f
-    // 90f is used to complete 1/4 of the rotation
     val animateRotation by animateFloatAsState(
         targetValue = if (animationPlayed) 90f * 11f else 0f,
         animationSpec =
@@ -135,30 +113,21 @@ fun StatusDistributionChart(
                 }
             }
         }
-
-        // To see the data in more structured way
-        // Compose Function in which Items are showing data
-        DetailsPieChart(
-            data = data,
-            colors = colors,
-        )
     }
 }
 
 @Composable
-fun DetailsPieChart(
+fun StatusDistributionDetails(
     data: Map<String, Int>,
     colors: List<Color>,
 ) {
     Column(
         modifier =
-            Modifier
-                .padding(top = 80.dp)
-                .fillMaxWidth(),
+        Modifier,
     ) {
         // create the data items
         data.values.forEachIndexed { index, value ->
-            DetailsPieChartItem(
+            StatusDistributionDetail(
                 data = Pair(data.keys.elementAt(index), value),
                 color = colors[index],
             )
@@ -167,7 +136,7 @@ fun DetailsPieChart(
 }
 
 @Composable
-fun DetailsPieChartItem(
+fun StatusDistributionDetail(
     data: Pair<String, Int>,
     height: Dp = 45.dp,
     color: Color,
@@ -179,7 +148,6 @@ fun DetailsPieChartItem(
         color = Color.Transparent,
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(20.dp),
         ) {
@@ -193,18 +161,31 @@ fun DetailsPieChartItem(
                         .size(height),
             )
 
-            Column(modifier = Modifier.fillMaxWidth()) {
-                OtakuTitle(
+            Column {
+                StatusDistributionDetailItem(
                     title = data.first,
-                    fontWeight = FontWeight.SemiBold,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-                OtakuTitle(
-                    title = data.second.toString(),
-                    fontWeight = FontWeight.Light,
-                    style = MaterialTheme.typography.bodyMedium,
+                    body = data.second.toString(),
                 )
             }
         }
+    }
+}
+
+@Composable
+fun StatusDistributionDetailItem(
+    title: String,
+    body: String,
+) {
+    Column {
+        OtakuTitle(
+            title = title,
+            fontWeight = FontWeight.SemiBold,
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        OtakuTitle(
+            title = body,
+            fontWeight = FontWeight.Light,
+            style = MaterialTheme.typography.bodyMedium,
+        )
     }
 }
