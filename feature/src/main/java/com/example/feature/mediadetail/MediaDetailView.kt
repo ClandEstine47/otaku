@@ -37,6 +37,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.core.domain.model.StatusDistribution
 import com.example.core.domain.model.media.Media
 import com.example.core.navigation.NavActionManager
 import com.example.core.navigation.OtakuScreen
@@ -208,13 +209,9 @@ fun MediaDetailContent(
                         } */
 
                         when (currentBottomTab) {
-                            MediaDetailType.INFO -> {
-                                MediaInfoTab(media = media, navActionManager = navActionManager)
-                            }
-                            MediaDetailType.GROUP -> {
-                                MediaGroupTab(media = media, navActionManager = navActionManager)
-                            }
-                            MediaDetailType.STATS -> {}
+                            MediaDetailType.INFO -> MediaInfoTab(media = media, navActionManager = navActionManager)
+                            MediaDetailType.GROUP -> MediaGroupTab(media = media, navActionManager = navActionManager)
+                            MediaDetailType.STATS -> MediaStatsTab(media = media, navActionManager = navActionManager)
                             MediaDetailType.SOCIAL -> {}
                         }
                     }
@@ -313,5 +310,33 @@ fun MediaGroupTab(
     MediaStaffs(
         staffs = media.staff,
         navActionManager = navActionManager,
+    )
+}
+
+@Composable
+fun MediaStatsTab(
+    media: Media,
+    navActionManager: NavActionManager,
+) {
+    // Status Distribution
+    media.stats?.statusDistribution?.let { status ->
+        MediaStatusDistribution(
+            status = status,
+        )
+    }
+}
+
+@Composable
+fun MediaStatusDistribution(
+    status: List<StatusDistribution>,
+) {
+    val chartData =
+        status.associate {
+            Pair(it.status?.name ?: "Unknown", it.amount ?: 0)
+        }
+
+    OtakuTitle(id = R.string.status_distribution)
+    StatusDistributionChart(
+        data = chartData,
     )
 }
