@@ -211,7 +211,7 @@ fun MediaDetailContent(
                             MediaDetailType.INFO -> MediaInfoTab(media = media, navActionManager = navActionManager)
                             MediaDetailType.GROUP -> MediaGroupTab(media = media, navActionManager = navActionManager)
                             MediaDetailType.STATS -> MediaStatsTab(media = media)
-                            MediaDetailType.SOCIAL -> {}
+                            MediaDetailType.SOCIAL -> MediaSocialTab(media = media)
                         }
                     }
                 }
@@ -333,4 +333,14 @@ fun MediaStatsTab(
             score = score,
         )
     }
+}
+
+@Composable
+fun MediaSocialTab(
+    media: Media,
+) {
+    // Reviews
+    MediaReviews(
+        reviews = media.review,
+    )
 }
