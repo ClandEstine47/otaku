@@ -20,7 +20,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -34,12 +33,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.core.domain.model.StatusDistribution
 import com.example.core.domain.model.media.Media
 import com.example.core.navigation.NavActionManager
 import com.example.core.navigation.OtakuScreen
@@ -213,7 +210,7 @@ fun MediaDetailContent(
                         when (currentBottomTab) {
                             MediaDetailType.INFO -> MediaInfoTab(media = media, navActionManager = navActionManager)
                             MediaDetailType.GROUP -> MediaGroupTab(media = media, navActionManager = navActionManager)
-                            MediaDetailType.STATS -> MediaStatsTab(media = media, navActionManager = navActionManager)
+                            MediaDetailType.STATS -> MediaStatsTab(media = media)
                             MediaDetailType.SOCIAL -> {}
                         }
                     }
@@ -318,7 +315,6 @@ fun MediaGroupTab(
 @Composable
 fun MediaStatsTab(
     media: Media,
-    navActionManager: NavActionManager,
 ) {
     // Status Distribution and Performance
     media.stats?.statusDistribution?.let { status ->
@@ -330,86 +326,11 @@ fun MediaStatsTab(
             favourites = media.favourites ?: 0,
         )
     }
-}
 
-@Composable
-fun MediaStatusDistribution(
-    status: List<StatusDistribution>,
-    averageScore: Int,
-    meanScore: Int,
-    popularity: Int,
-    favourites: Int,
-) {
-    val chartData =
-        status.associate {
-            Pair(it.status?.name ?: "Unknown", it.amount ?: 0)
-        }
-
-    val pieChartColor1 = Color(0xFF03045e)
-    val pieChartColor2 = Color(0xFF0077b6)
-    val pieChartColor3 = Color(0xFF00b4d8)
-    val pieChartColor4 = Color(0xFF90e0ef)
-    val pieChartColor5 = Color(0xFFcaf0f8)
-
-    val colors =
-        listOf(
-            pieChartColor1,
-            pieChartColor2,
-            pieChartColor3,
-            pieChartColor4,
-            pieChartColor5,
+    // Score Distribution
+    media.stats?.scoreDistribution?.let { score ->
+        MediaScoreDistribution(
+            score = score,
         )
-
-    OtakuTitle(id = R.string.status_distribution)
-    StatusDistributionChart(
-        data = chartData,
-        colors = colors,
-    )
-
-    Row(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(top = 80.dp),
-        horizontalArrangement = Arrangement.SpaceAround,
-    ) {
-        StatusDistributionDetails(
-            data = chartData,
-            colors = colors,
-        )
-
-        VerticalDivider(
-            modifier =
-                Modifier
-                    .height(300.dp),
-            thickness = 0.2.dp,
-            color = MaterialTheme.colorScheme.onBackground,
-        )
-
-        MediaPerformance(
-            averageScore = averageScore,
-            meanScore = meanScore,
-            popularity = popularity,
-            favourites = favourites,
-        )
-    }
-}
-
-@Composable
-fun MediaPerformance(
-    averageScore: Int,
-    meanScore: Int,
-    popularity: Int,
-    favourites: Int,
-) {
-    Column(
-        modifier = Modifier.padding(top = 10.dp),
-        verticalArrangement = Arrangement.spacedBy(20.dp),
-    ) {
-        OtakuTitle(id = R.string.performance)
-        StatusDistributionDetailItem(title = stringResource(id = R.string.average), body = "$averageScore%")
-        StatusDistributionDetailItem(title = stringResource(id = R.string.mean), body = "$meanScore%")
-        StatusDistributionDetailItem(title = stringResource(id = R.string.popularity), body = popularity.toString())
-        StatusDistributionDetailItem(title = stringResource(id = R.string.favourites), body = favourites.toString())
     }
 }
