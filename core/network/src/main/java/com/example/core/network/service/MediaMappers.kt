@@ -14,6 +14,10 @@ import com.example.core.domain.model.common.FuzzyDate
 import com.example.core.domain.model.media.*
 import com.example.core.domain.model.recommendation.Recommendation
 import com.example.core.domain.model.recommendation.RecommendationConnection
+import com.example.core.domain.model.review.Review
+import com.example.core.domain.model.review.ReviewConnection
+import com.example.core.domain.model.review.ReviewEdge
+import com.example.core.domain.model.review.ReviewRating
 import com.example.core.domain.model.staff.Staff
 import com.example.core.domain.model.staff.StaffConnection
 import com.example.core.domain.model.staff.StaffEdge
@@ -22,6 +26,8 @@ import com.example.core.domain.model.staff.StaffName
 import com.example.core.domain.model.studio.Studio
 import com.example.core.domain.model.studio.StudioConnection
 import com.example.core.domain.model.studio.StudioEdge
+import com.example.core.domain.model.user.User
+import com.example.core.domain.model.user.UserAvatar
 import com.example.core.network.MediaQuery
 import com.example.core.network.RecentlyUpdatedQuery
 import com.example.core.network.SeasonalAnimeQuery
@@ -36,6 +42,7 @@ import com.example.core.network.type.MediaSeason as NetworkMediaSeason
 import com.example.core.network.type.MediaSource as NetworkMediaSource
 import com.example.core.network.type.MediaStatus as NetworkMediaStatus
 import com.example.core.network.type.MediaType as NetworkMediaType
+import com.example.core.network.type.ReviewRating as NetworkReviewRating
 
 fun RecentlyUpdatedQuery.AiringSchedule.toRecentlyUpdatedMedia(): AiringSchedule {
     return AiringSchedule(
@@ -266,7 +273,38 @@ fun MediaQuery.Media.toDomainMedia(): Media {
             StaffConnection(
                 edges = staff?.toDomainStaffs(),
             ),
+        review =
+            ReviewConnection(
+                edges = reviews?.toDomainReviews(),
+            ),
     )
+}
+
+fun MediaQuery.Reviews.toDomainReviews(): List<ReviewEdge>? {
+    return edges?.map { edge ->
+        ReviewEdge(
+            node =
+                Review(
+                    id = edge?.node?.id,
+                    summary = edge?.node?.summary,
+                    ratingAmount = edge?.node?.ratingAmount,
+                    score = edge?.node?.score,
+                    rating = edge?.node?.rating,
+                    createdAt = edge?.node?.createdAt,
+                    user =
+                        User(
+                            name = edge?.node?.user?.name,
+                            avatar =
+                                UserAvatar(
+                                    medium = edge?.node?.user?.avatar?.medium,
+                                    large = edge?.node?.user?.avatar?.large,
+                                ),
+                        ),
+                    mediaType = edge?.node?.mediaType.toDomainMediaType(),
+                    userRating = edge?.node?.userRating?.toDomainReviewRating(),
+                ),
+        )
+    }
 }
 
 fun MediaQuery.ScoreDistribution.toDomainScoreDistribution(): ScoreDistribution {
@@ -540,6 +578,15 @@ fun NetworkMediaType?.toDomainMediaType(): MediaType? {
         NetworkMediaType.ANIME -> MediaType.ANIME
         NetworkMediaType.MANGA -> MediaType.MANGA
         else -> null
+    }
+}
+
+fun NetworkReviewRating.toDomainReviewRating(): ReviewRating {
+    return when (this) {
+        NetworkReviewRating.NO_VOTE -> ReviewRating.NO_VOTE
+        NetworkReviewRating.UP_VOTE -> ReviewRating.UP_VOTE
+        NetworkReviewRating.DOWN_VOTE -> ReviewRating.DOWN_VOTE
+        NetworkReviewRating.UNKNOWN__ -> ReviewRating.UNKNOWN
     }
 }
 

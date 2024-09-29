@@ -5,6 +5,7 @@ import com.example.core.domain.model.airing.AiringScheduleConnection
 import com.example.core.domain.model.character.CharacterConnection
 import com.example.core.domain.model.common.FuzzyDate
 import com.example.core.domain.model.recommendation.RecommendationConnection
+import com.example.core.domain.model.review.ReviewConnection
 import com.example.core.domain.model.staff.StaffConnection
 import com.example.core.domain.model.studio.StudioConnection
 
@@ -52,4 +53,5 @@ data class Media(
     val stats: MediaStats? = null,
     val siteUrl: String? = "",
     val mediaListEntry: MediaList? = null,
+    val review: ReviewConnection = ReviewConnection(),
 )

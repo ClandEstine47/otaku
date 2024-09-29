@@ -189,5 +189,30 @@ query Media(
                 }
             }
         }
+        reviews(
+            sort:RATING_DESC,
+            page:$page,
+            perPage:$perPage
+        ) {
+            edges {
+                node {
+                    id
+                    summary
+                    ratingAmount
+                    score
+                    rating
+                    createdAt
+                    mediaType
+                    userRating
+                    user {
+                        name
+                        avatar {
+                            large
+                            medium
+                        }
+                    }
+                }
+            }
+        }
     }
 }
