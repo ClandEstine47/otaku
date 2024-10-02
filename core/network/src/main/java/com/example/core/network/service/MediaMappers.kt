@@ -26,9 +26,11 @@ import com.example.core.domain.model.staff.StaffName
 import com.example.core.domain.model.studio.Studio
 import com.example.core.domain.model.studio.StudioConnection
 import com.example.core.domain.model.studio.StudioEdge
+import com.example.core.domain.model.thread.Thread
 import com.example.core.domain.model.user.User
 import com.example.core.domain.model.user.UserAvatar
 import com.example.core.network.MediaQuery
+import com.example.core.network.MediaThreadsQuery
 import com.example.core.network.RecentlyUpdatedQuery
 import com.example.core.network.SeasonalAnimeQuery
 import com.example.core.network.TrendingNowQuery
@@ -92,6 +94,14 @@ fun RecentlyUpdatedQuery.PageInfo.toDomainPageInfo(): PageInfo {
     )
 }
 
+fun MediaThreadsQuery.PageInfo.toDomainPageInfo(): PageInfo {
+    return PageInfo(
+        total = total,
+        currentPage = currentPage,
+        hasNextPage = hasNextPage,
+    )
+}
+
 fun TrendingNowQuery.Medium.toDomainMedia(): Media {
     return Media(
         idAniList = id,
@@ -126,6 +136,34 @@ fun TrendingNowQuery.Medium.toDomainMedia(): Media {
                 private = mediaListEntry?.private ?: false,
                 score = mediaListEntry?.score ?: 0.0,
                 status = mediaListEntry?.status?.toDomainMediaListStatus(),
+            ),
+    )
+}
+
+fun MediaThreadsQuery.Thread.toDomainThread(): Thread {
+    return Thread(
+        id = id,
+        title = title,
+        body = body,
+        isLiked = isLiked,
+        isLocked = isLocked,
+        isSubscribed = isSubscribed,
+        likeCount = likeCount,
+        replyCount = totalReplies,
+        viewCount = viewCount,
+        user = user?.toDomainMediaThreadUser(),
+        createdAt = createdAt,
+    )
+}
+
+fun MediaThreadsQuery.User.toDomainMediaThreadUser(): User {
+    return User(
+        id = id,
+        name = name,
+        avatar =
+            UserAvatar(
+                medium = avatar?.medium,
+                large = avatar?.large,
             ),
     )
 }
