@@ -26,7 +26,7 @@ class MediaDetailViewModel
             viewModelScope.launch {
                 _state.update {
                     it.copy(
-                        isLoading = true,
+                        isLoadingMediaDetails = true,
                     )
                 }
 
@@ -37,7 +37,7 @@ class MediaDetailViewModel
                         media.isSuccess -> {
                             currentState.copy(
                                 media = media.getOrNull(),
-                                isLoading = false,
+                                isLoadingMediaDetails = false,
                                 error = null,
                             )
                         }
@@ -45,14 +45,60 @@ class MediaDetailViewModel
                         media.isFailure -> {
                             currentState.copy(
                                 media = null,
-                                isLoading = false,
+                                isLoadingMediaDetails = false,
                                 error = media.exceptionOrNull()?.message ?: "An unknown error occurred",
                             )
                         }
 
                         else -> {
                             currentState.copy(
-                                isLoading = false,
+                                isLoadingMediaDetails = false,
+                                error = "Unexpected result state",
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        fun getMediaThreads(
+            mediaId: Int,
+        ) {
+            viewModelScope.launch {
+                _state.update {
+                    it.copy(
+                        isLoadingMediaThreads = true,
+                    )
+                }
+
+                val threads =
+                    mediaRepository.getMediaThreads(
+                        pageNumber = 1,
+                        perPage = 5,
+                        mediaId = mediaId,
+                    )
+
+                _state.update { currentState ->
+                    when {
+                        threads.isSuccess -> {
+                            currentState.copy(
+                                mediaThreads = threads.getOrNull()?.data,
+                                isLoadingMediaThreads = false,
+                                error = null,
+                            )
+                        }
+
+                        threads.isFailure -> {
+                            currentState.copy(
+                                mediaThreads = null,
+                                isLoadingMediaThreads = false,
+                                error = threads.exceptionOrNull()?.message ?: "An unknown error occurred",
+                            )
+                        }
+
+                        else -> {
+                            currentState.copy(
+                                isLoadingMediaThreads = false,
                                 error = "Unexpected result state",
                             )
                         }

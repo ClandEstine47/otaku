@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.core.domain.model.media.Media
+import com.example.core.domain.model.thread.Thread
 import com.example.core.navigation.NavActionManager
 import com.example.core.navigation.OtakuScreen
 import com.example.feature.R
@@ -60,6 +61,7 @@ fun MediaDetailView(
 
     LaunchedEffect(Unit) {
         viewModel.getMediaDetail(id = arguments.id)
+        viewModel.getMediaThreads(mediaId = arguments.id)
     }
 
     Column(
@@ -68,7 +70,7 @@ fun MediaDetailView(
                 .fillMaxSize()
                 .absolutePadding(),
     ) {
-        if (uiState.isLoading) {
+        if (uiState.isLoadingMediaDetails || uiState.isLoadingMediaThreads) {
             Column(
                 modifier =
                     Modifier
@@ -83,6 +85,7 @@ fun MediaDetailView(
             MediaDetailContent(
                 navActionManager = navActionManager,
                 mediaDetail = uiState.media,
+                mediaThreads = uiState.mediaThreads,
             )
         }
     }
@@ -94,6 +97,7 @@ fun MediaDetailView(
 fun MediaDetailContent(
     navActionManager: NavActionManager,
     mediaDetail: Media?,
+    mediaThreads: List<Thread>?,
 ) {
     val hazeState = remember { HazeState() }
     val topAppBarScrollBehavior =
@@ -211,7 +215,7 @@ fun MediaDetailContent(
                             MediaDetailType.INFO -> MediaInfoTab(media = media, navActionManager = navActionManager)
                             MediaDetailType.GROUP -> MediaGroupTab(media = media, navActionManager = navActionManager)
                             MediaDetailType.STATS -> MediaStatsTab(media = media)
-                            MediaDetailType.SOCIAL -> MediaSocialTab(media = media)
+                            MediaDetailType.SOCIAL -> MediaSocialTab(media = media, threads = mediaThreads)
                         }
                     }
                 }
@@ -338,9 +342,15 @@ fun MediaStatsTab(
 @Composable
 fun MediaSocialTab(
     media: Media,
+    threads: List<Thread>?,
 ) {
     // Reviews
     MediaReviews(
         reviews = media.review,
     )
+
+    // Threads
+    if (threads != null) {
+        MediaThreads(threads = threads)
+    }
 }

@@ -44,4 +44,5 @@
     <string name="mean">Mean</string>
     <string name="score_distribution">Score Distribution</string>
     <string name="reviews">Reviews</string>
+    <string name="threads">Threads</string>
 </resources>
