@@ -1,0 +1,39 @@
+query MediaThreads (
+    $page: Int!,
+    $perPage: Int,
+    $mediaCategoryId: Int,
+) {
+    Page(
+        page: $page,
+        perPage: $perPage
+    ) {
+        threads(
+            mediaCategoryId: $mediaCategoryId,
+            sort: CREATED_AT_DESC
+        ) {
+            id
+            title
+            body
+            viewCount
+            likeCount
+            isLiked
+            isSubscribed
+            totalReplies: replyCount
+            isLocked
+            user {
+                id
+                name
+                avatar {
+                    medium
+                    large
+                }
+            }
+            createdAt
+        }
+        pageInfo {
+            currentPage
+            hasNextPage
+            total
+        }
+    }
+}
