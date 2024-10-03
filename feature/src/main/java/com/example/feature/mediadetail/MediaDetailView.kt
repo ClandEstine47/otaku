@@ -253,6 +253,7 @@ private fun MediaInfoTab(
         media = media,
     )
 
+    // Media Tags
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -267,7 +268,6 @@ private fun MediaInfoTab(
                 },
         )
     }
-
     media.tags?.let { mediaTags ->
         val spoilerFreeTags =
             mediaTags.filter { tag ->

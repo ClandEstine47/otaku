@@ -17,6 +17,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.core.domain.model.media.MediaType
 import com.example.core.navigation.NavActionManager
 import com.example.core.navigation.OtakuScreen
+import com.example.core.navigation.navigateAndReplaceStartRoute
 import com.example.feature.BottomNavBar
 import com.example.feature.NavBarItem
 import com.example.otaku.ui.theme.OtakuTheme
@@ -65,10 +66,10 @@ fun OtakuMain() {
                             navigate = { mediaType ->
                                 when (mediaType) {
                                     MediaType.ANIME -> {
-                                        navController.navigate(OtakuScreen.AnimeTab)
+                                        navController.navigateAndReplaceStartRoute(OtakuScreen.AnimeTab)
                                     }
                                     MediaType.MANGA -> {
-                                        navController.navigate(OtakuScreen.MangaTab)
+                                        navController.navigateAndReplaceStartRoute(OtakuScreen.MangaTab)
                                     }
                                 }
                             },
