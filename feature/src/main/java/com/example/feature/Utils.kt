@@ -3,6 +3,7 @@ package com.example.feature
 import com.example.core.domain.model.AnimeSeason
 import com.example.core.domain.model.media.MediaSeason
 import java.text.SimpleDateFormat
+import java.time.Instant
 import java.time.LocalDateTime
 import java.time.Month
 import java.time.ZoneId
@@ -69,6 +70,13 @@ object Utils {
         val dateFormat = SimpleDateFormat("E, dd MMM yyyy, hh:mm a", Locale.getDefault())
         val date = Date(seconds * 1000L)
         return dateFormat.format(date)
+    }
+
+    fun secondsToMonthYearDateFormatter(seconds: Int): String {
+        val instant = Instant.ofEpochSecond(seconds.toLong())
+        val date = instant.atZone(ZoneId.systemDefault()).toLocalDate()
+        val formatter = DateTimeFormatter.ofPattern("dd MMM yyyy")
+        return date.format(formatter)
     }
 
     fun formatDateToText(

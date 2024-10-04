@@ -9,8 +9,10 @@ import com.example.core.domain.model.media.Media
 import com.example.core.domain.model.media.MediaFormat
 import com.example.core.domain.model.media.MediaSeason
 import com.example.core.domain.model.media.MediaType
+import com.example.core.domain.model.thread.Thread
 import com.example.core.domain.service.MediaService
 import com.example.core.network.MediaQuery
+import com.example.core.network.MediaThreadsQuery
 import com.example.core.network.RecentlyUpdatedQuery
 import com.example.core.network.SeasonalAnimeQuery
 import com.example.core.network.TrendingNowQuery
@@ -239,6 +241,52 @@ class MediaServiceImpl
                             response.data?.Media?.toDomainMedia() ?: Media()
                         Result.success(
                             media,
+                        )
+                    }
+                }
+            } catch (e: ApolloException) {
+                Result.failure(e)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+
+        override suspend fun getMediaThreads(
+            pageNumber: Int,
+            perPage: Int,
+            mediaId: Int,
+        ): Result<Page<Thread>> {
+            return try {
+                val response =
+                    apolloClient
+                        .query(
+                            MediaThreadsQuery(
+                                page = pageNumber,
+                                perPage = Optional.present(perPage),
+                                mediaCategoryId = Optional.present(mediaId),
+                            ),
+                        )
+                        .execute()
+
+                when {
+                    response.hasErrors() -> {
+                        val errorMessage =
+                            response.errors?.joinToString("; ") { it.message }
+                                ?: "Unknown GraphQL error"
+                        Result.failure(Exception(errorMessage))
+                    }
+
+                    else -> {
+                        val pageInfo = response.data?.Page?.pageInfo?.toDomainPageInfo()
+                        val threads =
+                            response.data?.Page?.threads
+                                ?.mapNotNull { it?.toDomainThread() }
+                                ?: emptyList()
+                        Result.success(
+                            Page(
+                                pageInfo = pageInfo,
+                                data = threads,
+                            ),
                         )
                     }
                 }

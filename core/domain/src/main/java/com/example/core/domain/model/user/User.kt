@@ -4,7 +4,7 @@ import com.example.core.domain.model.media.MediaListOptions
 
 data class User(
     val id: Int = 0,
-    val name: String = "",
+    val name: String? = "",
     val about: String = "",
     val avatar: UserAvatar = UserAvatar(),
     val bannerImage: String = "",

@@ -2,6 +2,7 @@ package com.example.feature.medialist
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,6 +44,7 @@ import com.example.feature.anime.OtakuTitle
 fun MediaListItem(
     modifier: Modifier = Modifier,
     mediaItem: Media,
+    onClick: (id: Int, mediaType: MediaType) -> Unit,
 ) {
     val title = mediaItem.title.english.ifBlank { mediaItem.title.romaji }
     val coverImage =
@@ -68,7 +70,10 @@ fun MediaListItem(
                 .fillMaxWidth()
                 .height(200.dp)
                 .padding(8.dp)
-                .clip(RoundedCornerShape(8.dp)),
+                .clip(RoundedCornerShape(8.dp))
+                .clickable {
+                    mediaItem.type?.let { type -> onClick(mediaItem.idAniList, type) }
+                },
     ) {
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -167,6 +172,7 @@ fun MediaListItem(
 fun MediaListItem(
     modifier: Modifier = Modifier,
     mediaItem: AiringSchedule,
+    onClick: (id: Int, mediaType: MediaType) -> Unit,
 ) {
     val title = mediaItem.media.title.english.ifBlank { mediaItem.media.title.romaji }
     val coverImage =
@@ -192,7 +198,10 @@ fun MediaListItem(
                 .fillMaxWidth()
                 .height(200.dp)
                 .padding(8.dp)
-                .clip(RoundedCornerShape(8.dp)),
+                .clip(RoundedCornerShape(8.dp))
+                .clickable {
+                    mediaItem.media.type?.let { type -> onClick(mediaItem.media.idAniList, type) }
+                },
     ) {
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -300,5 +309,5 @@ fun MediaListItemPreview(modifier: Modifier = Modifier) {
             episodes = 12,
             genres = listOf("Drama", "Mystery", "Action", "Fantasy", "Slice of Life", "Comedy"),
         )
-    MediaListItem(mediaItem = fakeMedia)
+    MediaListItem(mediaItem = fakeMedia, onClick = { _, _ -> })
 }

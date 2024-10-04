@@ -1,19 +1,41 @@
 package com.example.core.network.service
 
 import com.example.core.domain.model.PageInfo
+import com.example.core.domain.model.ScoreDistribution
+import com.example.core.domain.model.StatusDistribution
 import com.example.core.domain.model.airing.AiringSchedule
+import com.example.core.domain.model.character.Character
+import com.example.core.domain.model.character.CharacterConnection
+import com.example.core.domain.model.character.CharacterEdge
+import com.example.core.domain.model.character.CharacterImage
+import com.example.core.domain.model.character.CharacterName
+import com.example.core.domain.model.character.CharacterRole
 import com.example.core.domain.model.common.FuzzyDate
 import com.example.core.domain.model.media.*
 import com.example.core.domain.model.recommendation.Recommendation
 import com.example.core.domain.model.recommendation.RecommendationConnection
+import com.example.core.domain.model.review.Review
+import com.example.core.domain.model.review.ReviewConnection
+import com.example.core.domain.model.review.ReviewEdge
+import com.example.core.domain.model.review.ReviewRating
+import com.example.core.domain.model.staff.Staff
+import com.example.core.domain.model.staff.StaffConnection
+import com.example.core.domain.model.staff.StaffEdge
+import com.example.core.domain.model.staff.StaffImage
+import com.example.core.domain.model.staff.StaffName
 import com.example.core.domain.model.studio.Studio
 import com.example.core.domain.model.studio.StudioConnection
 import com.example.core.domain.model.studio.StudioEdge
+import com.example.core.domain.model.thread.Thread
+import com.example.core.domain.model.user.User
+import com.example.core.domain.model.user.UserAvatar
 import com.example.core.network.MediaQuery
+import com.example.core.network.MediaThreadsQuery
 import com.example.core.network.RecentlyUpdatedQuery
 import com.example.core.network.SeasonalAnimeQuery
 import com.example.core.network.TrendingNowQuery
 import com.example.core.network.MediaQuery.Studios as NetworkStudios
+import com.example.core.network.type.CharacterRole as NetworkCharacterRole
 import com.example.core.network.type.MediaFormat as NetworkMediaFormat
 import com.example.core.network.type.MediaListStatus as NetworkMediaListStatus
 import com.example.core.network.type.MediaRankType as NetworkMediaRankType
@@ -22,6 +44,7 @@ import com.example.core.network.type.MediaSeason as NetworkMediaSeason
 import com.example.core.network.type.MediaSource as NetworkMediaSource
 import com.example.core.network.type.MediaStatus as NetworkMediaStatus
 import com.example.core.network.type.MediaType as NetworkMediaType
+import com.example.core.network.type.ReviewRating as NetworkReviewRating
 
 fun RecentlyUpdatedQuery.AiringSchedule.toRecentlyUpdatedMedia(): AiringSchedule {
     return AiringSchedule(
@@ -71,6 +94,14 @@ fun RecentlyUpdatedQuery.PageInfo.toDomainPageInfo(): PageInfo {
     )
 }
 
+fun MediaThreadsQuery.PageInfo.toDomainPageInfo(): PageInfo {
+    return PageInfo(
+        total = total,
+        currentPage = currentPage,
+        hasNextPage = hasNextPage,
+    )
+}
+
 fun TrendingNowQuery.Medium.toDomainMedia(): Media {
     return Media(
         idAniList = id,
@@ -105,6 +136,34 @@ fun TrendingNowQuery.Medium.toDomainMedia(): Media {
                 private = mediaListEntry?.private ?: false,
                 score = mediaListEntry?.score ?: 0.0,
                 status = mediaListEntry?.status?.toDomainMediaListStatus(),
+            ),
+    )
+}
+
+fun MediaThreadsQuery.Thread.toDomainThread(): Thread {
+    return Thread(
+        id = id,
+        title = title,
+        body = body,
+        isLiked = isLiked,
+        isLocked = isLocked,
+        isSubscribed = isSubscribed,
+        likeCount = likeCount,
+        replyCount = totalReplies,
+        viewCount = viewCount,
+        user = user?.toDomainMediaThreadUser(),
+        createdAt = createdAt,
+    )
+}
+
+fun MediaThreadsQuery.User.toDomainMediaThreadUser(): User {
+    return User(
+        id = id,
+        name = name,
+        avatar =
+            UserAvatar(
+                medium = avatar?.medium,
+                large = avatar?.large,
             ),
     )
 }
@@ -197,6 +256,7 @@ fun MediaQuery.Media.toDomainMedia(): Media {
         synonyms = synonyms?.filterNotNull(),
         genres = genres,
         meanScore = meanScore ?: 0,
+        averageScore = averageScore ?: 0,
         isFavourite = isFavourite,
         popularity = popularity,
         trending = trending,
@@ -238,7 +298,116 @@ fun MediaQuery.Media.toDomainMedia(): Media {
             RecommendationConnection(
                 nodes = recommendations?.toDomainMediaRecommendations(),
             ),
+        stats =
+            MediaStats(
+                scoreDistribution = stats?.scoreDistribution?.map { it?.toDomainScoreDistribution() ?: ScoreDistribution() },
+                statusDistribution = stats?.statusDistribution?.map { it?.toDomainStatusDistribution() ?: StatusDistribution() },
+            ),
+        characters =
+            CharacterConnection(
+                edges = characters?.toDomainCharacters(),
+            ),
+        staff =
+            StaffConnection(
+                edges = staff?.toDomainStaffs(),
+            ),
+        review =
+            ReviewConnection(
+                edges = reviews?.toDomainReviews(),
+            ),
     )
+}
+
+fun MediaQuery.Reviews.toDomainReviews(): List<ReviewEdge>? {
+    return edges?.map { edge ->
+        ReviewEdge(
+            node =
+                Review(
+                    id = edge?.node?.id,
+                    summary = edge?.node?.summary,
+                    ratingAmount = edge?.node?.ratingAmount,
+                    score = edge?.node?.score,
+                    rating = edge?.node?.rating,
+                    createdAt = edge?.node?.createdAt,
+                    user =
+                        User(
+                            name = edge?.node?.user?.name,
+                            avatar =
+                                UserAvatar(
+                                    medium = edge?.node?.user?.avatar?.medium,
+                                    large = edge?.node?.user?.avatar?.large,
+                                ),
+                        ),
+                    mediaType = edge?.node?.mediaType.toDomainMediaType(),
+                    userRating = edge?.node?.userRating?.toDomainReviewRating(),
+                ),
+        )
+    }
+}
+
+fun MediaQuery.ScoreDistribution.toDomainScoreDistribution(): ScoreDistribution {
+    return ScoreDistribution(
+        score = score,
+        amount = amount,
+    )
+}
+
+fun MediaQuery.StatusDistribution.toDomainStatusDistribution(): StatusDistribution {
+    return StatusDistribution(
+        status = status.toDomainMediaListStatus(),
+        amount = amount,
+    )
+}
+
+fun NetworkCharacterRole.toDomainCharacterRole(): CharacterRole {
+    return when (this) {
+        NetworkCharacterRole.MAIN -> CharacterRole.MAIN
+        NetworkCharacterRole.SUPPORTING -> CharacterRole.SUPPORTING
+        NetworkCharacterRole.BACKGROUND -> CharacterRole.BACKGROUND
+        NetworkCharacterRole.UNKNOWN__ -> CharacterRole.UNKNOWN
+    }
+}
+
+fun MediaQuery.Characters.toDomainCharacters(): List<CharacterEdge>? {
+    return edges?.map { edge ->
+        CharacterEdge(
+            role = edge?.role?.toDomainCharacterRole(),
+            node =
+                Character(
+                    id = edge?.node?.id,
+                    name =
+                        CharacterName(
+                            full = edge?.node?.name?.full,
+                        ),
+                    image =
+                        CharacterImage(
+                            medium = edge?.node?.image?.medium,
+                            large = edge?.node?.image?.large,
+                        ),
+                ),
+        )
+    }
+}
+
+fun MediaQuery.Staff.toDomainStaffs(): List<StaffEdge>? {
+    return edges?.map { edge ->
+        StaffEdge(
+            role = edge?.role,
+            node =
+                Staff(
+                    id = edge?.node?.id,
+                    name =
+                        StaffName(
+                            full = edge?.node?.name?.full,
+                        ),
+                    image =
+                        StaffImage(
+                            medium = edge?.node?.image?.medium,
+                            large = edge?.node?.image?.large,
+                        ),
+                ),
+        )
+    }
 }
 
 fun MediaQuery.Recommendations.toDomainMediaRecommendations(): List<Recommendation>? {
@@ -447,6 +616,15 @@ fun NetworkMediaType?.toDomainMediaType(): MediaType? {
         NetworkMediaType.ANIME -> MediaType.ANIME
         NetworkMediaType.MANGA -> MediaType.MANGA
         else -> null
+    }
+}
+
+fun NetworkReviewRating.toDomainReviewRating(): ReviewRating {
+    return when (this) {
+        NetworkReviewRating.NO_VOTE -> ReviewRating.NO_VOTE
+        NetworkReviewRating.UP_VOTE -> ReviewRating.UP_VOTE
+        NetworkReviewRating.DOWN_VOTE -> ReviewRating.DOWN_VOTE
+        NetworkReviewRating.UNKNOWN__ -> ReviewRating.UNKNOWN
     }
 }
 

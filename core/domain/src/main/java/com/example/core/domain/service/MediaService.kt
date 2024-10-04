@@ -6,6 +6,7 @@ import com.example.core.domain.model.media.Media
 import com.example.core.domain.model.media.MediaFormat
 import com.example.core.domain.model.media.MediaSeason
 import com.example.core.domain.model.media.MediaType
+import com.example.core.domain.model.thread.Thread
 
 interface MediaService {
     suspend fun getSeasonalMediaList(
@@ -40,4 +41,10 @@ interface MediaService {
     suspend fun getMediaById(
         id: Int,
     ): Result<Media>
+
+    suspend fun getMediaThreads(
+        pageNumber: Int,
+        perPage: Int,
+        mediaId: Int,
+    ): Result<Page<Thread>>
 }

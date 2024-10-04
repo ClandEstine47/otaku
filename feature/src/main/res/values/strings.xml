@@ -36,4 +36,13 @@
     <string name="relations">Relations</string>
     <string name="recommendations">Recommended</string>
     <string name="links">Links</string>
+    <string name="characters">Characters</string>
+    <string name="staffs">Staff</string>
+    <string name="status_distribution">Status Distribution</string>
+    <string name="performance">Performance</string>
+    <string name="average">Average</string>
+    <string name="mean">Mean</string>
+    <string name="score_distribution">Score Distribution</string>
+    <string name="reviews">Reviews</string>
+    <string name="threads">Threads</string>
 </resources>

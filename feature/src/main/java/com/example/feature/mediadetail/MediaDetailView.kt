@@ -1,12 +1,16 @@
 package com.example.feature.mediadetail
 
+import android.annotation.SuppressLint
+import android.os.Build
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -34,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.core.domain.model.media.Media
+import com.example.core.domain.model.thread.Thread
 import com.example.core.navigation.NavActionManager
 import com.example.core.navigation.OtakuScreen
 import com.example.feature.R
@@ -41,6 +46,10 @@ import com.example.feature.anime.BackButton
 import com.example.feature.anime.OtakuTitle
 import com.example.feature.anime.ShareButton
 import com.example.feature.common.BannerItem
+import dev.chrisbanes.haze.HazeDefaults
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.HazeStyle
+import dev.chrisbanes.haze.haze
 
 @Composable
 fun MediaDetailView(
@@ -52,6 +61,7 @@ fun MediaDetailView(
 
     LaunchedEffect(Unit) {
         viewModel.getMediaDetail(id = arguments.id)
+        viewModel.getMediaThreads(mediaId = arguments.id)
     }
 
     Column(
@@ -60,7 +70,7 @@ fun MediaDetailView(
                 .fillMaxSize()
                 .absolutePadding(),
     ) {
-        if (uiState.isLoading) {
+        if (uiState.isLoadingMediaDetails || uiState.isLoadingMediaThreads) {
             Column(
                 modifier =
                     Modifier
@@ -75,17 +85,21 @@ fun MediaDetailView(
             MediaDetailContent(
                 navActionManager = navActionManager,
                 mediaDetail = uiState.media,
+                mediaThreads = uiState.mediaThreads,
             )
         }
     }
 }
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MediaDetailContent(
     navActionManager: NavActionManager,
     mediaDetail: Media?,
+    mediaThreads: List<Thread>?,
 ) {
+    val hazeState = remember { HazeState() }
     val topAppBarScrollBehavior =
         TopAppBarDefaults.pinnedScrollBehavior(
             rememberTopAppBarState(),
@@ -93,9 +107,17 @@ fun MediaDetailContent(
     val isTopAppBarScrolled by remember {
         derivedStateOf { topAppBarScrollBehavior.state.overlappedFraction == 1f }
     }
-    var showSpoilerTags by rememberSaveable {
-        mutableStateOf(false)
+    var currentBottomTab by rememberSaveable {
+        mutableStateOf(MediaDetailType.INFO)
     }
+
+    val navBarItems =
+        listOf(
+            MediaDetailNavBarItem(mediaDetailType = MediaDetailType.INFO, icon = R.drawable.info),
+            MediaDetailNavBarItem(mediaDetailType = MediaDetailType.GROUP, icon = R.drawable.group),
+            MediaDetailNavBarItem(mediaDetailType = MediaDetailType.STATS, icon = R.drawable.stats),
+            MediaDetailNavBarItem(mediaDetailType = MediaDetailType.SOCIAL, icon = R.drawable.social),
+        )
 
     Scaffold(
         modifier = Modifier.nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
@@ -133,12 +155,35 @@ fun MediaDetailContent(
                 scrollBehavior = topAppBarScrollBehavior,
             )
         },
-        content = { innerPadding ->
+        bottomBar = {
+            MediaDetailBottomNavBar(
+                navBarItems = navBarItems,
+                hazeState = hazeState,
+                navigate = { mediaDetailType ->
+                    currentBottomTab =
+                        when (mediaDetailType) {
+                            MediaDetailType.INFO -> MediaDetailType.INFO
+                            MediaDetailType.GROUP -> MediaDetailType.GROUP
+                            MediaDetailType.STATS -> MediaDetailType.STATS
+                            MediaDetailType.SOCIAL -> MediaDetailType.SOCIAL
+                        }
+                },
+            )
+        },
+        content = {
             Column(
                 modifier =
                     Modifier
+                        .haze(
+                            hazeState,
+                            HazeStyle(
+                                tint = MaterialTheme.colorScheme.background.copy(alpha = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.TIRAMISU) .2f else .8f),
+                                blurRadius = 30.dp,
+                                noiseFactor = HazeDefaults.noiseFactor,
+                            ),
+                        )
                         .fillMaxSize()
-                        .padding(bottom = innerPadding.calculateBottomPadding())
+                        .absolutePadding()
                         .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(20.dp),
                 horizontalAlignment = Alignment.Start,
@@ -166,71 +211,146 @@ fun MediaDetailContent(
                             )
                         } */
 
-                        media.trailer?.let { trailer ->
-                            trailer.id?.let { videoId ->
-                                trailer.thumbnail?.let { thumbnailUrl ->
-                                    OtakuTitle(id = R.string.trailer)
-
-                                    YouTubePlayer(
-                                        videoId = videoId,
-                                        thumbnailUrl = thumbnailUrl,
-                                    )
-                                }
-                            }
-                        }
-
-                        OtakuTitle(id = R.string.info)
-
-                        MediaInfo(
-                            media = media,
-                        )
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                        ) {
-                            OtakuTitle(id = R.string.tags)
-                            OtakuTitle(
-                                id = R.string.show_spoilers,
-                                color = if (showSpoilerTags) MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f) else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f),
-                                modifier =
-                                    Modifier.clickable {
-                                        showSpoilerTags = !showSpoilerTags
-                                    },
-                            )
-                        }
-
-                        media.tags?.let { mediaTags ->
-                            val spoilerFreeTags =
-                                mediaTags.filter { tag ->
-                                    tag.isGeneralSpoiler != true
-                                }
-                            MediaTags(
-                                tags = if (showSpoilerTags) mediaTags else spoilerFreeTags,
-                            )
-                        }
-
-                        // Media Relations
-                        MediaRelations(
-                            mediaConnection = media.relations,
-                            navActionManager = navActionManager,
-                        )
-
-                        // Media Recommendations
-                        MediaRecommendations(
-                            mediaRecommendation = media.recommendations,
-                            navActionManager = navActionManager,
-                        )
-
-                        // External Links
-                        media.externalLinks?.let { links ->
-                            MediaExternalLinks(
-                                externalLinks = links,
-                            )
+                        when (currentBottomTab) {
+                            MediaDetailType.INFO -> MediaInfoTab(media = media, navActionManager = navActionManager)
+                            MediaDetailType.GROUP -> MediaGroupTab(media = media, navActionManager = navActionManager)
+                            MediaDetailType.STATS -> MediaStatsTab(media = media)
+                            MediaDetailType.SOCIAL -> MediaSocialTab(media = media, threads = mediaThreads)
                         }
                     }
                 }
+
+                Spacer(modifier = Modifier.height(100.dp))
             }
         },
     )
+}
+
+@Composable
+private fun MediaInfoTab(
+    media: Media,
+    navActionManager: NavActionManager,
+) {
+    var showSpoilerTags by remember {
+        mutableStateOf(false)
+    }
+    media.trailer?.let { trailer ->
+        trailer.id?.let { videoId ->
+            trailer.thumbnail?.let { thumbnailUrl ->
+                OtakuTitle(id = R.string.trailer)
+
+                YouTubePlayer(
+                    videoId = videoId,
+                    thumbnailUrl = thumbnailUrl,
+                )
+            }
+        }
+    }
+
+    // Media Info
+    OtakuTitle(id = R.string.info)
+    MediaInfo(
+        media = media,
+    )
+
+    // Media Tags
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        OtakuTitle(id = R.string.tags)
+        OtakuTitle(
+            id = R.string.show_spoilers,
+            color = if (showSpoilerTags) MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f) else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f),
+            modifier =
+                Modifier.clickable {
+                    showSpoilerTags = !showSpoilerTags
+                },
+        )
+    }
+    media.tags?.let { mediaTags ->
+        val spoilerFreeTags =
+            mediaTags.filter { tag ->
+                tag.isGeneralSpoiler != true
+            }
+        MediaTags(
+            tags = if (showSpoilerTags) mediaTags else spoilerFreeTags,
+        )
+    }
+
+    // Media Relations
+    MediaRelations(
+        mediaConnection = media.relations,
+        navActionManager = navActionManager,
+    )
+
+    // Media Recommendations
+    MediaRecommendations(
+        mediaRecommendation = media.recommendations,
+        navActionManager = navActionManager,
+    )
+
+    // External Links
+    media.externalLinks?.let { links ->
+        MediaExternalLinks(
+            externalLinks = links,
+        )
+    }
+}
+
+@Composable
+fun MediaGroupTab(
+    media: Media,
+    navActionManager: NavActionManager,
+) {
+    // Media Characters
+    MediaCharacters(
+        characters = media.characters,
+        navActionManager = navActionManager,
+    )
+
+    // Media Staffs
+    MediaStaffs(
+        staffs = media.staff,
+        navActionManager = navActionManager,
+    )
+}
+
+@Composable
+fun MediaStatsTab(
+    media: Media,
+) {
+    // Status Distribution and Performance
+    media.stats?.statusDistribution?.let { status ->
+        MediaStatusDistribution(
+            status = status,
+            averageScore = media.averageScore,
+            meanScore = media.meanScore,
+            popularity = media.popularity ?: 0,
+            favourites = media.favourites ?: 0,
+        )
+    }
+
+    // Score Distribution
+    media.stats?.scoreDistribution?.let { score ->
+        MediaScoreDistribution(
+            score = score,
+        )
+    }
+}
+
+@Composable
+fun MediaSocialTab(
+    media: Media,
+    threads: List<Thread>?,
+) {
+    // Reviews
+    MediaReviews(
+        reviews = media.review,
+    )
+
+    // Threads
+    if (threads != null) {
+        MediaThreads(threads = threads)
+    }
 }
