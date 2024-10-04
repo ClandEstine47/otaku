@@ -32,26 +32,28 @@ import com.example.feature.anime.OtakuTitle
 fun MediaThreads(
     threads: List<Thread>,
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        OtakuTitle(id = R.string.threads)
+    if (threads.isNotEmpty()) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            OtakuTitle(id = R.string.threads)
 
-        ExpandMediaListButton(
-            modifier = Modifier,
-            onButtonClick = {
-                // todo: navigate to threads list
-            },
-        )
-    }
+            ExpandMediaListButton(
+                modifier = Modifier,
+                onButtonClick = {
+                    // todo: navigate to threads list
+                },
+            )
+        }
 
-    Column(
-        verticalArrangement = Arrangement.spacedBy(20.dp),
-    ) {
-        threads.forEach { thread ->
-            MediaThreadItem(thread = thread)
+        Column(
+            verticalArrangement = Arrangement.spacedBy(20.dp),
+        ) {
+            threads.forEach { thread ->
+                MediaThreadItem(thread = thread)
+            }
         }
     }
 }

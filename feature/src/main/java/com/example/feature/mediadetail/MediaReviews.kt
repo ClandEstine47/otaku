@@ -33,26 +33,28 @@ import com.example.feature.anime.OtakuTitle
 fun MediaReviews(
     reviews: ReviewConnection,
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        OtakuTitle(id = R.string.reviews)
+    if (!reviews.edges.isNullOrEmpty()) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            OtakuTitle(id = R.string.reviews)
 
-        ExpandMediaListButton(
-            modifier = Modifier,
-            onButtonClick = {
-                // todo: navigate to reviews list
-            },
-        )
-    }
+            ExpandMediaListButton(
+                modifier = Modifier,
+                onButtonClick = {
+                    // todo: navigate to reviews list
+                },
+            )
+        }
 
-    Column(
-        verticalArrangement = Arrangement.spacedBy(20.dp),
-    ) {
-        reviews.edges?.forEach { review ->
-            MediaReviewItem(review = review.node)
+        Column(
+            verticalArrangement = Arrangement.spacedBy(20.dp),
+        ) {
+            reviews.edges?.forEach { review ->
+                MediaReviewItem(review = review.node)
+            }
         }
     }
 }
