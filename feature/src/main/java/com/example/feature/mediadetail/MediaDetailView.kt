@@ -193,6 +193,7 @@ fun MediaDetailContent(
                         media = media,
                         rankingVisibility = true,
                         descriptionVisibility = true,
+                        isMediaDetailView = true,
                         onBannerItemClick = {},
                     )
 
