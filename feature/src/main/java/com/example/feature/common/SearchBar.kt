@@ -1,5 +1,6 @@
 package com.example.feature.common
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -37,6 +38,10 @@ fun SearchBar(
                     width = 0.5.dp,
                     color = MaterialTheme.colorScheme.primary,
                     shape = RoundedCornerShape(50.dp),
+                )
+                .background(
+                    color = MaterialTheme.colorScheme.background.copy(alpha = 0.2f),
+                    shape = RoundedCornerShape(50.dp),
                 ),
     ) {
         Row(
@@ -47,7 +52,7 @@ fun SearchBar(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            OtakuTitle(id = if (mediaType == MediaType.ANIME) R.string.anime else R.string.manga)
+            OtakuTitle(id = if (mediaType == MediaType.ANIME) R.string.anime else R.string.manga, style = MaterialTheme.typography.bodyMedium)
             Icon(
                 imageVector = Icons.Default.Search,
                 contentDescription = "search",
