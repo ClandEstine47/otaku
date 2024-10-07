@@ -112,7 +112,12 @@ fun AnimeContent(
                 },
             )
 
-            SearchBar(mediaType = mediaType)
+            SearchBar(
+                mediaType = mediaType,
+                onSearchBarClick = {
+                    // todo: navigate to media search view
+                },
+            )
         }
     }
 

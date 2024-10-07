@@ -2,6 +2,7 @@ package com.example.feature.common
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -26,6 +27,7 @@ import com.example.feature.anime.OtakuTitle
 fun SearchBar(
     modifier: Modifier = Modifier,
     mediaType: MediaType,
+    onSearchBarClick: () -> Unit,
 ) {
     Box(
         modifier =
@@ -42,7 +44,10 @@ fun SearchBar(
                 .background(
                     color = MaterialTheme.colorScheme.background.copy(alpha = 0.2f),
                     shape = RoundedCornerShape(50.dp),
-                ),
+                )
+                .clickable {
+                    onSearchBarClick()
+                },
     ) {
         Row(
             modifier =
@@ -67,5 +72,6 @@ fun SearchBar(
 fun SearchBarPreview() {
     SearchBar(
         mediaType = MediaType.ANIME,
+        onSearchBarClick = {},
     )
 }
