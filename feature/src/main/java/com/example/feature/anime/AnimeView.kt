@@ -115,7 +115,7 @@ fun AnimeContent(
             SearchBar(
                 mediaType = mediaType,
                 onSearchBarClick = {
-                    // todo: navigate to media search view
+                    navActionManager.toMediaSearch()
                 },
             )
         }
