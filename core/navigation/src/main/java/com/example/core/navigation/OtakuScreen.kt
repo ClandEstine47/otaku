@@ -12,6 +12,9 @@ sealed interface OtakuScreen {
     data object MangaTab : OtakuScreen
 
     @Serializable
+    data object MediaSearch : OtakuScreen
+
+    @Serializable
     data class MediaList(
         val titleId: Int,
         val mediaType: MediaType,

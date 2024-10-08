@@ -16,6 +16,10 @@ class NavActionManager(
         navController.navigateUp()
     }
 
+    fun toMediaSearch() {
+        navController.navigate(OtakuScreen.MediaSearch)
+    }
+
     fun toMediaList(
         titleId: Int,
         mediaType: MediaType,
