@@ -49,8 +49,14 @@ fun MainNavigation(
             )
         }
 
-        composable<OtakuScreen.MediaSearch> {
+        composable<OtakuScreen.MediaSearch>(
+            typeMap =
+                mapOf(
+                    typeOf<MediaType>() to CustomNavType(MediaType::class.java, MediaType.serializer()),
+                ),
+        ) {
             MediaSearchView(
+                arguments = it.toRoute(),
                 navActionManager = navActionManager,
             )
         }

@@ -118,7 +118,7 @@ fun MangaContent(
             SearchBar(
                 mediaType = mediaType,
                 onSearchBarClick = {
-                    navActionManager.toMediaSearch()
+                    navActionManager.toMediaSearch(mediaType = mediaType)
                 },
             )
         }
