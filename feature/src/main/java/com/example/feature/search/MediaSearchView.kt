@@ -84,7 +84,9 @@ fun MediaSearchView(
                 },
                 sheetState = bottomSheetState,
                 content = {
-                    MediaFilter()
+                    MediaFilter(
+                        mediaType = arguments.mediaType,
+                    )
                 },
             )
         }
@@ -168,7 +170,9 @@ fun MediaSearchView(
 }
 
 @Composable
-private fun MediaFilter() {
+private fun MediaFilter(
+    mediaType: MediaType,
+) {
     Box(
         modifier =
             Modifier
@@ -237,14 +241,16 @@ private fun MediaFilter() {
                 // todo: save current selected value
             },
         )
-        OtakuDropdownMenu(
-            options = listOf(),
-            label = stringResource(id = R.string.season),
-            modifier = Modifier.weight(1f),
-            onValueChangedEvent = { value ->
-                // todo: save current selected value
-            },
-        )
+        if (mediaType == MediaType.ANIME) {
+            OtakuDropdownMenu(
+                options = listOf(),
+                label = stringResource(id = R.string.season),
+                modifier = Modifier.weight(1f),
+                onValueChangedEvent = { value ->
+                    // todo: save current selected value
+                },
+            )
+        }
     }
 
     Row(
