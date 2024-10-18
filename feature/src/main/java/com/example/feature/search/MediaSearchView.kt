@@ -42,11 +42,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.core.domain.model.media.MediaFormat
+import com.example.core.domain.model.media.MediaSeason
+import com.example.core.domain.model.media.MediaStatus
 import com.example.core.domain.model.media.MediaType
 import com.example.core.navigation.NavActionManager
 import com.example.core.navigation.OtakuScreen
 import com.example.feature.R
 import com.example.feature.anime.OtakuTitle
+import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -173,6 +177,14 @@ fun MediaSearchView(
 private fun MediaFilter(
     mediaType: MediaType,
 ) {
+    val startYear = 1940
+    val endYear = LocalDate.now().year + 1
+    val yearList = (startYear..endYear).map { it.toString() }.reversed()
+    val seasons = MediaSeason.validSeasons
+    val animeFormat = MediaFormat.animeFormats
+    val mangaFormat = MediaFormat.mangaFormats
+    val statusList = MediaStatus.statusList
+
     Box(
         modifier =
             Modifier
@@ -234,7 +246,7 @@ private fun MediaFilter(
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         OtakuDropdownMenu(
-            options = listOf(),
+            options = yearList,
             label = stringResource(id = R.string.year),
             modifier = Modifier.weight(1f),
             onValueChangedEvent = { value ->
@@ -243,7 +255,7 @@ private fun MediaFilter(
         )
         if (mediaType == MediaType.ANIME) {
             OtakuDropdownMenu(
-                options = listOf(),
+                options = seasons,
                 label = stringResource(id = R.string.season),
                 modifier = Modifier.weight(1f),
                 onValueChangedEvent = { value ->
@@ -258,7 +270,7 @@ private fun MediaFilter(
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         OtakuDropdownMenu(
-            options = listOf(),
+            options = if (mediaType == MediaType.ANIME) animeFormat else mangaFormat,
             label = stringResource(id = R.string.format),
             modifier = Modifier.weight(1f),
             onValueChangedEvent = { value ->
@@ -266,7 +278,7 @@ private fun MediaFilter(
             },
         )
         OtakuDropdownMenu(
-            options = listOf(),
+            options = statusList,
             label = stringResource(id = R.string.status),
             modifier = Modifier.weight(1f),
             onValueChangedEvent = { value ->
