@@ -11,6 +11,10 @@ enum class MediaStatus {
     HIATUS,
     ;
 
+    companion object {
+        val statusList = MediaStatus.entries.toList()
+    }
+
     @get:StringRes
     val stringRes
         get() =
