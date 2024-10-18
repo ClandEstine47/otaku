@@ -24,18 +24,19 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.feature.Utils
 import com.example.feature.anime.OtakuTitle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OtakuDropdownMenu(
-    options: List<String>,
+fun <T> OtakuDropdownMenu(
+    options: List<T>,
     label: String,
-    onValueChangedEvent: (String) -> Unit,
+    onValueChangedEvent: (T) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedValue by remember { mutableStateOf("") }
+    var selectedValue by remember { mutableStateOf<T?>(null) }
     val focusManager = LocalFocusManager.current
     val focusedColor = MaterialTheme.colorScheme.primary
     val unFocusedColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
@@ -47,7 +48,7 @@ fun OtakuDropdownMenu(
     ) {
         OutlinedTextField(
             readOnly = true,
-            value = selectedValue,
+            value = Utils.getFormattedString(selectedValue),
             onValueChange = {},
             textStyle = TextStyle(fontWeight = FontWeight.Bold, fontSize = 14.sp),
             label = {
@@ -75,6 +76,7 @@ fun OtakuDropdownMenu(
                     .menuAnchor(MenuAnchorType.PrimaryNotEditable, true)
                     .fillMaxWidth(),
             shape = RoundedCornerShape(20.dp),
+            singleLine = true,
         )
 
         ExposedDropdownMenu(
@@ -84,9 +86,9 @@ fun OtakuDropdownMenu(
                 focusManager.clearFocus()
             },
         ) {
-            options.forEach { option: String ->
+            options.forEach { option: T ->
                 DropdownMenuItem(
-                    text = { OtakuTitle(title = option, style = MaterialTheme.typography.titleSmall) },
+                    text = { OtakuTitle(title = Utils.getFormattedString(option), style = MaterialTheme.typography.titleSmall) },
                     onClick = {
                         expanded = false
                         selectedValue = option
