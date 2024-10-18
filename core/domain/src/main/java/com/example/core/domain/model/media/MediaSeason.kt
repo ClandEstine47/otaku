@@ -6,4 +6,9 @@ enum class MediaSeason {
     SUMMER,
     FALL,
     UNKNOWN,
+    ;
+
+    companion object {
+        val validSeasons = entries.filter { it != UNKNOWN }
+    }
 }

@@ -44,6 +44,7 @@ fun BannerItem(
     media: Media,
     rankingVisibility: Boolean = false,
     descriptionVisibility: Boolean = false,
+    isMediaDetailView: Boolean = false,
     onBannerItemClick: (mediaId: Int) -> Unit,
 ) {
     val bannerPainter =
@@ -83,7 +84,7 @@ fun BannerItem(
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .padding(top = 150.dp)
+                        .padding(top = if (isMediaDetailView) 150.dp else 225.dp)
                         .combinedClickable(
                             onClick = {
                                 onBannerItemClick(media.idAniList)

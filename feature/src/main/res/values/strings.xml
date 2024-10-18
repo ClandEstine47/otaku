@@ -45,4 +45,11 @@
     <string name="score_distribution">Score Distribution</string>
     <string name="reviews">Reviews</string>
     <string name="threads">Threads</string>
+    <string name="anime">ANIME</string>
+    <string name="manga">MANGA</string>
+    <string name="filter">Filter</string>
+    <string name="genres">Genres</string>
+    <string name="year">Year</string>
+    <string name="cancel">Cancel</string>
+    <string name="apply">Apply</string>
 </resources>

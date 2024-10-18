@@ -3,6 +3,7 @@ package com.example.feature.manga
 import android.os.Build
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -35,6 +36,7 @@ import com.example.feature.anime.ImageCard
 import com.example.feature.anime.OtakuImageCardTitle
 import com.example.feature.anime.OtakuTitle
 import com.example.feature.common.InfiniteHorizontalPager
+import com.example.feature.common.SearchBar
 import dev.chrisbanes.haze.HazeDefaults
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
@@ -102,15 +104,24 @@ fun MangaContent(
     val mediaType = MediaType.MANGA
 
     if (trendingMangaList != null) {
-        InfiniteHorizontalPager(
-            mediaList = trendingMangaList,
-            onBannerItemClick = { mediaId ->
-                navActionManager.toMediaDetail(
-                    id = mediaId,
-                    mediaType = mediaType,
-                )
-            },
-        )
+        Box(modifier = Modifier.fillMaxSize()) {
+            InfiniteHorizontalPager(
+                mediaList = trendingMangaList,
+                onBannerItemClick = { mediaId ->
+                    navActionManager.toMediaDetail(
+                        id = mediaId,
+                        mediaType = mediaType,
+                    )
+                },
+            )
+
+            SearchBar(
+                mediaType = mediaType,
+                onSearchBarClick = {
+                    navActionManager.toMediaSearch(mediaType = mediaType)
+                },
+            )
+        }
     }
 
     Spacer(modifier = Modifier.height(40.dp))

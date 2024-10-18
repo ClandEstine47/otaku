@@ -3,6 +3,7 @@ package com.example.feature.anime
 import android.os.Build
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -32,6 +33,7 @@ import com.example.core.domain.model.media.MediaType
 import com.example.core.navigation.NavActionManager
 import com.example.feature.R
 import com.example.feature.common.InfiniteHorizontalPager
+import com.example.feature.common.SearchBar
 import dev.chrisbanes.haze.HazeDefaults
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
@@ -99,15 +101,24 @@ fun AnimeContent(
     val mediaType = MediaType.ANIME
 
     if (trendingNowMedia != null) {
-        InfiniteHorizontalPager(
-            mediaList = trendingNowMedia,
-            onBannerItemClick = { mediaId ->
-                navActionManager.toMediaDetail(
-                    id = mediaId,
-                    mediaType = mediaType,
-                )
-            },
-        )
+        Box(modifier = Modifier.fillMaxSize()) {
+            InfiniteHorizontalPager(
+                mediaList = trendingNowMedia,
+                onBannerItemClick = { mediaId ->
+                    navActionManager.toMediaDetail(
+                        id = mediaId,
+                        mediaType = mediaType,
+                    )
+                },
+            )
+
+            SearchBar(
+                mediaType = mediaType,
+                onSearchBarClick = {
+                    navActionManager.toMediaSearch(mediaType = mediaType)
+                },
+            )
+        }
     }
 
     Spacer(modifier = Modifier.height(40.dp))

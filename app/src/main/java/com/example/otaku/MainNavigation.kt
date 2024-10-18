@@ -17,6 +17,7 @@ import com.example.feature.anime.AnimeView
 import com.example.feature.manga.MangaView
 import com.example.feature.mediadetail.MediaDetailView
 import com.example.feature.medialist.MediaListView
+import com.example.feature.search.MediaSearchView
 import dev.chrisbanes.haze.HazeState
 import kotlin.reflect.typeOf
 
@@ -45,6 +46,18 @@ fun MainNavigation(
             MangaView(
                 navActionManager = navActionManager,
                 hazeState = hazeState,
+            )
+        }
+
+        composable<OtakuScreen.MediaSearch>(
+            typeMap =
+                mapOf(
+                    typeOf<MediaType>() to CustomNavType(MediaType::class.java, MediaType.serializer()),
+                ),
+        ) {
+            MediaSearchView(
+                arguments = it.toRoute(),
+                navActionManager = navActionManager,
             )
         }
 

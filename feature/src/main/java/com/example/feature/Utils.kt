@@ -89,4 +89,8 @@ object Utils {
 
         return dateTime.format(formatter)
     }
+
+    fun <T> getFormattedString(value: T?): String {
+        return value?.toString()?.replace("_", " ") ?: ""
+    }
 }

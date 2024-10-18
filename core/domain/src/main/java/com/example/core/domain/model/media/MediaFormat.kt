@@ -11,4 +11,11 @@ enum class MediaFormat {
     MANGA,
     NOVEL,
     ONE_SHOT,
+    ;
+
+    companion object {
+        private val mediaFormats = MediaFormat.entries
+        val animeFormats = mediaFormats.filter { it != MANGA && it != NOVEL && it != ONE_SHOT }
+        val mangaFormats = mediaFormats.filterNot { it in animeFormats }
+    }
 }
