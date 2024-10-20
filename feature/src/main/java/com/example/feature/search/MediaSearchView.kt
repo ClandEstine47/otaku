@@ -19,10 +19,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
@@ -52,6 +56,10 @@ import com.example.core.navigation.NavActionManager
 import com.example.core.navigation.OtakuScreen
 import com.example.feature.R
 import com.example.feature.anime.OtakuTitle
+import com.example.feature.common.MediaGridViewContent
+import com.example.feature.common.MediaListItem
+import com.example.feature.common.MediaListViewContent
+import com.example.feature.common.ViewType
 import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -84,6 +92,9 @@ fun MediaSearchView(
     }
     var selectedStatus by rememberSaveable {
         mutableStateOf<MediaStatus?>(null)
+    }
+    var viewType by rememberSaveable {
+        mutableStateOf(ViewType.LIST)
     }
     var openBottomSheet by rememberSaveable { mutableStateOf(false) }
     var skipPartiallyExpanded by rememberSaveable { mutableStateOf(false) }
@@ -231,6 +242,93 @@ fun MediaSearchView(
                 colors = SearchBarDefaults.colors(containerColor = MaterialTheme.colorScheme.onBackground.copy(0.1f)),
                 modifier = Modifier,
             ) {}
+
+            if (uiState.isLoading) {
+                Column(
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .padding(top = 60.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                if (!uiState.mediaList.isNullOrEmpty()) {
+                    Box(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(start = 5.dp, bottom = 15.dp, end = 5.dp, top = 15.dp),
+                    ) {
+                        OtakuTitle(
+                            id = R.string.search_results,
+                            modifier =
+                                Modifier
+                                    .align(Alignment.CenterStart),
+                        )
+
+                        Row(
+                            modifier = Modifier.align(Alignment.CenterEnd),
+                            horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        ) {
+                            IconButton(
+                                onClick = {
+                                    viewType = ViewType.LIST
+                                },
+                                colors =
+                                    if (viewType == ViewType.LIST) {
+                                        IconButtonDefaults.iconButtonColors()
+                                    } else {
+                                        IconButtonDefaults.iconButtonColors(
+                                            contentColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f),
+                                        )
+                                    },
+                            ) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.List,
+                                    contentDescription = "List View",
+                                )
+                            }
+
+                            IconButton(
+                                onClick = {
+                                    viewType = ViewType.GRID
+                                },
+                                colors =
+                                    if (viewType == ViewType.GRID) {
+                                        IconButtonDefaults.iconButtonColors()
+                                    } else {
+                                        IconButtonDefaults.iconButtonColors(
+                                            contentColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f),
+                                        )
+                                    },
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.grid_view_24px),
+                                    contentDescription = "Grid View",
+                                )
+                            }
+                        }
+                    }
+
+                    when (viewType) {
+                        ViewType.LIST -> {
+                            MediaListViewContent(
+                                navActionManager = navActionManager,
+                                mediaList = uiState.mediaList!!.map { MediaListItem.MediaListType(it) },
+                            )
+                        }
+                        ViewType.GRID -> {
+                            MediaGridViewContent(
+                                navActionManager = navActionManager,
+                                mediaList = uiState.mediaList!!.map { MediaListItem.MediaListType(it) },
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }

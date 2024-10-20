@@ -45,7 +45,7 @@ class MediaSearchViewModel
                 val searchResult =
                     mediaRepository.getSearchMedia(
                         pageNumber = 1,
-                        perPage = 20,
+                        perPage = 21,
                         mediaType = mediaType,
                         search = if (searchQuery?.isBlank() == true) null else searchQuery,
                         season = season,
