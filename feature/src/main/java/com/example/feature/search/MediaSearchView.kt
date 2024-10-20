@@ -43,6 +43,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -99,7 +100,7 @@ fun MediaSearchView(
     var openBottomSheet by rememberSaveable { mutableStateOf(false) }
     var skipPartiallyExpanded by rememberSaveable { mutableStateOf(false) }
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = skipPartiallyExpanded)
-
+    val focusManager = LocalFocusManager.current
     val handler = Handler(Looper.getMainLooper())
     val searchRunnable =
         Runnable {
@@ -181,7 +182,10 @@ fun MediaSearchView(
                             handler.removeCallbacks(searchRunnable)
                             handler.postDelayed(searchRunnable, 500L)
                         },
-                        onSearch = { expanded = false },
+                        onSearch = {
+                            expanded = false
+                            focusManager.clearFocus()
+                        },
                         expanded = expanded,
                         onExpandedChange = {
                             expanded = false
