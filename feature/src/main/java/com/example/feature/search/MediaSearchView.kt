@@ -1,5 +1,7 @@
 package com.example.feature.search
 
+import android.os.Handler
+import android.os.Looper
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -70,9 +72,38 @@ fun MediaSearchView(
     var isClicked by rememberSaveable {
         mutableStateOf(false)
     }
+
+    var selectedYear by rememberSaveable {
+        mutableStateOf<Int?>(null)
+    }
+    var selectedSeason by rememberSaveable {
+        mutableStateOf<MediaSeason?>(null)
+    }
+    var selectedFormat by rememberSaveable {
+        mutableStateOf<MediaFormat?>(null)
+    }
+    var selectedStatus by rememberSaveable {
+        mutableStateOf<MediaStatus?>(null)
+    }
     var openBottomSheet by rememberSaveable { mutableStateOf(false) }
     var skipPartiallyExpanded by rememberSaveable { mutableStateOf(false) }
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = skipPartiallyExpanded)
+
+    val handler = Handler(Looper.getMainLooper())
+    val searchRunnable =
+        Runnable {
+            mediaSearchViewModel.loadSearchResult(
+                mediaType = arguments.mediaType,
+                searchQuery = inputText,
+                season = selectedSeason,
+                seasonYear = selectedYear,
+                format = selectedFormat,
+                status = selectedStatus,
+                countryOfOrigin = null,
+                genres = null,
+                tags = null,
+            )
+        }
 
     Scaffold(
         modifier =
@@ -90,6 +121,33 @@ fun MediaSearchView(
                 content = {
                     MediaFilter(
                         mediaType = arguments.mediaType,
+                        year = selectedYear,
+                        season = selectedSeason,
+                        format = selectedFormat,
+                        status = selectedStatus,
+                        onCancelClick = {
+                            openBottomSheet = false
+                        },
+                        onApplyClick = { year, season, format, status ->
+
+                            selectedYear = year
+                            selectedSeason = season
+                            selectedFormat = format
+                            selectedStatus = status
+
+                            mediaSearchViewModel.loadSearchResult(
+                                mediaType = arguments.mediaType,
+                                searchQuery = inputText,
+                                season = selectedSeason,
+                                seasonYear = selectedYear,
+                                format = selectedFormat,
+                                status = selectedStatus,
+                                countryOfOrigin = null,
+                                genres = null,
+                                tags = null,
+                            )
+                            openBottomSheet = false
+                        },
                     )
                 },
             )
@@ -107,7 +165,11 @@ fun MediaSearchView(
                 inputField = {
                     SearchBarDefaults.InputField(
                         query = inputText,
-                        onQueryChange = { inputText = it },
+                        onQueryChange = { query ->
+                            inputText = query
+                            handler.removeCallbacks(searchRunnable)
+                            handler.postDelayed(searchRunnable, 500L)
+                        },
                         onSearch = { expanded = false },
                         expanded = expanded,
                         onExpandedChange = {
@@ -176,6 +238,17 @@ fun MediaSearchView(
 @Composable
 private fun MediaFilter(
     mediaType: MediaType,
+    year: Int?,
+    season: MediaSeason?,
+    format: MediaFormat?,
+    status: MediaStatus?,
+    onCancelClick: () -> Unit,
+    onApplyClick: (
+        year: Int?,
+        season: MediaSeason?,
+        format: MediaFormat?,
+        status: MediaStatus?,
+    ) -> Unit,
 ) {
     val startYear = 1940
     val endYear = LocalDate.now().year + 1
@@ -184,6 +257,19 @@ private fun MediaFilter(
     val animeFormat = MediaFormat.animeFormats
     val mangaFormat = MediaFormat.mangaFormats
     val statusList = MediaStatus.statusList
+
+    var selectedYear by rememberSaveable {
+        mutableStateOf(year)
+    }
+    var selectedSeason by rememberSaveable {
+        mutableStateOf(season)
+    }
+    var selectedFormat by rememberSaveable {
+        mutableStateOf(format)
+    }
+    var selectedStatus by rememberSaveable {
+        mutableStateOf(status)
+    }
 
     Box(
         modifier =
@@ -250,7 +336,7 @@ private fun MediaFilter(
             label = stringResource(id = R.string.year),
             modifier = Modifier.weight(1f),
             onValueChangedEvent = { value ->
-                // todo: save current selected value
+                selectedYear = value.toIntOrNull()
             },
         )
         if (mediaType == MediaType.ANIME) {
@@ -259,7 +345,7 @@ private fun MediaFilter(
                 label = stringResource(id = R.string.season),
                 modifier = Modifier.weight(1f),
                 onValueChangedEvent = { value ->
-                    // todo: save current selected value
+                    selectedSeason = value
                 },
             )
         }
@@ -274,7 +360,7 @@ private fun MediaFilter(
             label = stringResource(id = R.string.format),
             modifier = Modifier.weight(1f),
             onValueChangedEvent = { value ->
-                // todo: save current selected value
+                selectedFormat = value
             },
         )
         OtakuDropdownMenu(
@@ -282,7 +368,7 @@ private fun MediaFilter(
             label = stringResource(id = R.string.status),
             modifier = Modifier.weight(1f),
             onValueChangedEvent = { value ->
-                // todo: save current selected value
+                selectedStatus = value
             },
         )
     }
@@ -295,7 +381,9 @@ private fun MediaFilter(
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         TextButton(
-            onClick = { /*TODO*/ },
+            onClick = {
+                onCancelClick()
+            },
             shape = RoundedCornerShape(20.dp),
             border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.primary),
             modifier = Modifier.weight(1f),
@@ -306,7 +394,14 @@ private fun MediaFilter(
             )
         }
         TextButton(
-            onClick = { /*TODO*/ },
+            onClick = {
+                onApplyClick(
+                    selectedYear,
+                    selectedSeason,
+                    selectedFormat,
+                    selectedStatus,
+                )
+            },
             shape = RoundedCornerShape(20.dp),
             border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.primary),
             modifier = Modifier.weight(1f),
