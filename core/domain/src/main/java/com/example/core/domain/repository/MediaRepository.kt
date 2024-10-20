@@ -5,6 +5,7 @@ import com.example.core.domain.model.airing.AiringSchedule
 import com.example.core.domain.model.media.Media
 import com.example.core.domain.model.media.MediaFormat
 import com.example.core.domain.model.media.MediaSeason
+import com.example.core.domain.model.media.MediaStatus
 import com.example.core.domain.model.media.MediaType
 import com.example.core.domain.model.thread.Thread
 
@@ -47,4 +48,18 @@ interface MediaRepository {
         perPage: Int,
         mediaId: Int,
     ): Result<Page<Thread>>
+
+    suspend fun getSearchMedia(
+        pageNumber: Int,
+        perPage: Int,
+        mediaType: MediaType,
+        search: String? = null,
+        season: MediaSeason? = null,
+        seasonYear: Int? = null,
+        format: MediaFormat? = null,
+        status: MediaStatus? = null,
+        countryOfOrigin: String? = null,
+        genres: List<String>? = null,
+        tags: List<String>? = null,
+    ): Result<Page<Media>>
 }

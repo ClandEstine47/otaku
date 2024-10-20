@@ -5,6 +5,7 @@ import com.example.core.domain.model.airing.AiringSchedule
 import com.example.core.domain.model.media.Media
 import com.example.core.domain.model.media.MediaFormat
 import com.example.core.domain.model.media.MediaSeason
+import com.example.core.domain.model.media.MediaStatus
 import com.example.core.domain.model.media.MediaType
 import com.example.core.domain.model.thread.Thread
 import com.example.core.domain.repository.MediaRepository
@@ -103,5 +104,33 @@ class MediaRepositoryImpl
             ).onFailure { error ->
                 Timber.e(error, "Failed to get media threads")
             }
+        }
+
+        override suspend fun getSearchMedia(
+            pageNumber: Int,
+            perPage: Int,
+            mediaType: MediaType,
+            search: String?,
+            season: MediaSeason?,
+            seasonYear: Int?,
+            format: MediaFormat?,
+            status: MediaStatus?,
+            countryOfOrigin: String?,
+            genres: List<String>?,
+            tags: List<String>?,
+        ): Result<Page<Media>> {
+            return mediaService.getSearchMedia(
+                pageNumber = pageNumber,
+                perPage = perPage,
+                mediaType = mediaType,
+                search = search,
+                season = season,
+                seasonYear = seasonYear,
+                format = format,
+                status = status,
+                countryOfOrigin = countryOfOrigin,
+                genres = genres,
+                tags = tags,
+            )
         }
     }
