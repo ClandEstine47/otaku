@@ -1,6 +1,5 @@
 package com.example.feature.medialist
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,11 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
@@ -48,21 +42,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.rememberAsyncImagePainter
 import com.example.core.domain.model.MediaListContentType
-import com.example.core.domain.model.media.MediaType
 import com.example.core.navigation.NavActionManager
 import com.example.core.navigation.OtakuScreen
 import com.example.feature.R
-import com.example.feature.anime.ImageCard
-import com.example.feature.anime.OtakuImageCardTitle
 import com.example.feature.anime.OtakuTitle
+import com.example.feature.common.MediaGridViewContent
+import com.example.feature.common.MediaListViewContent
+import com.example.feature.common.ViewType
 import kotlinx.coroutines.launch
-
-enum class ViewType {
-    LIST,
-    GRID,
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -291,127 +279,6 @@ fun MediaListView(
                                 navActionManager = navActionManager,
                                 mediaList = uiState.mediaListByPage[page],
                             )
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun MediaListViewContent(
-    navActionManager: NavActionManager,
-    mediaList: List<MediaListItem>? = null,
-) {
-    mediaList?.let {
-        LazyColumn {
-            items(mediaList) { mediaItem ->
-                when (mediaItem) {
-                    is MediaListItem.MediaListType -> {
-                        MediaListItem(
-                            mediaItem = mediaItem.media,
-                            onClick = { id, type ->
-                                navActionManager.toMediaDetail(
-                                    id = id,
-                                    mediaType = type,
-                                )
-                            },
-                        )
-                    }
-                    is MediaListItem.ScheduleType -> {
-                        MediaListItem(
-                            mediaItem = mediaItem.schedule,
-                            onClick = { id, type ->
-                                navActionManager.toMediaDetail(
-                                    id = id,
-                                    mediaType = type,
-                                )
-                            },
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun MediaGridViewContent(
-    navActionManager: NavActionManager,
-    mediaList: List<MediaListItem>? = null,
-) {
-    mediaList?.let {
-        LazyVerticalGrid(
-            columns = GridCells.Adaptive(110.dp),
-            modifier = Modifier.padding(horizontal = 5.dp, vertical = 5.dp),
-            verticalArrangement = Arrangement.spacedBy(15.dp),
-            horizontalArrangement = Arrangement.spacedBy(5.dp, Alignment.CenterHorizontally),
-        ) {
-            items(mediaList) { mediaItem ->
-                when (mediaItem) {
-                    is MediaListItem.MediaListType -> {
-                        val media = mediaItem.media
-                        val coverImage =
-                            rememberAsyncImagePainter(
-                                model = media.coverImage.large,
-                            )
-
-                        Column(
-                            verticalArrangement = Arrangement.spacedBy(3.dp),
-                            modifier =
-                                Modifier.clickable {
-                                    media.type?.let { type ->
-                                        navActionManager.toMediaDetail(
-                                            id = media.idAniList,
-                                            mediaType = type,
-                                        )
-                                    }
-                                },
-                        ) {
-                            ImageCard(
-                                painter = coverImage,
-                                score = (media.meanScore.toDouble()) / 10,
-                                isAnime = media.type == MediaType.ANIME,
-                                totalChapters = media.chapters,
-                                totalEpisodes = media.episodes,
-                                releasedEpisodes = media.nextAiringEpisode?.episode?.minus(1),
-                                format = media.format?.name,
-                            )
-
-                            OtakuImageCardTitle(title = media.title.english.ifBlank { media.title.romaji })
-                        }
-                    }
-                    is MediaListItem.ScheduleType -> {
-                        val media = mediaItem.schedule
-                        val coverImage =
-                            rememberAsyncImagePainter(
-                                model = media.media.coverImage.large,
-                            )
-
-                        Column(
-                            verticalArrangement = Arrangement.spacedBy(3.dp),
-                            modifier =
-                                Modifier.clickable {
-                                    media.media.type?.let { type ->
-                                        navActionManager.toMediaDetail(
-                                            id = media.media.idAniList,
-                                            mediaType = type,
-                                        )
-                                    }
-                                },
-                        ) {
-                            ImageCard(
-                                painter = coverImage,
-                                score = (media.media.meanScore.toDouble()) / 10,
-                                isAnime = media.media.type == MediaType.ANIME,
-                                totalChapters = media.media.chapters,
-                                totalEpisodes = media.media.episodes,
-                                releasedEpisodes = media.episode,
-                                format = media.media.format?.name,
-                            )
-
-                            OtakuImageCardTitle(title = media.media.title.english.ifBlank { media.media.title.romaji })
                         }
                     }
                 }
