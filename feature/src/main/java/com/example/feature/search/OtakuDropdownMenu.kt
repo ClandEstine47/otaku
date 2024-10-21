@@ -31,12 +31,13 @@ import com.example.feature.anime.OtakuTitle
 @Composable
 fun <T> OtakuDropdownMenu(
     options: List<T>,
+    currentValue: T?,
     label: String,
     onValueChangedEvent: (T) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedValue by remember { mutableStateOf<T?>(null) }
+    var selectedValue by remember { mutableStateOf<T?>(currentValue) }
     val focusManager = LocalFocusManager.current
     val focusedColor = MaterialTheme.colorScheme.primary
     val unFocusedColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
@@ -105,6 +106,7 @@ fun <T> OtakuDropdownMenu(
 fun OtakuDropdownMenuPreview() {
     OtakuDropdownMenu(
         label = "Season",
+        currentValue = "WINTER",
         options = listOf("WINTER", "SUMMER", "SPRING", "FALL"),
         onValueChangedEvent = {},
     )

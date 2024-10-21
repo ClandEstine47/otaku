@@ -435,6 +435,7 @@ private fun MediaFilter(
     ) {
         OtakuDropdownMenu(
             options = yearList,
+            currentValue = selectedYear?.toString(),
             label = stringResource(id = R.string.year),
             modifier = Modifier.weight(1f),
             onValueChangedEvent = { value ->
@@ -444,6 +445,7 @@ private fun MediaFilter(
         if (mediaType == MediaType.ANIME) {
             OtakuDropdownMenu(
                 options = seasons,
+                currentValue = selectedSeason,
                 label = stringResource(id = R.string.season),
                 modifier = Modifier.weight(1f),
                 onValueChangedEvent = { value ->
@@ -459,6 +461,7 @@ private fun MediaFilter(
     ) {
         OtakuDropdownMenu(
             options = if (mediaType == MediaType.ANIME) animeFormat else mangaFormat,
+            currentValue = selectedFormat,
             label = stringResource(id = R.string.format),
             modifier = Modifier.weight(1f),
             onValueChangedEvent = { value ->
@@ -467,6 +470,7 @@ private fun MediaFilter(
         )
         OtakuDropdownMenu(
             options = statusList,
+            currentValue = selectedStatus,
             label = stringResource(id = R.string.status),
             modifier = Modifier.weight(1f),
             onValueChangedEvent = { value ->
