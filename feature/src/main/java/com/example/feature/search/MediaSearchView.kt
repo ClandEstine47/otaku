@@ -390,7 +390,10 @@ private fun MediaFilter(
                     .size(30.dp)
                     .clip(CircleShape)
                     .clickable {
-                        // todo: reset values
+                        selectedYear = null
+                        selectedSeason = null
+                        selectedFormat = null
+                        selectedStatus = null
                     },
         )
         OtakuTitle(
