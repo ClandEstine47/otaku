@@ -26,4 +26,8 @@
     <string name="compilation">COMPILATION</string>
     <string name="contains">CONTAINS</string>
     <string name="unknown">UNKNOWN</string>
+    <string name="china">CHINA</string>
+    <string name="south_korea">SOUTH KOREA</string>
+    <string name="japan">JAPAN</string>
+    <string name="taiwan">TAIWAN</string>
 </resources>

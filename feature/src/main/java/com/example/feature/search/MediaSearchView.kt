@@ -23,6 +23,8 @@ import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -37,6 +39,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -49,6 +52,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.core.domain.model.Countries
 import com.example.core.domain.model.media.MediaFormat
 import com.example.core.domain.model.media.MediaSeason
 import com.example.core.domain.model.media.MediaStatus
@@ -56,6 +60,7 @@ import com.example.core.domain.model.media.MediaType
 import com.example.core.navigation.NavActionManager
 import com.example.core.navigation.OtakuScreen
 import com.example.feature.R
+import com.example.feature.Utils
 import com.example.feature.anime.OtakuTitle
 import com.example.feature.common.MediaGridViewContent
 import com.example.feature.common.MediaListItem
@@ -82,6 +87,9 @@ fun MediaSearchView(
         mutableStateOf(false)
     }
 
+    var selectedCountry by rememberSaveable {
+        mutableStateOf<Countries?>(null)
+    }
     var selectedYear by rememberSaveable {
         mutableStateOf<Int?>(null)
     }
@@ -111,7 +119,7 @@ fun MediaSearchView(
                 seasonYear = selectedYear,
                 format = selectedFormat,
                 status = selectedStatus,
-                countryOfOrigin = null,
+                countryOfOrigin = selectedCountry?.code,
                 genres = null,
                 tags = null,
             )
@@ -133,6 +141,7 @@ fun MediaSearchView(
                 content = {
                     MediaFilter(
                         mediaType = arguments.mediaType,
+                        country = selectedCountry,
                         year = selectedYear,
                         season = selectedSeason,
                         format = selectedFormat,
@@ -140,8 +149,9 @@ fun MediaSearchView(
                         onCancelClick = {
                             openBottomSheet = false
                         },
-                        onApplyClick = { year, season, format, status ->
+                        onApplyClick = { country, year, season, format, status ->
 
+                            selectedCountry = country
                             selectedYear = year
                             selectedSeason = season
                             selectedFormat = format
@@ -154,7 +164,7 @@ fun MediaSearchView(
                                 seasonYear = selectedYear,
                                 format = selectedFormat,
                                 status = selectedStatus,
-                                countryOfOrigin = null,
+                                countryOfOrigin = selectedCountry?.code,
                                 genres = null,
                                 tags = null,
                             )
@@ -340,12 +350,14 @@ fun MediaSearchView(
 @Composable
 private fun MediaFilter(
     mediaType: MediaType,
+    country: Countries?,
     year: Int?,
     season: MediaSeason?,
     format: MediaFormat?,
     status: MediaStatus?,
     onCancelClick: () -> Unit,
     onApplyClick: (
+        country: Countries?,
         year: Int?,
         season: MediaSeason?,
         format: MediaFormat?,
@@ -359,7 +371,11 @@ private fun MediaFilter(
     val animeFormat = MediaFormat.animeFormats
     val mangaFormat = MediaFormat.mangaFormats
     val statusList = MediaStatus.statusList
+    val countries = Countries.countries
 
+    var selectedCountry by rememberSaveable {
+        mutableStateOf(country)
+    }
     var selectedYear by rememberSaveable {
         mutableStateOf(year)
     }
@@ -371,6 +387,10 @@ private fun MediaFilter(
     }
     var selectedStatus by rememberSaveable {
         mutableStateOf(status)
+    }
+
+    var expandRegion by remember {
+        mutableStateOf(false)
     }
 
     Box(
@@ -394,6 +414,7 @@ private fun MediaFilter(
                         selectedSeason = null
                         selectedFormat = null
                         selectedStatus = null
+                        selectedCountry = null
                     },
         )
         OtakuTitle(
@@ -405,18 +426,45 @@ private fun MediaFilter(
             modifier = Modifier.align(Alignment.CenterEnd),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Icon(
-                painter = painterResource(id = R.drawable.region_search),
-                contentDescription = "region",
-                tint = MaterialTheme.colorScheme.primary,
-                modifier =
-                    Modifier
-                        .size(30.dp)
-                        .clip(CircleShape)
-                        .clickable {
-                            // todo: select regions
-                        },
-            )
+            Box {
+                Icon(
+                    painter = painterResource(id = R.drawable.region_search),
+                    contentDescription = "region",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier =
+                        Modifier
+                            .size(30.dp)
+                            .clip(CircleShape)
+                            .clickable {
+                                // todo: select regions
+                                expandRegion = true
+                            },
+                )
+
+                DropdownMenu(
+                    expanded = expandRegion,
+                    onDismissRequest = {
+                        expandRegion = false
+                    },
+                ) {
+                    countries.forEach { option: Countries ->
+                        DropdownMenuItem(
+                            text = {
+                                OtakuTitle(
+                                    title = Utils.getFormattedString(option),
+                                    style = MaterialTheme.typography.titleSmall,
+                                    color = if (selectedCountry == option) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground,
+                                )
+                            },
+                            onClick = {
+                                expandRegion = false
+                                selectedCountry = option
+                            },
+                        )
+                    }
+                }
+            }
+
             Icon(
                 painter = painterResource(id = R.drawable.filter),
                 contentDescription = "filter",
@@ -505,6 +553,7 @@ private fun MediaFilter(
         TextButton(
             onClick = {
                 onApplyClick(
+                    selectedCountry,
                     selectedYear,
                     selectedSeason,
                     selectedFormat,
