@@ -8,6 +8,7 @@ import com.example.core.domain.model.airing.AiringSchedule
 import com.example.core.domain.model.media.Media
 import com.example.core.domain.model.media.MediaFormat
 import com.example.core.domain.model.media.MediaSeason
+import com.example.core.domain.model.media.MediaSort
 import com.example.core.domain.model.media.MediaStatus
 import com.example.core.domain.model.media.MediaType
 import com.example.core.domain.model.thread.Thread
@@ -311,6 +312,7 @@ class MediaServiceImpl
             countryOfOrigin: String?,
             genres: List<String>?,
             tags: List<String>?,
+            sortBy: List<MediaSort>?,
         ): Result<Page<Media>> {
             return try {
                 val response =
@@ -328,6 +330,7 @@ class MediaServiceImpl
                                 season = Optional.presentIfNotNull(season?.toNetworkMediaSeason()),
                                 genres = Optional.presentIfNotNull(genres),
                                 tags = Optional.presentIfNotNull(tags),
+                                sort = Optional.presentIfNotNull(sortBy?.map { it.toNetworkMediaSort() }),
                             ),
                         )
                         .execute()

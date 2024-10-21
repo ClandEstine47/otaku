@@ -55,6 +55,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.core.domain.model.Countries
 import com.example.core.domain.model.media.MediaFormat
 import com.example.core.domain.model.media.MediaSeason
+import com.example.core.domain.model.media.MediaSort
 import com.example.core.domain.model.media.MediaStatus
 import com.example.core.domain.model.media.MediaType
 import com.example.core.navigation.NavActionManager
@@ -90,6 +91,9 @@ fun MediaSearchView(
     var selectedCountry by rememberSaveable {
         mutableStateOf<Countries?>(null)
     }
+    var selectedSort by rememberSaveable {
+        mutableStateOf<MediaSort?>(null)
+    }
     var selectedYear by rememberSaveable {
         mutableStateOf<Int?>(null)
     }
@@ -122,6 +126,7 @@ fun MediaSearchView(
                 countryOfOrigin = selectedCountry?.code,
                 genres = null,
                 tags = null,
+                sortBy = selectedSort,
             )
         }
 
@@ -142,6 +147,7 @@ fun MediaSearchView(
                     MediaFilter(
                         mediaType = arguments.mediaType,
                         country = selectedCountry,
+                        sort = selectedSort,
                         year = selectedYear,
                         season = selectedSeason,
                         format = selectedFormat,
@@ -149,9 +155,10 @@ fun MediaSearchView(
                         onCancelClick = {
                             openBottomSheet = false
                         },
-                        onApplyClick = { country, year, season, format, status ->
+                        onApplyClick = { country, sortBy, year, season, format, status ->
 
                             selectedCountry = country
+                            selectedSort = sortBy
                             selectedYear = year
                             selectedSeason = season
                             selectedFormat = format
@@ -167,6 +174,7 @@ fun MediaSearchView(
                                 countryOfOrigin = selectedCountry?.code,
                                 genres = null,
                                 tags = null,
+                                sortBy = selectedSort,
                             )
                             openBottomSheet = false
                         },
@@ -351,6 +359,7 @@ fun MediaSearchView(
 private fun MediaFilter(
     mediaType: MediaType,
     country: Countries?,
+    sort: MediaSort?,
     year: Int?,
     season: MediaSeason?,
     format: MediaFormat?,
@@ -358,6 +367,7 @@ private fun MediaFilter(
     onCancelClick: () -> Unit,
     onApplyClick: (
         country: Countries?,
+        sort: MediaSort?,
         year: Int?,
         season: MediaSeason?,
         format: MediaFormat?,
@@ -372,9 +382,13 @@ private fun MediaFilter(
     val mangaFormat = MediaFormat.mangaFormats
     val statusList = MediaStatus.statusList
     val countries = Countries.countries
+    val sortBy = MediaSort.types
 
     var selectedCountry by rememberSaveable {
         mutableStateOf(country)
+    }
+    var selectedSort by rememberSaveable {
+        mutableStateOf(sort)
     }
     var selectedYear by rememberSaveable {
         mutableStateOf(year)
@@ -390,6 +404,9 @@ private fun MediaFilter(
     }
 
     var expandRegion by remember {
+        mutableStateOf(false)
+    }
+    var expandSortBy by remember {
         mutableStateOf(false)
     }
 
@@ -415,6 +432,7 @@ private fun MediaFilter(
                         selectedFormat = null
                         selectedStatus = null
                         selectedCountry = null
+                        selectedSort = null
                     },
         )
         OtakuTitle(
@@ -436,7 +454,6 @@ private fun MediaFilter(
                             .size(30.dp)
                             .clip(CircleShape)
                             .clickable {
-                                // todo: select regions
                                 expandRegion = true
                             },
                 )
@@ -465,18 +482,43 @@ private fun MediaFilter(
                 }
             }
 
-            Icon(
-                painter = painterResource(id = R.drawable.filter),
-                contentDescription = "filter",
-                tint = MaterialTheme.colorScheme.primary,
-                modifier =
-                    Modifier
-                        .size(30.dp)
-                        .clip(CircleShape)
-                        .clickable {
-                            // todo: select filter by
-                        },
-            )
+            Box {
+                Icon(
+                    painter = painterResource(id = R.drawable.filter),
+                    contentDescription = "filter",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier =
+                        Modifier
+                            .size(30.dp)
+                            .clip(CircleShape)
+                            .clickable {
+                                expandSortBy = true
+                            },
+                )
+
+                DropdownMenu(
+                    expanded = expandSortBy,
+                    onDismissRequest = {
+                        expandSortBy = false
+                    },
+                ) {
+                    sortBy.forEach { option: MediaSort ->
+                        DropdownMenuItem(
+                            text = {
+                                OtakuTitle(
+                                    title = Utils.getFormattedString(option),
+                                    style = MaterialTheme.typography.titleSmall,
+                                    color = if (selectedSort == option) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground,
+                                )
+                            },
+                            onClick = {
+                                expandSortBy = false
+                                selectedSort = option
+                            },
+                        )
+                    }
+                }
+            }
         }
     }
 
@@ -554,6 +596,7 @@ private fun MediaFilter(
             onClick = {
                 onApplyClick(
                     selectedCountry,
+                    selectedSort,
                     selectedYear,
                     selectedSeason,
                     selectedFormat,

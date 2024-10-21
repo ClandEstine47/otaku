@@ -760,3 +760,12 @@ fun MediaStatus.toNetworkMediaStatus(): com.example.core.network.type.MediaStatu
         MediaStatus.HIATUS -> com.example.core.network.type.MediaStatus.HIATUS
     }
 }
+
+fun MediaSort.toNetworkMediaSort(): com.example.core.network.type.MediaSort {
+    return when (this) {
+        MediaSort.SCORE -> com.example.core.network.type.MediaSort.SCORE_DESC
+        MediaSort.POPULARITY -> com.example.core.network.type.MediaSort.POPULARITY_DESC
+        MediaSort.TRENDING -> com.example.core.network.type.MediaSort.TRENDING_DESC
+        MediaSort.FAVOURITES -> com.example.core.network.type.MediaSort.FAVOURITES_DESC
+    }
+}

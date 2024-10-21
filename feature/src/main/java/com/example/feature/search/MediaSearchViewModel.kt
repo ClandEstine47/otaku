@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.core.domain.model.media.MediaFormat
 import com.example.core.domain.model.media.MediaSeason
+import com.example.core.domain.model.media.MediaSort
 import com.example.core.domain.model.media.MediaStatus
 import com.example.core.domain.model.media.MediaType
 import com.example.core.domain.repository.MediaRepository
@@ -34,6 +35,7 @@ class MediaSearchViewModel
             countryOfOrigin: String? = null,
             genres: List<String>? = null,
             tags: List<String>? = null,
+            sortBy: MediaSort? = null,
         ) {
             viewModelScope.launch {
                 _state.update {
@@ -55,6 +57,7 @@ class MediaSearchViewModel
                         countryOfOrigin = countryOfOrigin,
                         genres = genres,
                         tags = tags,
+                        sortBy = if (sortBy == null) null else listOf(sortBy),
                     )
 
                 _state.update { currentState ->

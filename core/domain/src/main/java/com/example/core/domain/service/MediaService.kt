@@ -5,6 +5,7 @@ import com.example.core.domain.model.airing.AiringSchedule
 import com.example.core.domain.model.media.Media
 import com.example.core.domain.model.media.MediaFormat
 import com.example.core.domain.model.media.MediaSeason
+import com.example.core.domain.model.media.MediaSort
 import com.example.core.domain.model.media.MediaStatus
 import com.example.core.domain.model.media.MediaType
 import com.example.core.domain.model.thread.Thread
@@ -61,5 +62,6 @@ interface MediaService {
         countryOfOrigin: String? = null,
         genres: List<String>? = null,
         tags: List<String>? = null,
+        sortBy: List<MediaSort>? = null,
     ): Result<Page<Media>>
 }
