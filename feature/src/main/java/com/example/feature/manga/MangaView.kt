@@ -126,29 +126,29 @@ fun MangaContent(
 
     Spacer(modifier = Modifier.height(40.dp))
 
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        OtakuTitle(
-            id = R.string.popular_manga,
-            modifier = Modifier.padding(start = 10.dp),
-        )
-
-        ExpandMediaListButton(
-            modifier = Modifier,
-            onButtonClick = {
-                navActionManager.toMediaList(
-                    titleId = R.string.popular_manga,
-                    mediaType = MediaType.MANGA,
-                    contentType = MediaListContentType.POPULAR_MANGA,
-                )
-            },
-        )
-    }
-
     popularMangaList?.let { mangas ->
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            OtakuTitle(
+                id = R.string.popular_manga,
+                modifier = Modifier.padding(start = 10.dp),
+            )
+
+            ExpandMediaListButton(
+                modifier = Modifier,
+                onButtonClick = {
+                    navActionManager.toMediaList(
+                        titleId = R.string.popular_manga,
+                        mediaType = MediaType.MANGA,
+                        contentType = MediaListContentType.POPULAR_MANGA,
+                    )
+                },
+            )
+        }
+
         LazyRow(
             modifier =
                 Modifier
@@ -188,29 +188,29 @@ fun MangaContent(
         }
     }
 
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        OtakuTitle(
-            id = R.string.popular_manhwa,
-            modifier = Modifier.padding(start = 10.dp),
-        )
-
-        ExpandMediaListButton(
-            modifier = Modifier,
-            onButtonClick = {
-                navActionManager.toMediaList(
-                    titleId = R.string.popular_manhwa,
-                    mediaType = MediaType.MANGA,
-                    contentType = MediaListContentType.POPULAR_MANHWA,
-                )
-            },
-        )
-    }
-
     popularManhwaList?.let { manhwas ->
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            OtakuTitle(
+                id = R.string.popular_manhwa,
+                modifier = Modifier.padding(start = 10.dp),
+            )
+
+            ExpandMediaListButton(
+                modifier = Modifier,
+                onButtonClick = {
+                    navActionManager.toMediaList(
+                        titleId = R.string.popular_manhwa,
+                        mediaType = MediaType.MANGA,
+                        contentType = MediaListContentType.POPULAR_MANHWA,
+                    )
+                },
+            )
+        }
+
         LazyRow(
             modifier =
                 Modifier
@@ -250,29 +250,29 @@ fun MangaContent(
         }
     }
 
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        OtakuTitle(
-            id = R.string.popular_novel,
-            modifier = Modifier.padding(start = 10.dp),
-        )
-
-        ExpandMediaListButton(
-            modifier = Modifier,
-            onButtonClick = {
-                navActionManager.toMediaList(
-                    titleId = R.string.popular_novel,
-                    mediaType = MediaType.MANGA,
-                    contentType = MediaListContentType.POPULAR_NOVEL,
-                )
-            },
-        )
-    }
-
     popularNovelList?.let { novels ->
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            OtakuTitle(
+                id = R.string.popular_novel,
+                modifier = Modifier.padding(start = 10.dp),
+            )
+
+            ExpandMediaListButton(
+                modifier = Modifier,
+                onButtonClick = {
+                    navActionManager.toMediaList(
+                        titleId = R.string.popular_novel,
+                        mediaType = MediaType.MANGA,
+                        contentType = MediaListContentType.POPULAR_NOVEL,
+                    )
+                },
+            )
+        }
+
         LazyRow(
             modifier =
                 Modifier
@@ -312,29 +312,29 @@ fun MangaContent(
         }
     }
 
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        OtakuTitle(
-            id = R.string.popular_one_shot,
-            modifier = Modifier.padding(start = 10.dp),
-        )
-
-        ExpandMediaListButton(
-            modifier = Modifier,
-            onButtonClick = {
-                navActionManager.toMediaList(
-                    titleId = R.string.popular_one_shot,
-                    mediaType = MediaType.MANGA,
-                    contentType = MediaListContentType.ONE_SHOT,
-                )
-            },
-        )
-    }
-
     popularOneShotList?.let { oneShorts ->
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            OtakuTitle(
+                id = R.string.popular_one_shot,
+                modifier = Modifier.padding(start = 10.dp),
+            )
+
+            ExpandMediaListButton(
+                modifier = Modifier,
+                onButtonClick = {
+                    navActionManager.toMediaList(
+                        titleId = R.string.popular_one_shot,
+                        mediaType = MediaType.MANGA,
+                        contentType = MediaListContentType.ONE_SHOT,
+                    )
+                },
+            )
+        }
+
         LazyRow(
             modifier =
                 Modifier
