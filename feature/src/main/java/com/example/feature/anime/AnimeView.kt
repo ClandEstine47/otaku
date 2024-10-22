@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxSize
@@ -34,6 +33,7 @@ import com.example.core.navigation.NavActionManager
 import com.example.feature.R
 import com.example.feature.common.InfiniteHorizontalPager
 import com.example.feature.common.SearchBar
+import com.example.feature.common.TitleWithExpandButton
 import dev.chrisbanes.haze.HazeDefaults
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
@@ -124,27 +124,16 @@ fun AnimeContent(
     Spacer(modifier = Modifier.height(40.dp))
 
     recentlyUpdatedMedia?.let { recentlyUpdatedAnime ->
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            OtakuTitle(
-                id = R.string.recently_updated,
-                modifier = Modifier.padding(start = 10.dp),
-            )
-
-            ExpandMediaListButton(
-                modifier = Modifier,
-                onButtonClick = {
-                    navActionManager.toMediaList(
-                        titleId = R.string.calendar,
-                        mediaType = MediaType.ANIME,
-                        contentType = MediaListContentType.RECENTLY_UPDATED,
-                    )
-                },
-            )
-        }
+        TitleWithExpandButton(
+            titleId = R.string.recently_updated,
+            onExpandClick = {
+                navActionManager.toMediaList(
+                    titleId = R.string.calendar,
+                    mediaType = MediaType.ANIME,
+                    contentType = MediaListContentType.RECENTLY_UPDATED,
+                )
+            },
+        )
 
         LazyRow(
             modifier =
@@ -186,27 +175,16 @@ fun AnimeContent(
     }
 
     currentSeasonMedia?.let { currentSeasonAnime ->
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            OtakuTitle(
-                id = R.string.current_season,
-                modifier = Modifier.padding(start = 10.dp),
-            )
-
-            ExpandMediaListButton(
-                modifier = Modifier,
-                onButtonClick = {
-                    navActionManager.toMediaList(
-                        titleId = R.string.current_season,
-                        mediaType = MediaType.ANIME,
-                        contentType = MediaListContentType.CURRENT_SEASON,
-                    )
-                },
-            )
-        }
+        TitleWithExpandButton(
+            titleId = R.string.current_season,
+            onExpandClick = {
+                navActionManager.toMediaList(
+                    titleId = R.string.current_season,
+                    mediaType = MediaType.ANIME,
+                    contentType = MediaListContentType.CURRENT_SEASON,
+                )
+            },
+        )
 
         LazyRow(
             modifier =
@@ -249,27 +227,16 @@ fun AnimeContent(
     }
 
     popularNowMedia?.let { popularAnime ->
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            OtakuTitle(
-                id = R.string.popular_now,
-                modifier = Modifier.padding(start = 10.dp),
-            )
-
-            ExpandMediaListButton(
-                modifier = Modifier,
-                onButtonClick = {
-                    navActionManager.toMediaList(
-                        titleId = R.string.popular_now,
-                        mediaType = MediaType.ANIME,
-                        contentType = MediaListContentType.POPULAR_NOW,
-                    )
-                },
-            )
-        }
+        TitleWithExpandButton(
+            titleId = R.string.popular_now,
+            onExpandClick = {
+                navActionManager.toMediaList(
+                    titleId = R.string.popular_now,
+                    mediaType = MediaType.ANIME,
+                    contentType = MediaListContentType.POPULAR_NOW,
+                )
+            },
+        )
 
         LazyRow(
             modifier =
@@ -312,27 +279,16 @@ fun AnimeContent(
     }
 
     nextSeasonMedia?.let { nextSeasonAnime ->
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            OtakuTitle(
-                id = R.string.next_season,
-                modifier = Modifier.padding(start = 10.dp),
-            )
-
-            ExpandMediaListButton(
-                modifier = Modifier,
-                onButtonClick = {
-                    navActionManager.toMediaList(
-                        titleId = R.string.next_season,
-                        mediaType = MediaType.ANIME,
-                        contentType = MediaListContentType.NEXT_SEASON,
-                    )
-                },
-            )
-        }
+        TitleWithExpandButton(
+            titleId = R.string.next_season,
+            onExpandClick = {
+                navActionManager.toMediaList(
+                    titleId = R.string.next_season,
+                    mediaType = MediaType.ANIME,
+                    contentType = MediaListContentType.NEXT_SEASON,
+                )
+            },
+        )
 
         LazyRow(
             modifier =

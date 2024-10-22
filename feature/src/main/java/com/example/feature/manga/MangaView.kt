@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,12 +30,11 @@ import com.example.core.domain.model.media.Media
 import com.example.core.domain.model.media.MediaType
 import com.example.core.navigation.NavActionManager
 import com.example.feature.R
-import com.example.feature.anime.ExpandMediaListButton
 import com.example.feature.anime.ImageCard
 import com.example.feature.anime.OtakuImageCardTitle
-import com.example.feature.anime.OtakuTitle
 import com.example.feature.common.InfiniteHorizontalPager
 import com.example.feature.common.SearchBar
+import com.example.feature.common.TitleWithExpandButton
 import dev.chrisbanes.haze.HazeDefaults
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
@@ -127,27 +125,16 @@ fun MangaContent(
     Spacer(modifier = Modifier.height(40.dp))
 
     popularMangaList?.let { mangas ->
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            OtakuTitle(
-                id = R.string.popular_manga,
-                modifier = Modifier.padding(start = 10.dp),
-            )
-
-            ExpandMediaListButton(
-                modifier = Modifier,
-                onButtonClick = {
-                    navActionManager.toMediaList(
-                        titleId = R.string.popular_manga,
-                        mediaType = MediaType.MANGA,
-                        contentType = MediaListContentType.POPULAR_MANGA,
-                    )
-                },
-            )
-        }
+        TitleWithExpandButton(
+            titleId = R.string.popular_manga,
+            onExpandClick = {
+                navActionManager.toMediaList(
+                    titleId = R.string.popular_manga,
+                    mediaType = MediaType.MANGA,
+                    contentType = MediaListContentType.POPULAR_MANGA,
+                )
+            },
+        )
 
         LazyRow(
             modifier =
@@ -189,27 +176,16 @@ fun MangaContent(
     }
 
     popularManhwaList?.let { manhwas ->
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            OtakuTitle(
-                id = R.string.popular_manhwa,
-                modifier = Modifier.padding(start = 10.dp),
-            )
-
-            ExpandMediaListButton(
-                modifier = Modifier,
-                onButtonClick = {
-                    navActionManager.toMediaList(
-                        titleId = R.string.popular_manhwa,
-                        mediaType = MediaType.MANGA,
-                        contentType = MediaListContentType.POPULAR_MANHWA,
-                    )
-                },
-            )
-        }
+        TitleWithExpandButton(
+            titleId = R.string.popular_manhwa,
+            onExpandClick = {
+                navActionManager.toMediaList(
+                    titleId = R.string.popular_manhwa,
+                    mediaType = MediaType.MANGA,
+                    contentType = MediaListContentType.POPULAR_MANHWA,
+                )
+            },
+        )
 
         LazyRow(
             modifier =
@@ -251,27 +227,16 @@ fun MangaContent(
     }
 
     popularNovelList?.let { novels ->
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            OtakuTitle(
-                id = R.string.popular_novel,
-                modifier = Modifier.padding(start = 10.dp),
-            )
-
-            ExpandMediaListButton(
-                modifier = Modifier,
-                onButtonClick = {
-                    navActionManager.toMediaList(
-                        titleId = R.string.popular_novel,
-                        mediaType = MediaType.MANGA,
-                        contentType = MediaListContentType.POPULAR_NOVEL,
-                    )
-                },
-            )
-        }
+        TitleWithExpandButton(
+            titleId = R.string.popular_manhwa,
+            onExpandClick = {
+                navActionManager.toMediaList(
+                    titleId = R.string.popular_novel,
+                    mediaType = MediaType.MANGA,
+                    contentType = MediaListContentType.POPULAR_NOVEL,
+                )
+            },
+        )
 
         LazyRow(
             modifier =
@@ -313,27 +278,16 @@ fun MangaContent(
     }
 
     popularOneShotList?.let { oneShorts ->
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            OtakuTitle(
-                id = R.string.popular_one_shot,
-                modifier = Modifier.padding(start = 10.dp),
-            )
-
-            ExpandMediaListButton(
-                modifier = Modifier,
-                onButtonClick = {
-                    navActionManager.toMediaList(
-                        titleId = R.string.popular_one_shot,
-                        mediaType = MediaType.MANGA,
-                        contentType = MediaListContentType.ONE_SHOT,
-                    )
-                },
-            )
-        }
+        TitleWithExpandButton(
+            titleId = R.string.popular_one_shot,
+            onExpandClick = {
+                navActionManager.toMediaList(
+                    titleId = R.string.popular_one_shot,
+                    mediaType = MediaType.MANGA,
+                    contentType = MediaListContentType.ONE_SHOT,
+                )
+            },
+        )
 
         LazyRow(
             modifier =
