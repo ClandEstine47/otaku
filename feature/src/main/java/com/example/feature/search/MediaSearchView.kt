@@ -341,20 +341,22 @@ fun MediaSearchView(
                                 navActionManager = navActionManager,
                                 mediaList = uiState.mediaList!!.map { MediaListItem.MediaListType(it) },
                                 onLoadMore = {
-                                    mediaSearchViewModel.incrementPageNumber()
-                                    mediaSearchViewModel.loadSearchResult(
-                                        mediaType = arguments.mediaType,
-                                        searchQuery = inputText,
-                                        season = selectedSeason,
-                                        seasonYear = selectedYear,
-                                        format = selectedFormat,
-                                        status = selectedStatus,
-                                        countryOfOrigin = selectedCountry?.code,
-                                        genres = null,
-                                        tags = null,
-                                        sortBy = selectedSort,
-                                        loadMore = true,
-                                    )
+                                    if (uiState.hasNextPage) {
+                                        mediaSearchViewModel.incrementPageNumber()
+                                        mediaSearchViewModel.loadSearchResult(
+                                            mediaType = arguments.mediaType,
+                                            searchQuery = inputText,
+                                            season = selectedSeason,
+                                            seasonYear = selectedYear,
+                                            format = selectedFormat,
+                                            status = selectedStatus,
+                                            countryOfOrigin = selectedCountry?.code,
+                                            genres = null,
+                                            tags = null,
+                                            sortBy = selectedSort,
+                                            loadMore = true,
+                                        )
+                                    }
                                 },
                             )
                         }
@@ -363,20 +365,22 @@ fun MediaSearchView(
                                 navActionManager = navActionManager,
                                 mediaList = uiState.mediaList!!.map { MediaListItem.MediaListType(it) },
                                 onLoadMore = {
-                                    mediaSearchViewModel.incrementPageNumber()
-                                    mediaSearchViewModel.loadSearchResult(
-                                        mediaType = arguments.mediaType,
-                                        searchQuery = inputText,
-                                        season = selectedSeason,
-                                        seasonYear = selectedYear,
-                                        format = selectedFormat,
-                                        status = selectedStatus,
-                                        countryOfOrigin = selectedCountry?.code,
-                                        genres = null,
-                                        tags = null,
-                                        sortBy = selectedSort,
-                                        loadMore = true,
-                                    )
+                                    if (uiState.hasNextPage) {
+                                        mediaSearchViewModel.incrementPageNumber()
+                                        mediaSearchViewModel.loadSearchResult(
+                                            mediaType = arguments.mediaType,
+                                            searchQuery = inputText,
+                                            season = selectedSeason,
+                                            seasonYear = selectedYear,
+                                            format = selectedFormat,
+                                            status = selectedStatus,
+                                            countryOfOrigin = selectedCountry?.code,
+                                            genres = null,
+                                            tags = null,
+                                            sortBy = selectedSort,
+                                            loadMore = true,
+                                        )
+                                    }
                                 },
                             )
                         }

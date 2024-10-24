@@ -44,6 +44,7 @@ class MediaSearchViewModel
                         it.copy(
                             mediaList = emptyList(),
                             pageNumber = 1,
+                            hasNextPage = false,
                             isLoading = true,
                         )
                     }
@@ -75,6 +76,7 @@ class MediaSearchViewModel
                                     } else {
                                         searchResult.getOrNull()?.data
                                     },
+                                hasNextPage = searchResult.getOrNull()?.pageInfo?.hasNextPage == true,
                                 isLoading = false,
                                 error = null,
                             )
@@ -83,6 +85,7 @@ class MediaSearchViewModel
                         searchResult.isFailure -> {
                             currentState.copy(
                                 mediaList = currentState.mediaList ?: emptyList(),
+                                hasNextPage = false,
                                 isLoading = false,
                                 error = searchResult.exceptionOrNull()?.message ?: "An unknown error occurred",
                             )
