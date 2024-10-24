@@ -340,12 +340,44 @@ fun MediaSearchView(
                             MediaListViewContent(
                                 navActionManager = navActionManager,
                                 mediaList = uiState.mediaList!!.map { MediaListItem.MediaListType(it) },
+                                onLoadMore = {
+                                    mediaSearchViewModel.incrementPageNumber()
+                                    mediaSearchViewModel.loadSearchResult(
+                                        mediaType = arguments.mediaType,
+                                        searchQuery = inputText,
+                                        season = selectedSeason,
+                                        seasonYear = selectedYear,
+                                        format = selectedFormat,
+                                        status = selectedStatus,
+                                        countryOfOrigin = selectedCountry?.code,
+                                        genres = null,
+                                        tags = null,
+                                        sortBy = selectedSort,
+                                        loadMore = true,
+                                    )
+                                },
                             )
                         }
                         ViewType.GRID -> {
                             MediaGridViewContent(
                                 navActionManager = navActionManager,
                                 mediaList = uiState.mediaList!!.map { MediaListItem.MediaListType(it) },
+                                onLoadMore = {
+                                    mediaSearchViewModel.incrementPageNumber()
+                                    mediaSearchViewModel.loadSearchResult(
+                                        mediaType = arguments.mediaType,
+                                        searchQuery = inputText,
+                                        season = selectedSeason,
+                                        seasonYear = selectedYear,
+                                        format = selectedFormat,
+                                        status = selectedStatus,
+                                        countryOfOrigin = selectedCountry?.code,
+                                        genres = null,
+                                        tags = null,
+                                        sortBy = selectedSort,
+                                        loadMore = true,
+                                    )
+                                },
                             )
                         }
                     }

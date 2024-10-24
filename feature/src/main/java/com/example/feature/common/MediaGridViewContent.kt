@@ -5,8 +5,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,11 +23,21 @@ import com.example.feature.anime.OtakuImageCardTitle
 fun MediaGridViewContent(
     navActionManager: NavActionManager,
     mediaList: List<MediaListItem>? = null,
+    gridState: LazyGridState = rememberLazyGridState(),
+    onLoadMore: () -> Unit,
 ) {
+    gridState.OnBottomReached(
+        buffer = 3,
+        onLoadMore = {
+            onLoadMore()
+        },
+    )
+
     mediaList?.let {
         LazyVerticalGrid(
             columns = GridCells.Adaptive(110.dp),
             modifier = Modifier.padding(horizontal = 5.dp, vertical = 5.dp),
+            state = gridState,
             verticalArrangement = Arrangement.spacedBy(15.dp),
             horizontalArrangement = Arrangement.spacedBy(5.dp, Alignment.CenterHorizontally),
         ) {

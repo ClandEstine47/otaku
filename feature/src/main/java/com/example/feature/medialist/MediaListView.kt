@@ -272,13 +272,13 @@ fun MediaListView(
                             MediaListViewContent(
                                 navActionManager = navActionManager,
                                 mediaList = uiState.mediaListByPage[page],
-                            )
+                            ) {}
                         }
                         ViewType.GRID -> {
                             MediaGridViewContent(
                                 navActionManager = navActionManager,
                                 mediaList = uiState.mediaListByPage[page],
-                            )
+                            ) {}
                         }
                     }
                 }

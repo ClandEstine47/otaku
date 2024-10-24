@@ -36,17 +36,22 @@ class MediaSearchViewModel
             genres: List<String>? = null,
             tags: List<String>? = null,
             sortBy: MediaSort? = null,
+            loadMore: Boolean = false,
         ) {
             viewModelScope.launch {
-                _state.update {
-                    it.copy(
-                        isLoading = true,
-                    )
+                if (!loadMore) {
+                    _state.update {
+                        it.copy(
+                            mediaList = emptyList(),
+                            pageNumber = 1,
+                            isLoading = true,
+                        )
+                    }
                 }
 
                 val searchResult =
                     mediaRepository.getSearchMedia(
-                        pageNumber = 1,
+                        pageNumber = _state.value.pageNumber,
                         perPage = 21,
                         mediaType = mediaType,
                         search = if (searchQuery?.isBlank() == true) null else searchQuery,
@@ -64,7 +69,12 @@ class MediaSearchViewModel
                     when {
                         searchResult.isSuccess -> {
                             currentState.copy(
-                                mediaList = searchResult.getOrNull()?.data,
+                                mediaList =
+                                    if (loadMore) {
+                                        (currentState.mediaList ?: emptyList()) + (searchResult.getOrNull()?.data ?: emptyList())
+                                    } else {
+                                        searchResult.getOrNull()?.data
+                                    },
                                 isLoading = false,
                                 error = null,
                             )
@@ -72,7 +82,7 @@ class MediaSearchViewModel
 
                         searchResult.isFailure -> {
                             currentState.copy(
-                                mediaList = emptyList(),
+                                mediaList = currentState.mediaList ?: emptyList(),
                                 isLoading = false,
                                 error = searchResult.exceptionOrNull()?.message ?: "An unknown error occurred",
                             )
@@ -86,6 +96,14 @@ class MediaSearchViewModel
                         }
                     }
                 }
+            }
+        }
+
+        fun incrementPageNumber() {
+            _state.update { currentState ->
+                currentState.copy(
+                    pageNumber = currentState.pageNumber + 1,
+                )
             }
         }
     }
