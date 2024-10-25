@@ -37,6 +37,13 @@ fun OtakuMain() {
         val hazeState = remember { HazeState() }
         val context = LocalContext.current
         val dataStore = StartDestination(context)
+        val startDestination =
+            remember {
+                dataStore.getInitialRoute()
+            }
+        var bottomTabIndex by rememberSaveable {
+            mutableStateOf<Int?>(null)
+        }
 
         var showBottomBar by rememberSaveable {
             mutableStateOf(true)
@@ -54,6 +61,10 @@ fun OtakuMain() {
                 NavBarItem(mediaType = MediaType.MANGA, iconEnabled = com.example.feature.R.drawable.manga_enabled, iconDisabled = com.example.feature.R.drawable.manga_disabled),
             )
 
+        LaunchedEffect(Unit) {
+            bottomTabIndex = if (startDestination == OtakuScreen.AnimeTab.toString()) 0 else 1
+        }
+
         LaunchedEffect(navBackStackEntry) {
             val currentRoute = navBackStackEntry?.destination.toString().substringAfterLast('.')
 
@@ -67,32 +78,38 @@ fun OtakuMain() {
             Scaffold(
                 bottomBar = {
                     if (showBottomBar) {
-                        BottomNavBar(
-                            navBarItems = navBarItems,
-                            hazeState = hazeState,
-                            navigate = { mediaType ->
-                                when (mediaType) {
-                                    MediaType.ANIME -> {
-                                        navController.navigateAndReplaceStartRoute(OtakuScreen.AnimeTab)
-                                        scope.launch {
-                                            dataStore.saveRoute(OtakuScreen.AnimeTab.toString())
+                        bottomTabIndex?.let { index ->
+                            BottomNavBar(
+                                navBarItems = navBarItems,
+                                hazeState = hazeState,
+                                tabIndex = index,
+                                navigate = { mediaType ->
+                                    when (mediaType) {
+                                        MediaType.ANIME -> {
+                                            bottomTabIndex = 0
+                                            navController.navigateAndReplaceStartRoute(OtakuScreen.AnimeTab)
+                                            scope.launch {
+                                                dataStore.saveRoute(OtakuScreen.AnimeTab.toString())
+                                            }
+                                        }
+                                        MediaType.MANGA -> {
+                                            bottomTabIndex = 1
+                                            navController.navigateAndReplaceStartRoute(OtakuScreen.MangaTab)
+                                            scope.launch {
+                                                dataStore.saveRoute(OtakuScreen.MangaTab.toString())
+                                            }
                                         }
                                     }
-                                    MediaType.MANGA -> {
-                                        navController.navigateAndReplaceStartRoute(OtakuScreen.MangaTab)
-                                        scope.launch {
-                                            dataStore.saveRoute(OtakuScreen.MangaTab.toString())
-                                        }
-                                    }
-                                }
-                            },
-                        )
+                                },
+                            )
+                        }
                     }
                 },
             ) { padding ->
                 MainNavigation(
                     navController = navController,
                     navActionManager = navActionManager,
+                    startDestination = startDestination,
                     deepLink = null,
                     padding = padding,
                     hazeState = hazeState,

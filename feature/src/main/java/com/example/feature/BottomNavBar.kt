@@ -58,10 +58,11 @@ import dev.chrisbanes.haze.hazeChild
 fun BottomNavBar(
     navBarItems: List<NavBarItem>,
     hazeState: HazeState,
+    tabIndex: Int,
     navigate: (MediaType) -> Unit,
 ) {
     var selectedTabIndex by rememberSaveable {
-        mutableIntStateOf(0)
+        mutableIntStateOf(tabIndex)
     }
 
     val animatedSelectedTabIndex by animateFloatAsState(
