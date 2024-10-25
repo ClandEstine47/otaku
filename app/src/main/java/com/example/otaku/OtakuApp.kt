@@ -9,7 +9,7 @@ class OtakuApp : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        if (true) {
+        if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         }
     }

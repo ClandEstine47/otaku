@@ -1,0 +1,70 @@
+query MediaSearch(
+    $page:Int!,
+    $perPage: Int,
+    $type:MediaType,
+    $search:String,
+    $format:MediaFormat,
+    $status:MediaStatus,
+    $countryOfOrigin:CountryCode,
+#    $source:MediaSource,
+    $season:MediaSeason,
+    $seasonYear:Int,
+    $genres:[String],
+    $tags:[String],
+    $sort:[MediaSort] = [POPULARITY_DESC,SCORE_DESC]
+){
+    Page(
+        page: $page,
+        perPage: $perPage
+    ){
+        pageInfo {
+            total
+            currentPage
+            hasNextPage
+        }
+        media(
+            type:$type
+            season:$season
+            format:$format
+            status:$status
+            countryOfOrigin:$countryOfOrigin
+#            source:$source
+            search:$search
+            seasonYear:$seasonYear
+            genre_in:$genres
+            tag_in:$tags
+            sort:$sort
+        ) {
+            id
+            idMal
+            status
+            chapters
+            episodes
+            nextAiringEpisode { episode }
+            isAdult
+            type
+            description
+            genres
+            meanScore
+            isFavourite
+            format
+            bannerImage
+            countryOfOrigin
+            coverImage {
+                large
+                extraLarge
+            }
+            title {
+                english
+                romaji
+                userPreferred
+            }
+            mediaListEntry {
+                progress
+                private
+                score (format: POINT_100)
+                status
+            }
+        }
+    }
+}

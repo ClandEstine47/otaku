@@ -8,10 +8,13 @@ import com.example.core.domain.model.airing.AiringSchedule
 import com.example.core.domain.model.media.Media
 import com.example.core.domain.model.media.MediaFormat
 import com.example.core.domain.model.media.MediaSeason
+import com.example.core.domain.model.media.MediaSort
+import com.example.core.domain.model.media.MediaStatus
 import com.example.core.domain.model.media.MediaType
 import com.example.core.domain.model.thread.Thread
 import com.example.core.domain.service.MediaService
 import com.example.core.network.MediaQuery
+import com.example.core.network.MediaSearchQuery
 import com.example.core.network.MediaThreadsQuery
 import com.example.core.network.RecentlyUpdatedQuery
 import com.example.core.network.SeasonalAnimeQuery
@@ -286,6 +289,70 @@ class MediaServiceImpl
                             Page(
                                 pageInfo = pageInfo,
                                 data = threads,
+                            ),
+                        )
+                    }
+                }
+            } catch (e: ApolloException) {
+                Result.failure(e)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+
+        override suspend fun getSearchMedia(
+            pageNumber: Int,
+            perPage: Int,
+            mediaType: MediaType,
+            search: String?,
+            season: MediaSeason?,
+            seasonYear: Int?,
+            format: MediaFormat?,
+            status: MediaStatus?,
+            countryOfOrigin: String?,
+            genres: List<String>?,
+            tags: List<String>?,
+            sortBy: List<MediaSort>?,
+        ): Result<Page<Media>> {
+            return try {
+                val response =
+                    apolloClient
+                        .query(
+                            MediaSearchQuery(
+                                page = pageNumber,
+                                perPage = Optional.present(perPage),
+                                type = Optional.present(mediaType.toNetworkMediaType()),
+                                search = Optional.presentIfNotNull(search),
+                                format = Optional.presentIfNotNull(format?.toNetworkMediaFormat()),
+                                status = Optional.presentIfNotNull(status?.toNetworkMediaStatus()),
+                                countryOfOrigin = Optional.presentIfNotNull(countryOfOrigin),
+                                seasonYear = Optional.presentIfNotNull(seasonYear),
+                                season = Optional.presentIfNotNull(season?.toNetworkMediaSeason()),
+                                genres = Optional.presentIfNotNull(genres),
+                                tags = Optional.presentIfNotNull(tags),
+                                sort = Optional.presentIfNotNull(sortBy?.map { it.toNetworkMediaSort() }),
+                            ),
+                        )
+                        .execute()
+
+                when {
+                    response.hasErrors() -> {
+                        val errorMessage =
+                            response.errors?.joinToString("; ") { it.message }
+                                ?: "Unknown GraphQL error"
+                        Result.failure(Exception(errorMessage))
+                    }
+
+                    else -> {
+                        val pageInfo = response.data?.Page?.pageInfo?.toDomainPageInfo()
+                        val mediaSearch =
+                            response.data?.Page?.media
+                                ?.mapNotNull { it?.toDomainMedia() }
+                                ?: emptyList()
+                        Result.success(
+                            Page(
+                                pageInfo = pageInfo,
+                                data = mediaSearch,
                             ),
                         )
                     }

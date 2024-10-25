@@ -12,9 +12,11 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
@@ -31,15 +33,20 @@ import com.example.feature.anime.OtakuTitle
 @Composable
 fun <T> OtakuDropdownMenu(
     options: List<T>,
+    currentValue: T?,
     label: String,
     onValueChangedEvent: (T) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedValue by remember { mutableStateOf<T?>(null) }
+    var selectedValue by rememberSaveable { mutableStateOf(currentValue) }
     val focusManager = LocalFocusManager.current
     val focusedColor = MaterialTheme.colorScheme.primary
     val unFocusedColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+
+    LaunchedEffect(currentValue) {
+        selectedValue = currentValue
+    }
 
     ExposedDropdownMenuBox(
         expanded = expanded,
@@ -105,6 +112,7 @@ fun <T> OtakuDropdownMenu(
 fun OtakuDropdownMenuPreview() {
     OtakuDropdownMenu(
         label = "Season",
+        currentValue = "WINTER",
         options = listOf("WINTER", "SUMMER", "SPRING", "FALL"),
         onValueChangedEvent = {},
     )

@@ -25,13 +25,19 @@ import kotlin.reflect.typeOf
 fun MainNavigation(
     navController: NavHostController,
     navActionManager: NavActionManager,
+    startDestination: String,
     deepLink: DeepLink?,
     padding: PaddingValues,
     hazeState: HazeState,
 ) {
     NavHost(
         navController = navController,
-        startDestination = OtakuScreen.AnimeTab,
+        startDestination =
+            if (startDestination == OtakuScreen.AnimeTab.toString()) {
+                OtakuScreen.AnimeTab
+            } else {
+                OtakuScreen.MangaTab
+            },
         modifier =
         Modifier,
     ) {

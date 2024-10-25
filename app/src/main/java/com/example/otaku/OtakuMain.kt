@@ -9,27 +9,41 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.core.domain.model.media.MediaType
 import com.example.core.navigation.NavActionManager
 import com.example.core.navigation.OtakuScreen
+import com.example.core.navigation.StartDestination
 import com.example.core.navigation.navigateAndReplaceStartRoute
 import com.example.feature.BottomNavBar
 import com.example.feature.NavBarItem
 import com.example.otaku.ui.theme.OtakuTheme
 import dev.chrisbanes.haze.HazeState
+import kotlinx.coroutines.launch
 
 @Composable
 fun OtakuMain() {
     OtakuTheme {
         val navController = rememberNavController()
+        val scope = rememberCoroutineScope()
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val navActionManager = NavActionManager.rememberNavActionManager(navController)
         val hazeState = remember { HazeState() }
+        val context = LocalContext.current
+        val dataStore = StartDestination(context)
+        val startDestination =
+            remember {
+                dataStore.getInitialRoute()
+            }
+        var bottomTabIndex by rememberSaveable {
+            mutableStateOf<Int?>(null)
+        }
 
         var showBottomBar by rememberSaveable {
             mutableStateOf(true)
@@ -47,6 +61,10 @@ fun OtakuMain() {
                 NavBarItem(mediaType = MediaType.MANGA, iconEnabled = com.example.feature.R.drawable.manga_enabled, iconDisabled = com.example.feature.R.drawable.manga_disabled),
             )
 
+        LaunchedEffect(Unit) {
+            bottomTabIndex = if (startDestination == OtakuScreen.AnimeTab.toString()) 0 else 1
+        }
+
         LaunchedEffect(navBackStackEntry) {
             val currentRoute = navBackStackEntry?.destination.toString().substringAfterLast('.')
 
@@ -60,26 +78,38 @@ fun OtakuMain() {
             Scaffold(
                 bottomBar = {
                     if (showBottomBar) {
-                        BottomNavBar(
-                            navBarItems = navBarItems,
-                            hazeState = hazeState,
-                            navigate = { mediaType ->
-                                when (mediaType) {
-                                    MediaType.ANIME -> {
-                                        navController.navigateAndReplaceStartRoute(OtakuScreen.AnimeTab)
+                        bottomTabIndex?.let { index ->
+                            BottomNavBar(
+                                navBarItems = navBarItems,
+                                hazeState = hazeState,
+                                tabIndex = index,
+                                navigate = { mediaType ->
+                                    when (mediaType) {
+                                        MediaType.ANIME -> {
+                                            bottomTabIndex = 0
+                                            navController.navigateAndReplaceStartRoute(OtakuScreen.AnimeTab)
+                                            scope.launch {
+                                                dataStore.saveRoute(OtakuScreen.AnimeTab.toString())
+                                            }
+                                        }
+                                        MediaType.MANGA -> {
+                                            bottomTabIndex = 1
+                                            navController.navigateAndReplaceStartRoute(OtakuScreen.MangaTab)
+                                            scope.launch {
+                                                dataStore.saveRoute(OtakuScreen.MangaTab.toString())
+                                            }
+                                        }
                                     }
-                                    MediaType.MANGA -> {
-                                        navController.navigateAndReplaceStartRoute(OtakuScreen.MangaTab)
-                                    }
-                                }
-                            },
-                        )
+                                },
+                            )
+                        }
                     }
                 },
             ) { padding ->
                 MainNavigation(
                     navController = navController,
                     navActionManager = navActionManager,
+                    startDestination = startDestination,
                     deepLink = null,
                     padding = padding,
                     hazeState = hazeState,

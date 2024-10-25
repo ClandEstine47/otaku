@@ -30,6 +30,7 @@ import com.example.core.domain.model.thread.Thread
 import com.example.core.domain.model.user.User
 import com.example.core.domain.model.user.UserAvatar
 import com.example.core.network.MediaQuery
+import com.example.core.network.MediaSearchQuery
 import com.example.core.network.MediaThreadsQuery
 import com.example.core.network.RecentlyUpdatedQuery
 import com.example.core.network.SeasonalAnimeQuery
@@ -95,6 +96,14 @@ fun RecentlyUpdatedQuery.PageInfo.toDomainPageInfo(): PageInfo {
 }
 
 fun MediaThreadsQuery.PageInfo.toDomainPageInfo(): PageInfo {
+    return PageInfo(
+        total = total,
+        currentPage = currentPage,
+        hasNextPage = hasNextPage,
+    )
+}
+
+fun MediaSearchQuery.PageInfo.toDomainPageInfo(): PageInfo {
     return PageInfo(
         total = total,
         currentPage = currentPage,
@@ -314,6 +323,43 @@ fun MediaQuery.Media.toDomainMedia(): Media {
         review =
             ReviewConnection(
                 edges = reviews?.toDomainReviews(),
+            ),
+    )
+}
+
+fun MediaSearchQuery.Medium.toDomainMedia(): Media {
+    return Media(
+        idAniList = id,
+        idMal = idMal,
+        status = status?.toDomainMediaStatus(),
+        chapters = chapters,
+        episodes = episodes,
+        nextAiringEpisode =
+            AiringSchedule(
+                episode = nextAiringEpisode?.episode,
+            ),
+        isAdult = isAdult ?: false,
+        type = type?.toDomainMediaType(),
+        meanScore = meanScore ?: 0,
+        isFavourite = isFavourite,
+        description = description,
+        genres = genres,
+        format = format?.toDomainMediaFormat(),
+        bannerImage = bannerImage.orEmpty(),
+        countryOfOrigin = countryOfOrigin.toString(),
+        coverImage = coverImage?.toDomainMediaCoverImage() ?: MediaCoverImage(),
+        title =
+            MediaTitle(
+                english = title?.english ?: "",
+                romaji = title?.romaji ?: "",
+                userPreferred = title?.userPreferred ?: "",
+            ),
+        mediaListEntry =
+            MediaList(
+                progress = mediaListEntry?.progress ?: 0,
+                private = mediaListEntry?.private ?: false,
+                score = mediaListEntry?.score ?: 0.0,
+                status = mediaListEntry?.status?.toDomainMediaListStatus(),
             ),
     )
 }
@@ -600,6 +646,13 @@ fun MediaQuery.CoverImage.toDomainMediaCoverImage(): MediaCoverImage {
     )
 }
 
+fun MediaSearchQuery.CoverImage.toDomainMediaCoverImage(): MediaCoverImage {
+    return MediaCoverImage(
+        large = large.orEmpty(),
+        extraLarge = extraLarge.orEmpty(),
+    )
+}
+
 fun NetworkMediaStatus?.toDomainMediaStatus(): MediaStatus? {
     return when (this) {
         NetworkMediaStatus.FINISHED -> MediaStatus.FINISHED
@@ -695,5 +748,24 @@ fun MediaFormat.toNetworkMediaFormat(): com.example.core.network.type.MediaForma
         MediaFormat.MANGA -> com.example.core.network.type.MediaFormat.MANGA
         MediaFormat.NOVEL -> com.example.core.network.type.MediaFormat.NOVEL
         MediaFormat.ONE_SHOT -> com.example.core.network.type.MediaFormat.ONE_SHOT
+    }
+}
+
+fun MediaStatus.toNetworkMediaStatus(): com.example.core.network.type.MediaStatus {
+    return when (this) {
+        MediaStatus.FINISHED -> com.example.core.network.type.MediaStatus.FINISHED
+        MediaStatus.RELEASING -> com.example.core.network.type.MediaStatus.RELEASING
+        MediaStatus.NOT_YET_RELEASED -> com.example.core.network.type.MediaStatus.NOT_YET_RELEASED
+        MediaStatus.CANCELLED -> com.example.core.network.type.MediaStatus.CANCELLED
+        MediaStatus.HIATUS -> com.example.core.network.type.MediaStatus.HIATUS
+    }
+}
+
+fun MediaSort.toNetworkMediaSort(): com.example.core.network.type.MediaSort {
+    return when (this) {
+        MediaSort.SCORE -> com.example.core.network.type.MediaSort.SCORE_DESC
+        MediaSort.POPULARITY -> com.example.core.network.type.MediaSort.POPULARITY_DESC
+        MediaSort.TRENDING -> com.example.core.network.type.MediaSort.TRENDING_DESC
+        MediaSort.FAVOURITES -> com.example.core.network.type.MediaSort.FAVOURITES_DESC
     }
 }
