@@ -2,7 +2,9 @@ package com.example.otaku
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.produceState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -13,12 +15,14 @@ import com.example.core.navigation.CustomNavType
 import com.example.core.navigation.DeepLink
 import com.example.core.navigation.NavActionManager
 import com.example.core.navigation.OtakuScreen
+import com.example.core.navigation.StartDestination
 import com.example.feature.anime.AnimeView
 import com.example.feature.manga.MangaView
 import com.example.feature.mediadetail.MediaDetailView
 import com.example.feature.medialist.MediaListView
 import com.example.feature.search.MediaSearchView
 import dev.chrisbanes.haze.HazeState
+import kotlinx.coroutines.flow.first
 import kotlin.reflect.typeOf
 
 @Composable
@@ -29,9 +33,21 @@ fun MainNavigation(
     padding: PaddingValues,
     hazeState: HazeState,
 ) {
+    val context = LocalContext.current
+    val dataStore = StartDestination(context)
+    val startDestination =
+        produceState(initialValue = OtakuScreen.AnimeTab.toString()) {
+            value = dataStore.getRoute.first()
+        }.value
+
     NavHost(
         navController = navController,
-        startDestination = OtakuScreen.AnimeTab,
+        startDestination =
+            if (startDestination == OtakuScreen.AnimeTab.toString()) {
+                OtakuScreen.AnimeTab
+            } else {
+                OtakuScreen.MangaTab
+            },
         modifier =
         Modifier,
     ) {
