@@ -29,8 +29,19 @@ android {
     }
 
     buildTypes {
-        release {
+        debug {
+            isDebuggable = true
             isMinifyEnabled = false
+            isShrinkResources = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
+        }
+        release {
+            isDebuggable = false
+            isMinifyEnabled = true
+            isShrinkResources = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
@@ -44,6 +55,9 @@ android {
     }
     kotlinOptions {
         jvmTarget = "17"
+    }
+    buildFeatures {
+        buildConfig = true
     }
     composeCompiler {
         enableStrongSkippingMode = true
