@@ -56,11 +56,16 @@ import dev.chrisbanes.haze.hazeChild
 
 @Composable
 fun BottomNavBar(
-    navBarItems: List<NavBarItem>,
     hazeState: HazeState,
     tabIndex: Int,
     navigate: (MediaType) -> Unit,
 ) {
+    val navBarItems =
+        listOf(
+            NavBarItem(mediaType = MediaType.ANIME, iconEnabled = com.example.feature.R.drawable.anime_enabled, iconDisabled = com.example.feature.R.drawable.anime_disabled),
+            NavBarItem(mediaType = MediaType.MANGA, iconEnabled = com.example.feature.R.drawable.manga_enabled, iconDisabled = com.example.feature.R.drawable.manga_disabled),
+        )
+
     var selectedTabIndex by rememberSaveable {
         mutableIntStateOf(tabIndex)
     }

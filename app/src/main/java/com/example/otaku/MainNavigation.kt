@@ -10,7 +10,6 @@ import androidx.navigation.toRoute
 import com.example.core.domain.model.MediaListContentType
 import com.example.core.domain.model.media.MediaType
 import com.example.core.navigation.CustomNavType
-import com.example.core.navigation.DeepLink
 import com.example.core.navigation.NavActionManager
 import com.example.core.navigation.OtakuScreen
 import com.example.feature.anime.AnimeView
@@ -26,7 +25,6 @@ fun MainNavigation(
     navController: NavHostController,
     navActionManager: NavActionManager,
     startDestination: String,
-    deepLink: DeepLink?,
     padding: PaddingValues,
     hazeState: HazeState,
 ) {
