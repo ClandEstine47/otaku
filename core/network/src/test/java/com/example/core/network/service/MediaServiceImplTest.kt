@@ -1,0 +1,295 @@
+package com.example.core.network.service
+
+import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo3.annotations.ApolloExperimental
+import com.apollographql.apollo3.api.ApolloRequest
+import com.apollographql.apollo3.api.ApolloResponse
+import com.apollographql.apollo3.api.Error
+import com.apollographql.apollo3.api.Operation
+import com.apollographql.apollo3.api.Optional
+import com.apollographql.apollo3.exception.ApolloException
+import com.apollographql.apollo3.network.NetworkTransport
+import com.apollographql.apollo3.testing.QueueTestNetworkTransport
+import com.apollographql.apollo3.testing.enqueueTestResponse
+import com.example.core.domain.model.media.MediaFormat
+import com.example.core.domain.model.media.MediaSeason
+import com.example.core.domain.model.media.MediaType
+import com.example.core.network.SeasonalAnimeQuery
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert.*
+import org.junit.Before
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.runners.JUnit4
+import com.example.core.network.type.MediaFormat as NetworkMediaFormat
+import com.example.core.network.type.MediaStatus as NetworkMediaStatus
+import com.example.core.network.type.MediaType as NetworkMediaType
+
+@OptIn(ApolloExperimental::class)
+@RunWith(JUnit4::class)
+class MediaServiceImplTest {
+    private lateinit var testClient: ApolloClient
+    private lateinit var mediaService: MediaServiceImpl
+
+    private val defaultParams =
+        TestParams(
+            pageNumber = 1,
+            perPage = 20,
+            seasonYear = 2024,
+            season = MediaSeason.SPRING,
+            mediaType = MediaType.ANIME,
+        )
+
+    @Before
+    fun setup() {
+        testClient =
+            ApolloClient.Builder()
+                .networkTransport(QueueTestNetworkTransport())
+                .build()
+        mediaService = MediaServiceImpl(testClient)
+    }
+
+    @Test
+    fun `getSeasonalMediaList returns success result with mapped data when API call is successful`() =
+        runTest {
+            // Given
+            val testData =
+                SeasonalAnimeQuery.Data(
+                    Page =
+                        SeasonalAnimeQuery.Page(
+                            pageInfo =
+                                SeasonalAnimeQuery.PageInfo(
+                                    total = 5,
+                                    currentPage = 1,
+                                    hasNextPage = true,
+                                ),
+                            media =
+                                listOf(
+                                    SeasonalAnimeQuery.Medium(
+                                        id = 123,
+                                        idMal = 123,
+                                        status = NetworkMediaStatus.FINISHED,
+                                        chapters = 30,
+                                        episodes = 12,
+                                        nextAiringEpisode =
+                                            SeasonalAnimeQuery.NextAiringEpisode(
+                                                episode = 12,
+                                            ),
+                                        isAdult = false,
+                                        type = NetworkMediaType.ANIME,
+                                        description = "",
+                                        genres = emptyList(),
+                                        meanScore = 90,
+                                        isFavourite = false,
+                                        format = NetworkMediaFormat.TV,
+                                        bannerImage = "",
+                                        countryOfOrigin = "JP",
+                                        coverImage =
+                                            SeasonalAnimeQuery.CoverImage(
+                                                large = "",
+                                                extraLarge = "",
+                                            ),
+                                        title =
+                                            SeasonalAnimeQuery.Title(
+                                                romaji = "Test Anime",
+                                                english = "Test Anime EN",
+                                                userPreferred = "Test Anime EN",
+                                            ),
+                                        mediaListEntry =
+                                            SeasonalAnimeQuery.MediaListEntry(
+                                                progress = 12,
+                                                private = false,
+                                                score = 10.0,
+                                                status = null,
+                                            ),
+                                    ),
+                                ),
+                        ),
+                )
+
+            // Create the query with test parameters
+            val query =
+                SeasonalAnimeQuery(
+                    page = defaultParams.pageNumber,
+                    perPage = Optional.present(defaultParams.perPage),
+                    seasonYear = Optional.present(defaultParams.seasonYear),
+                    season = Optional.present(defaultParams.season.toNetworkMediaSeason()),
+                    mediaType = Optional.present(defaultParams.mediaType.toNetworkMediaType()),
+                )
+
+            // Enqueue the test response
+            testClient.enqueueTestResponse(operation = query, data = testData, errors = null)
+
+            // When
+            val result =
+                mediaService.getSeasonalMediaList(
+                    pageNumber = defaultParams.pageNumber,
+                    perPage = defaultParams.perPage,
+                    seasonYear = defaultParams.seasonYear,
+                    season = defaultParams.season,
+                    mediaType = defaultParams.mediaType,
+                )
+
+            // Then
+            assertTrue(result.isSuccess)
+            result.onSuccess { page ->
+                assertEquals(1, page.data.size)
+                with(page.data.first()) {
+                    assertEquals("Test Anime", title.romaji)
+                    assertEquals("Test Anime EN", title.english)
+                    assertEquals(123, idAniList)
+                    assertEquals(12, episodes)
+                    assertEquals(90, meanScore)
+                    assertEquals(MediaFormat.TV, format)
+                }
+                with(page.pageInfo!!) {
+                    assertEquals(1, currentPage)
+                    assertEquals(5, total)
+                    assertTrue(hasNextPage == true)
+                }
+            }
+        }
+
+    @Test
+    fun `getSeasonalMediaList returns empty list when API returns null media list`() =
+        runTest {
+            // Given
+            val testData =
+                SeasonalAnimeQuery.Data(
+                    Page =
+                        SeasonalAnimeQuery.Page(
+                            pageInfo = null,
+                            media = null,
+                        ),
+                )
+
+            val query =
+                SeasonalAnimeQuery(
+                    page = defaultParams.pageNumber,
+                    perPage = Optional.present(defaultParams.perPage),
+                    seasonYear = Optional.present(defaultParams.seasonYear),
+                    season = Optional.present(defaultParams.season.toNetworkMediaSeason()),
+                    mediaType = Optional.present(defaultParams.mediaType.toNetworkMediaType()),
+                )
+
+            testClient.enqueueTestResponse(operation = query, data = testData, errors = null)
+
+            // When
+            val result =
+                mediaService.getSeasonalMediaList(
+                    pageNumber = defaultParams.pageNumber,
+                    perPage = defaultParams.perPage,
+                    seasonYear = defaultParams.seasonYear,
+                    season = defaultParams.season,
+                    mediaType = defaultParams.mediaType,
+                )
+
+            // Then
+            assertTrue(result.isSuccess)
+            result.onSuccess { page ->
+                assertTrue(page.data.isEmpty())
+                assertNull(page.pageInfo)
+            }
+        }
+
+    @Test
+    fun `getSeasonalMediaList returns failure result when API returns errors`() =
+        runTest {
+            // Given
+            val query =
+                SeasonalAnimeQuery(
+                    page = defaultParams.pageNumber,
+                    perPage = Optional.present(defaultParams.perPage),
+                    seasonYear = Optional.present(defaultParams.seasonYear),
+                    season = Optional.present(defaultParams.season.toNetworkMediaSeason()),
+                    mediaType = Optional.present(defaultParams.mediaType.toNetworkMediaType()),
+                )
+
+            testClient.enqueueTestResponse(
+                operation = query,
+                data = null,
+                errors =
+                    listOf(
+                        Error(
+                            message = "GraphQL Error",
+                            locations = null,
+                            path = null,
+                            extensions = null,
+                            nonStandardFields = null,
+                        ),
+                    ),
+            )
+
+            // When
+            val result =
+                mediaService.getSeasonalMediaList(
+                    pageNumber = defaultParams.pageNumber,
+                    perPage = defaultParams.perPage,
+                    seasonYear = defaultParams.seasonYear,
+                    season = defaultParams.season,
+                    mediaType = defaultParams.mediaType,
+                )
+
+            // Then
+            assertTrue(result.isFailure)
+            result.onFailure { exception ->
+                assertEquals("GraphQL Error", exception.message)
+            }
+        }
+
+    @Test
+    fun `getSeasonalMediaList returns failure result when ApolloException occurs`() =
+        runTest {
+            // Given
+            val query =
+                SeasonalAnimeQuery(
+                    page = defaultParams.pageNumber,
+                    perPage = Optional.present(defaultParams.perPage),
+                    seasonYear = Optional.present(defaultParams.seasonYear),
+                    season = Optional.present(defaultParams.season.toNetworkMediaSeason()),
+                    mediaType = Optional.present(defaultParams.mediaType.toNetworkMediaType()),
+                )
+
+            // Create custom transport that throws exception
+            val errorClient =
+                ApolloClient.Builder()
+                    .networkTransport(
+                        object : NetworkTransport {
+                            override fun <D : Operation.Data> execute(request: ApolloRequest<D>): Flow<ApolloResponse<D>> {
+                                throw ApolloException("Network error")
+                            }
+
+                            override fun dispose() {}
+                        },
+                    )
+                    .build()
+
+            mediaService = MediaServiceImpl(errorClient)
+
+            // When
+            val result =
+                mediaService.getSeasonalMediaList(
+                    pageNumber = defaultParams.pageNumber,
+                    perPage = defaultParams.perPage,
+                    seasonYear = defaultParams.seasonYear,
+                    season = defaultParams.season,
+                    mediaType = defaultParams.mediaType,
+                )
+
+            // Then
+            assertTrue(result.isFailure)
+            result.onFailure { exception ->
+                assertTrue(exception is ApolloException)
+                assertEquals("Network error", exception.message)
+            }
+        }
+
+    private data class TestParams(
+        val pageNumber: Int,
+        val perPage: Int,
+        val seasonYear: Int,
+        val season: MediaSeason,
+        val mediaType: MediaType,
+    )
+}
