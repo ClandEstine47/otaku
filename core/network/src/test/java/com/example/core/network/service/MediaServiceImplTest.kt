@@ -16,6 +16,7 @@ import com.example.core.domain.model.media.MediaSeason
 import com.example.core.domain.model.media.MediaType
 import com.example.core.network.RecentlyUpdatedQuery
 import com.example.core.network.SeasonalAnimeQuery
+import com.example.core.network.TrendingNowQuery
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.*
@@ -511,6 +512,225 @@ class MediaServiceImplTest {
             result.onFailure { exception ->
                 assertTrue(exception is ApolloException)
                 assertEquals("Network connection failed", exception.message)
+            }
+        }
+
+    @Test
+    fun `getTrendingNowMediaList returns success result with mapped data when API call is successful`() =
+        runTest {
+            // Given
+            val testData =
+                TrendingNowQuery.Data(
+                    Page =
+                        TrendingNowQuery.Page(
+                            pageInfo =
+                                TrendingNowQuery.PageInfo(
+                                    total = 5,
+                                    currentPage = 1,
+                                    hasNextPage = true,
+                                ),
+                            media =
+                                listOf(
+                                    TrendingNowQuery.Medium(
+                                        id = 123,
+                                        idMal = 123,
+                                        status = NetworkMediaStatus.FINISHED,
+                                        chapters = 30,
+                                        episodes = 12,
+                                        nextAiringEpisode =
+                                            TrendingNowQuery.NextAiringEpisode(
+                                                episode = 12,
+                                            ),
+                                        isAdult = false,
+                                        type = NetworkMediaType.ANIME,
+                                        description = "",
+                                        genres = emptyList(),
+                                        meanScore = 90,
+                                        isFavourite = false,
+                                        format = NetworkMediaFormat.TV,
+                                        bannerImage = "",
+                                        countryOfOrigin = "JP",
+                                        coverImage =
+                                            TrendingNowQuery.CoverImage(
+                                                large = "",
+                                                extraLarge = "",
+                                            ),
+                                        title =
+                                            TrendingNowQuery.Title(
+                                                romaji = "Test Anime",
+                                                english = "Test Anime EN",
+                                                userPreferred = "Test Anime EN",
+                                            ),
+                                        mediaListEntry =
+                                            TrendingNowQuery.MediaListEntry(
+                                                progress = 12,
+                                                private = false,
+                                                score = 10.0,
+                                                status = null,
+                                            ),
+                                        rankings = null,
+                                    ),
+                                ),
+                        ),
+                )
+
+            // Create the query with test parameters
+            val query =
+                TrendingNowQuery(
+                    page = defaultParams.pageNumber,
+                    perPage = Optional.present(defaultParams.perPage),
+                    mediaType = Optional.present(defaultParams.mediaType.toNetworkMediaType()),
+                )
+
+            // Enqueue the test response
+            testClient.enqueueTestResponse(operation = query, data = testData, errors = null)
+
+            // When
+            val result =
+                mediaService.getTrendingNowMediaList(
+                    pageNumber = defaultParams.pageNumber,
+                    perPage = defaultParams.perPage,
+                    mediaType = defaultParams.mediaType,
+                )
+
+            // Then
+            assertTrue(result.isSuccess)
+            result.onSuccess { page ->
+                assertEquals(1, page.data.size)
+                with(page.data.first()) {
+                    assertEquals("Test Anime", title.romaji)
+                    assertEquals("Test Anime EN", title.english)
+                    assertEquals(123, idAniList)
+                    assertEquals(12, episodes)
+                    assertEquals(90, meanScore)
+                    assertEquals(MediaFormat.TV, format)
+                }
+                with(page.pageInfo!!) {
+                    assertEquals(1, currentPage)
+                    assertEquals(5, total)
+                    assertTrue(hasNextPage == true)
+                }
+            }
+        }
+
+    @Test
+    fun `getTrendingNowMediaList returns empty list when API returns null media list`() =
+        runTest {
+            // Given
+            val testData =
+                TrendingNowQuery.Data(
+                    Page =
+                        TrendingNowQuery.Page(
+                            pageInfo = null,
+                            media = null,
+                        ),
+                )
+
+            val query =
+                TrendingNowQuery(
+                    page = defaultParams.pageNumber,
+                    perPage = Optional.present(defaultParams.perPage),
+                    mediaType = Optional.present(defaultParams.mediaType.toNetworkMediaType()),
+                )
+
+            testClient.enqueueTestResponse(operation = query, data = testData, errors = null)
+
+            // When
+            val result =
+                mediaService.getTrendingNowMediaList(
+                    pageNumber = defaultParams.pageNumber,
+                    perPage = defaultParams.perPage,
+                    mediaType = defaultParams.mediaType,
+                )
+
+            // Then
+            assertTrue(result.isSuccess)
+            result.onSuccess { page ->
+                assertTrue(page.data.isEmpty())
+                assertNull(page.pageInfo)
+            }
+        }
+
+    @Test
+    fun `getTrendingNowMediaList returns failure result when API returns errors`() =
+        runTest {
+            // Given
+            val query =
+                TrendingNowQuery(
+                    page = defaultParams.pageNumber,
+                    perPage = Optional.present(defaultParams.perPage),
+                    mediaType = Optional.present(defaultParams.mediaType.toNetworkMediaType()),
+                )
+
+            testClient.enqueueTestResponse(
+                operation = query,
+                data = null,
+                errors =
+                    listOf(
+                        Error(
+                            message = "GraphQL Error",
+                            locations = null,
+                            path = null,
+                            extensions = null,
+                            nonStandardFields = null,
+                        ),
+                    ),
+            )
+
+            // When
+            val result =
+                mediaService.getTrendingNowMediaList(
+                    pageNumber = defaultParams.pageNumber,
+                    perPage = defaultParams.perPage,
+                    mediaType = defaultParams.mediaType,
+                )
+
+            // Then
+            assertTrue(result.isFailure)
+            result.onFailure { exception ->
+                assertEquals("GraphQL Error", exception.message)
+            }
+        }
+
+    @Test
+    fun `getTrendingNowMediaList returns failure result when ApolloException occurs`() =
+        runTest {
+            // Given
+            TrendingNowQuery(
+                page = defaultParams.pageNumber,
+                perPage = Optional.present(defaultParams.perPage),
+                mediaType = Optional.present(defaultParams.mediaType.toNetworkMediaType()),
+            )
+
+            // Create custom transport that throws exception
+            val errorClient =
+                ApolloClient.Builder()
+                    .networkTransport(
+                        object : NetworkTransport {
+                            override fun <D : Operation.Data> execute(request: ApolloRequest<D>): Flow<ApolloResponse<D>> {
+                                throw ApolloException("Network error")
+                            }
+
+                            override fun dispose() {}
+                        },
+                    )
+                    .build()
+
+            mediaService = MediaServiceImpl(errorClient)
+
+            // When
+            val result =
+                mediaService.getTrendingNowMediaList(
+                    pageNumber = defaultParams.pageNumber,
+                    perPage = defaultParams.perPage,
+                    mediaType = defaultParams.mediaType,
+                )
+
+            // Then
+            assertTrue(result.isFailure)
+            result.onFailure { exception ->
+                assertTrue(exception is ApolloException)
+                assertEquals("Network error", exception.message)
             }
         }
 
