@@ -14,6 +14,7 @@ import com.apollographql.apollo3.testing.enqueueTestResponse
 import com.example.core.domain.model.media.MediaFormat
 import com.example.core.domain.model.media.MediaSeason
 import com.example.core.domain.model.media.MediaType
+import com.example.core.network.RecentlyUpdatedQuery
 import com.example.core.network.SeasonalAnimeQuery
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.test.runTest
@@ -39,6 +40,8 @@ class MediaServiceImplTest {
             seasonYear = 2024,
             season = MediaSeason.SPRING,
             mediaType = MediaType.ANIME,
+            airingAtLesser = 1698710400,
+            airingAtGreater = 1698624000,
         )
 
     @Before
@@ -242,14 +245,13 @@ class MediaServiceImplTest {
     fun `getSeasonalMediaList returns failure result when ApolloException occurs`() =
         runTest {
             // Given
-            val query =
-                SeasonalAnimeQuery(
-                    page = defaultParams.pageNumber,
-                    perPage = Optional.present(defaultParams.perPage),
-                    seasonYear = Optional.present(defaultParams.seasonYear),
-                    season = Optional.present(defaultParams.season.toNetworkMediaSeason()),
-                    mediaType = Optional.present(defaultParams.mediaType.toNetworkMediaType()),
-                )
+            SeasonalAnimeQuery(
+                page = defaultParams.pageNumber,
+                perPage = Optional.present(defaultParams.perPage),
+                seasonYear = Optional.present(defaultParams.seasonYear),
+                season = Optional.present(defaultParams.season.toNetworkMediaSeason()),
+                mediaType = Optional.present(defaultParams.mediaType.toNetworkMediaType()),
+            )
 
             // Create custom transport that throws exception
             val errorClient =
@@ -285,11 +287,240 @@ class MediaServiceImplTest {
             }
         }
 
+    @Test
+    fun `getRecentlyUpdatedAnimeList returns success result with mapped data when API call is successful`() =
+        runTest {
+            // Given
+            val testData =
+                RecentlyUpdatedQuery.Data(
+                    Page =
+                        RecentlyUpdatedQuery.Page(
+                            pageInfo =
+                                RecentlyUpdatedQuery.PageInfo(
+                                    total = 5,
+                                    currentPage = 1,
+                                    hasNextPage = true,
+                                ),
+                            airingSchedules =
+                                listOf(
+                                    RecentlyUpdatedQuery.AiringSchedule(
+                                        episode = 5,
+                                        airingAt = 1698624100,
+                                        media =
+                                            RecentlyUpdatedQuery.Media(
+                                                id = 456,
+                                                idMal = 789,
+                                                title =
+                                                    RecentlyUpdatedQuery.Title(
+                                                        romaji = "Test Anime",
+                                                        english = "Test Anime EN",
+                                                        userPreferred = "Test Anime EN",
+                                                    ),
+                                                type = NetworkMediaType.ANIME,
+                                                format = NetworkMediaFormat.TV,
+                                                status = NetworkMediaStatus.RELEASING,
+                                                chapters = 10,
+                                                episodes = 12,
+                                                countryOfOrigin = "JP",
+                                                bannerImage = "banner.jpg",
+                                                coverImage =
+                                                    RecentlyUpdatedQuery.CoverImage(
+                                                        large = "cover_large.jpg",
+                                                        extraLarge = "cover_xl.jpg",
+                                                    ),
+                                                genres = listOf("Action", "Adventure"),
+                                                meanScore = 85,
+                                                isAdult = false,
+                                                isFavourite = false,
+                                                mediaListEntry = null,
+                                                nextAiringEpisode =
+                                                    RecentlyUpdatedQuery.NextAiringEpisode(
+                                                        episode = 6,
+                                                    ),
+                                            ),
+                                    ),
+                                ),
+                        ),
+                )
+
+            val query =
+                RecentlyUpdatedQuery(
+                    page = defaultParams.pageNumber,
+                    perPage = Optional.present(defaultParams.perPage),
+                    airingAtLesser = defaultParams.airingAtLesser,
+                    airingAtGreater = Optional.present(defaultParams.airingAtGreater),
+                )
+
+            testClient.enqueueTestResponse(operation = query, data = testData)
+
+            // When
+            val result =
+                mediaService.getRecentlyUpdatedAnimeList(
+                    pageNumber = defaultParams.pageNumber,
+                    perPage = defaultParams.perPage,
+                    airingAtLesser = defaultParams.airingAtLesser,
+                    airingAtGreater = defaultParams.airingAtGreater,
+                )
+
+            // Then
+            assertTrue(result.isSuccess)
+            result.onSuccess { page ->
+                assertEquals(1, page.data.size)
+                with(page.data.first()) {
+                    with(media) {
+                        assertEquals(789, idMal)
+                        assertEquals("Test Anime", title.romaji)
+                        assertEquals("Test Anime EN", title.english)
+                        assertEquals(MediaType.ANIME, type)
+                        assertEquals(MediaFormat.TV, format)
+                        assertEquals(85, meanScore)
+                        assertEquals(listOf("Action", "Adventure"), genres)
+                    }
+                }
+
+                with(page.pageInfo!!) {
+                    assertEquals(1, currentPage)
+                    assertEquals(5, total)
+                    assertTrue(hasNextPage == true)
+                }
+            }
+        }
+
+    @Test
+    fun `getRecentlyUpdatedAnimeList returns empty list when API returns null schedules`() =
+        runTest {
+            // Given
+            val testData =
+                RecentlyUpdatedQuery.Data(
+                    Page =
+                        RecentlyUpdatedQuery.Page(
+                            pageInfo =
+                                RecentlyUpdatedQuery.PageInfo(
+                                    total = 0,
+                                    currentPage = 1,
+                                    hasNextPage = false,
+                                ),
+                            airingSchedules = null,
+                        ),
+                )
+
+            val query =
+                RecentlyUpdatedQuery(
+                    page = defaultParams.pageNumber,
+                    perPage = Optional.present(defaultParams.perPage),
+                    airingAtLesser = defaultParams.airingAtLesser,
+                    airingAtGreater = Optional.present(defaultParams.airingAtGreater),
+                )
+
+            testClient.enqueueTestResponse(operation = query, data = testData)
+
+            // When
+            val result =
+                mediaService.getRecentlyUpdatedAnimeList(
+                    pageNumber = defaultParams.pageNumber,
+                    perPage = defaultParams.perPage,
+                    airingAtLesser = defaultParams.airingAtLesser,
+                    airingAtGreater = defaultParams.airingAtGreater,
+                )
+
+            // Then
+            assertTrue(result.isSuccess)
+            result.onSuccess { page ->
+                assertTrue(page.data.isEmpty())
+                with(page.pageInfo!!) {
+                    assertEquals(1, currentPage)
+                    assertEquals(0, total)
+                    assertEquals(false, hasNextPage)
+                }
+            }
+        }
+
+    @Test
+    fun `getRecentlyUpdatedAnimeList returns failure result when API returns errors`() =
+        runTest {
+            // Given
+            val query =
+                RecentlyUpdatedQuery(
+                    page = defaultParams.pageNumber,
+                    perPage = Optional.present(defaultParams.perPage),
+                    airingAtLesser = defaultParams.airingAtLesser,
+                    airingAtGreater = Optional.present(defaultParams.airingAtGreater),
+                )
+
+            testClient.enqueueTestResponse(
+                operation = query,
+                data = null,
+                errors =
+                    listOf(
+                        Error(
+                            message = "GraphQL Error",
+                            locations = null,
+                            path = null,
+                            extensions = null,
+                            nonStandardFields = null,
+                        ),
+                    ),
+            )
+
+            // When
+            val result =
+                mediaService.getRecentlyUpdatedAnimeList(
+                    pageNumber = defaultParams.pageNumber,
+                    perPage = defaultParams.perPage,
+                    airingAtLesser = defaultParams.airingAtLesser,
+                    airingAtGreater = defaultParams.airingAtGreater,
+                )
+
+            // Then
+            assertTrue(result.isFailure)
+            result.onFailure { exception ->
+                assertEquals("GraphQL Error", exception.message)
+            }
+        }
+
+    @Test
+    fun `getRecentlyUpdatedAnimeList returns failure result when network error occurs`() =
+        runTest {
+            // Given
+            val errorClient =
+                ApolloClient.Builder()
+                    .networkTransport(
+                        object : NetworkTransport {
+                            override fun <D : Operation.Data> execute(request: ApolloRequest<D>): Flow<ApolloResponse<D>> {
+                                throw ApolloException("Network connection failed")
+                            }
+
+                            override fun dispose() {}
+                        },
+                    )
+                    .build()
+
+            mediaService = MediaServiceImpl(errorClient)
+
+            // When
+            val result =
+                mediaService.getRecentlyUpdatedAnimeList(
+                    pageNumber = defaultParams.pageNumber,
+                    perPage = defaultParams.perPage,
+                    airingAtLesser = defaultParams.airingAtLesser,
+                    airingAtGreater = defaultParams.airingAtGreater,
+                )
+
+            // Then
+            assertTrue(result.isFailure)
+            result.onFailure { exception ->
+                assertTrue(exception is ApolloException)
+                assertEquals("Network connection failed", exception.message)
+            }
+        }
+
     private data class TestParams(
         val pageNumber: Int,
         val perPage: Int,
         val seasonYear: Int,
         val season: MediaSeason,
         val mediaType: MediaType,
+        val airingAtLesser: Int,
+        val airingAtGreater: Int,
     )
 }
