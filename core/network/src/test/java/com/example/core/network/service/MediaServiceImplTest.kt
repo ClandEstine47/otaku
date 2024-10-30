@@ -13,8 +13,11 @@ import com.apollographql.apollo3.testing.QueueTestNetworkTransport
 import com.apollographql.apollo3.testing.enqueueTestResponse
 import com.example.core.domain.model.media.MediaFormat
 import com.example.core.domain.model.media.MediaSeason
+import com.example.core.domain.model.media.MediaSort
+import com.example.core.domain.model.media.MediaStatus
 import com.example.core.domain.model.media.MediaType
 import com.example.core.network.MediaQuery
+import com.example.core.network.MediaSearchQuery
 import com.example.core.network.MediaThreadsQuery
 import com.example.core.network.RecentlyUpdatedQuery
 import com.example.core.network.SeasonalAnimeQuery
@@ -45,10 +48,15 @@ class MediaServiceImplTest {
             season = MediaSeason.SPRING,
             mediaType = MediaType.ANIME,
             mediaFormat = MediaFormat.TV,
+            mediaStatus = MediaStatus.FINISHED,
             airingAtLesser = 1698710400,
             airingAtGreater = 1698624000,
             countryOfOrigin = "JP",
             mediaId = 123,
+            genres = null,
+            tags = null,
+            sort = listOf(MediaSort.POPULARITY),
+            searchQuery = "One Piece",
         )
 
     @Before
@@ -804,7 +812,7 @@ class MediaServiceImplTest {
                     page = defaultParams.pageNumber,
                     perPage = Optional.present(defaultParams.perPage),
                     mediaType = Optional.present(defaultParams.mediaType.toNetworkMediaType()),
-                    mediaFormat = Optional.presentIfNotNull(defaultParams.mediaFormat.toNetworkMediaFormat()),
+                    mediaFormat = Optional.presentIfNotNull(defaultParams.mediaFormat?.toNetworkMediaFormat()),
                     countryOfOrigin = Optional.presentIfNotNull(defaultParams.countryOfOrigin),
                 )
 
@@ -860,7 +868,7 @@ class MediaServiceImplTest {
                     page = defaultParams.pageNumber,
                     perPage = Optional.present(defaultParams.perPage),
                     mediaType = Optional.present(defaultParams.mediaType.toNetworkMediaType()),
-                    mediaFormat = Optional.presentIfNotNull(defaultParams.mediaFormat.toNetworkMediaFormat()),
+                    mediaFormat = Optional.presentIfNotNull(defaultParams.mediaFormat?.toNetworkMediaFormat()),
                     countryOfOrigin = Optional.presentIfNotNull(defaultParams.countryOfOrigin),
                 )
 
@@ -893,7 +901,7 @@ class MediaServiceImplTest {
                     page = defaultParams.pageNumber,
                     perPage = Optional.present(defaultParams.perPage),
                     mediaType = Optional.present(defaultParams.mediaType.toNetworkMediaType()),
-                    mediaFormat = Optional.presentIfNotNull(defaultParams.mediaFormat.toNetworkMediaFormat()),
+                    mediaFormat = Optional.presentIfNotNull(defaultParams.mediaFormat?.toNetworkMediaFormat()),
                     countryOfOrigin = Optional.presentIfNotNull(defaultParams.countryOfOrigin),
                 )
 
@@ -1239,7 +1247,7 @@ class MediaServiceImplTest {
         }
 
     @Test
-    fun `getMediaThreads returns empty list when API returns null media list`() =
+    fun `getMediaThreads returns empty list when API returns null thread list`() =
         runTest {
             // Given
             val testData =
@@ -1352,16 +1360,295 @@ class MediaServiceImplTest {
             }
         }
 
+    @Test
+    fun `getSearchMedia returns success result with mapped data when API call is successful`() =
+        runTest {
+            // Given
+            val testData =
+                MediaSearchQuery.Data(
+                    Page =
+                        MediaSearchQuery.Page(
+                            pageInfo =
+                                MediaSearchQuery.PageInfo(
+                                    total = 5,
+                                    currentPage = 1,
+                                    hasNextPage = true,
+                                ),
+                            media =
+                                listOf(
+                                    MediaSearchQuery.Medium(
+                                        id = 123,
+                                        idMal = 123,
+                                        status = NetworkMediaStatus.FINISHED,
+                                        chapters = 30,
+                                        episodes = 12,
+                                        nextAiringEpisode =
+                                            MediaSearchQuery.NextAiringEpisode(
+                                                episode = 12,
+                                            ),
+                                        isAdult = false,
+                                        type = NetworkMediaType.ANIME,
+                                        description = "",
+                                        genres = emptyList(),
+                                        meanScore = 90,
+                                        isFavourite = false,
+                                        format = NetworkMediaFormat.TV,
+                                        bannerImage = "",
+                                        countryOfOrigin = "JP",
+                                        coverImage =
+                                            MediaSearchQuery.CoverImage(
+                                                large = "",
+                                                extraLarge = "",
+                                            ),
+                                        title =
+                                            MediaSearchQuery.Title(
+                                                romaji = "One Piece",
+                                                english = "One Piece",
+                                                userPreferred = "One Piece",
+                                            ),
+                                        mediaListEntry =
+                                            MediaSearchQuery.MediaListEntry(
+                                                progress = 12,
+                                                private = false,
+                                                score = 10.0,
+                                                status = null,
+                                            ),
+                                    ),
+                                ),
+                        ),
+                )
+
+            // Create the query with test parameters
+            val query =
+                MediaSearchQuery(
+                    page = defaultParams.pageNumber,
+                    perPage = Optional.present(defaultParams.perPage),
+                    seasonYear = Optional.presentIfNotNull(defaultParams.seasonYear),
+                    season = Optional.presentIfNotNull(defaultParams.season.toNetworkMediaSeason()),
+                    type = Optional.present(defaultParams.mediaType.toNetworkMediaType()),
+                    search = Optional.presentIfNotNull(defaultParams.searchQuery),
+                    format = Optional.presentIfNotNull(defaultParams.mediaFormat?.toNetworkMediaFormat()),
+                    status = Optional.presentIfNotNull(defaultParams.mediaStatus?.toNetworkMediaStatus()),
+                    countryOfOrigin = Optional.presentIfNotNull(defaultParams.countryOfOrigin),
+                    genres = Optional.presentIfNotNull(defaultParams.genres),
+                    tags = Optional.presentIfNotNull(defaultParams.tags),
+                    sort = Optional.presentIfNotNull(defaultParams.sort?.map { it.toNetworkMediaSort() }),
+                )
+
+            // Enqueue the test response
+            testClient.enqueueTestResponse(operation = query, data = testData, errors = null)
+
+            // When
+            val result =
+                mediaService.getSearchMedia(
+                    pageNumber = defaultParams.pageNumber,
+                    perPage = defaultParams.perPage,
+                    seasonYear = defaultParams.seasonYear,
+                    season = defaultParams.season,
+                    mediaType = defaultParams.mediaType,
+                    search = defaultParams.searchQuery,
+                    format = defaultParams.mediaFormat,
+                    status = defaultParams.mediaStatus,
+                    countryOfOrigin = defaultParams.countryOfOrigin,
+                    genres = defaultParams.genres,
+                    tags = defaultParams.tags,
+                    sortBy = defaultParams.sort,
+                )
+
+            // Then
+            assertTrue(result.isSuccess)
+            result.onSuccess { page ->
+                assertEquals(1, page.data.size)
+                with(page.data.first()) {
+                    assertEquals("One Piece", title.romaji)
+                    assertEquals("One Piece", title.english)
+                    assertEquals(123, idAniList)
+                    assertEquals(12, episodes)
+                    assertEquals(90, meanScore)
+                    assertEquals(MediaFormat.TV, format)
+                }
+                with(page.pageInfo!!) {
+                    assertEquals(1, currentPage)
+                    assertEquals(5, total)
+                    assertTrue(hasNextPage == true)
+                }
+            }
+        }
+
+    @Test
+    fun `getSearchMedia returns empty list when API returns null media list`() =
+        runTest {
+            // Given
+            val testData =
+                MediaSearchQuery.Data(
+                    Page =
+                        MediaSearchQuery.Page(
+                            pageInfo = null,
+                            media = null,
+                        ),
+                )
+
+            val query =
+                MediaSearchQuery(
+                    page = defaultParams.pageNumber,
+                    perPage = Optional.present(defaultParams.perPage),
+                    seasonYear = Optional.presentIfNotNull(defaultParams.seasonYear),
+                    season = Optional.presentIfNotNull(defaultParams.season.toNetworkMediaSeason()),
+                    type = Optional.present(defaultParams.mediaType.toNetworkMediaType()),
+                    search = Optional.presentIfNotNull(defaultParams.searchQuery),
+                    format = Optional.presentIfNotNull(defaultParams.mediaFormat?.toNetworkMediaFormat()),
+                    status = Optional.presentIfNotNull(defaultParams.mediaStatus?.toNetworkMediaStatus()),
+                    countryOfOrigin = Optional.presentIfNotNull(defaultParams.countryOfOrigin),
+                    genres = Optional.presentIfNotNull(defaultParams.genres),
+                    tags = Optional.presentIfNotNull(defaultParams.tags),
+                    sort = Optional.presentIfNotNull(defaultParams.sort?.map { it.toNetworkMediaSort() }),
+                )
+
+            testClient.enqueueTestResponse(operation = query, data = testData, errors = null)
+
+            // When
+            val result =
+                mediaService.getSearchMedia(
+                    pageNumber = defaultParams.pageNumber,
+                    perPage = defaultParams.perPage,
+                    seasonYear = defaultParams.seasonYear,
+                    season = defaultParams.season,
+                    mediaType = defaultParams.mediaType,
+                    search = defaultParams.searchQuery,
+                    format = defaultParams.mediaFormat,
+                    status = defaultParams.mediaStatus,
+                    countryOfOrigin = defaultParams.countryOfOrigin,
+                    genres = defaultParams.genres,
+                    tags = defaultParams.tags,
+                    sortBy = defaultParams.sort,
+                )
+
+            // Then
+            assertTrue(result.isSuccess)
+            result.onSuccess { page ->
+                assertTrue(page.data.isEmpty())
+                assertNull(page.pageInfo)
+            }
+        }
+
+    @Test
+    fun `getSearchMedia returns failure result when API returns errors`() =
+        runTest {
+            // Given
+            val query =
+                MediaSearchQuery(
+                    page = defaultParams.pageNumber,
+                    perPage = Optional.present(defaultParams.perPage),
+                    seasonYear = Optional.presentIfNotNull(defaultParams.seasonYear),
+                    season = Optional.presentIfNotNull(defaultParams.season.toNetworkMediaSeason()),
+                    type = Optional.present(defaultParams.mediaType.toNetworkMediaType()),
+                    search = Optional.presentIfNotNull(defaultParams.searchQuery),
+                    format = Optional.presentIfNotNull(defaultParams.mediaFormat?.toNetworkMediaFormat()),
+                    status = Optional.presentIfNotNull(defaultParams.mediaStatus?.toNetworkMediaStatus()),
+                    countryOfOrigin = Optional.presentIfNotNull(defaultParams.countryOfOrigin),
+                    genres = Optional.presentIfNotNull(defaultParams.genres),
+                    tags = Optional.presentIfNotNull(defaultParams.tags),
+                    sort = Optional.presentIfNotNull(defaultParams.sort?.map { it.toNetworkMediaSort() }),
+                )
+
+            testClient.enqueueTestResponse(
+                operation = query,
+                data = null,
+                errors =
+                    listOf(
+                        Error(
+                            message = "GraphQL Error",
+                            locations = null,
+                            path = null,
+                            extensions = null,
+                            nonStandardFields = null,
+                        ),
+                    ),
+            )
+
+            // When
+            val result =
+                mediaService.getSearchMedia(
+                    pageNumber = defaultParams.pageNumber,
+                    perPage = defaultParams.perPage,
+                    seasonYear = defaultParams.seasonYear,
+                    season = defaultParams.season,
+                    mediaType = defaultParams.mediaType,
+                    search = defaultParams.searchQuery,
+                    format = defaultParams.mediaFormat,
+                    status = defaultParams.mediaStatus,
+                    countryOfOrigin = defaultParams.countryOfOrigin,
+                    genres = defaultParams.genres,
+                    tags = defaultParams.tags,
+                    sortBy = defaultParams.sort,
+                )
+
+            // Then
+            assertTrue(result.isFailure)
+            result.onFailure { exception ->
+                assertEquals("GraphQL Error", exception.message)
+            }
+        }
+
+    @Test
+    fun `getSearchMedia returns failure result when ApolloException occurs`() =
+        runTest {
+            // Create custom transport that throws exception
+            val errorClient =
+                ApolloClient.Builder()
+                    .networkTransport(
+                        object : NetworkTransport {
+                            override fun <D : Operation.Data> execute(request: ApolloRequest<D>): Flow<ApolloResponse<D>> {
+                                throw ApolloException("Network error")
+                            }
+
+                            override fun dispose() {}
+                        },
+                    )
+                    .build()
+
+            mediaService = MediaServiceImpl(errorClient)
+
+            // When
+            val result =
+                mediaService.getSearchMedia(
+                    pageNumber = defaultParams.pageNumber,
+                    perPage = defaultParams.perPage,
+                    seasonYear = defaultParams.seasonYear,
+                    season = defaultParams.season,
+                    mediaType = defaultParams.mediaType,
+                    search = defaultParams.searchQuery,
+                    format = defaultParams.mediaFormat,
+                    status = defaultParams.mediaStatus,
+                    countryOfOrigin = defaultParams.countryOfOrigin,
+                    genres = defaultParams.genres,
+                    tags = defaultParams.tags,
+                    sortBy = defaultParams.sort,
+                )
+
+            // Then
+            assertTrue(result.isFailure)
+            result.onFailure { exception ->
+                assertTrue(exception is ApolloException)
+                assertEquals("Network error", exception.message)
+            }
+        }
+
     private data class TestParams(
         val pageNumber: Int,
         val perPage: Int,
         val seasonYear: Int,
         val season: MediaSeason,
         val mediaType: MediaType,
-        val mediaFormat: MediaFormat,
+        val mediaFormat: MediaFormat?,
+        val mediaStatus: MediaStatus?,
         val airingAtLesser: Int,
         val airingAtGreater: Int,
-        val countryOfOrigin: String,
+        val countryOfOrigin: String?,
         val mediaId: Int,
+        val searchQuery: String?,
+        val genres: List<String>?,
+        val tags: List<String>?,
+        val sort: List<MediaSort>?,
     )
 }
