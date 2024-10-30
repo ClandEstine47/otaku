@@ -11,6 +11,7 @@ import com.example.core.domain.model.media.MediaSort
 import com.example.core.domain.model.media.MediaStatus
 import com.example.core.domain.model.media.MediaTitle
 import com.example.core.domain.model.media.MediaType
+import com.example.core.domain.model.thread.Thread
 import com.example.core.domain.service.MediaService
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -549,6 +550,114 @@ class MediaRepositoryImplTest {
             val result =
                 mediaRepository.getMediaById(
                     id = defaultParams.mediaId,
+                )
+
+            // Then
+            assertTrue(result.isFailure)
+            assertEquals(expectedError, result.exceptionOrNull())
+        }
+
+    @Test
+    fun `getMediaThreads returns success when service call succeeds`() =
+        runTest {
+            // Given
+            val expectedPage =
+                Page(
+                    pageInfo =
+                        PageInfo(
+                            total = 500,
+                            perPage = 21,
+                            currentPage = 1,
+                            lastPage = null,
+                            hasNextPage = true,
+                        ),
+                    data =
+                        listOf(
+                            Thread(id = 1, title = "Title1", body = "Body1"),
+                            Thread(id = 2, title = "Title2", body = "Body2"),
+                        ),
+                )
+
+            coEvery {
+                mediaService.getMediaThreads(
+                    pageNumber = defaultParams.pageNumber,
+                    perPage = defaultParams.perPage,
+                    mediaId = defaultParams.mediaId,
+                )
+            } returns Result.success(expectedPage)
+
+            // When
+            val result =
+                mediaRepository.getMediaThreads(
+                    pageNumber = defaultParams.pageNumber,
+                    perPage = defaultParams.perPage,
+                    mediaId = defaultParams.mediaId,
+                )
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(expectedPage, result.getOrNull())
+        }
+
+    @Test
+    fun `getMediaThreads with empty page returns success with empty list`() =
+        runTest {
+            // Given
+            val expectedPage =
+                Page<Thread>(
+                    pageInfo =
+                        PageInfo(
+                            total = 0,
+                            perPage = 20,
+                            currentPage = 1,
+                            hasNextPage = false,
+                            lastPage = null,
+                        ),
+                    data = emptyList(),
+                )
+
+            coEvery {
+                mediaService.getMediaThreads(
+                    pageNumber = defaultParams.pageNumber,
+                    perPage = defaultParams.perPage,
+                    mediaId = defaultParams.mediaId,
+                )
+            } returns Result.success(expectedPage)
+
+            // When
+            val result =
+                mediaRepository.getMediaThreads(
+                    pageNumber = defaultParams.pageNumber,
+                    perPage = defaultParams.perPage,
+                    mediaId = defaultParams.mediaId,
+                )
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(expectedPage, result.getOrNull())
+            assertEquals(0, result.getOrNull()?.data?.size)
+        }
+
+    @Test
+    fun `getMediaThreads returns failure when Apollo throws exception`() =
+        runTest {
+            // Given
+            val expectedError = ApolloException("Network error")
+
+            coEvery {
+                mediaService.getMediaThreads(
+                    pageNumber = defaultParams.pageNumber,
+                    perPage = defaultParams.perPage,
+                    mediaId = defaultParams.mediaId,
+                )
+            } returns Result.failure(expectedError)
+
+            // When
+            val result =
+                mediaRepository.getMediaThreads(
+                    pageNumber = defaultParams.pageNumber,
+                    perPage = defaultParams.perPage,
+                    mediaId = defaultParams.mediaId,
                 )
 
             // Then
