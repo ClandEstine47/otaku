@@ -15,6 +15,7 @@ import com.example.core.domain.model.media.MediaFormat
 import com.example.core.domain.model.media.MediaSeason
 import com.example.core.domain.model.media.MediaType
 import com.example.core.network.MediaQuery
+import com.example.core.network.MediaThreadsQuery
 import com.example.core.network.RecentlyUpdatedQuery
 import com.example.core.network.SeasonalAnimeQuery
 import com.example.core.network.TrendingNowQuery
@@ -1157,6 +1158,197 @@ class MediaServiceImplTest {
             result.onFailure { exception ->
                 assertTrue(exception is ApolloException)
                 assertEquals("Unknown GraphQL error", exception.message)
+            }
+        }
+
+    @Test
+    fun `getMediaThreads returns success result with mapped data when API call is successful`() =
+        runTest {
+            // Given
+            val testData =
+                MediaThreadsQuery.Data(
+                    Page =
+                        MediaThreadsQuery.Page(
+                            pageInfo =
+                                MediaThreadsQuery.PageInfo(
+                                    total = 5,
+                                    currentPage = 1,
+                                    hasNextPage = true,
+                                ),
+                            threads =
+                                listOf(
+                                    MediaThreadsQuery.Thread(
+                                        id = 50,
+                                        title = "Media Thread",
+                                        body = "Media Thread Body",
+                                        isLiked = true,
+                                        isLocked = false,
+                                        isSubscribed = false,
+                                        likeCount = 30,
+                                        totalReplies = 25,
+                                        viewCount = 450,
+                                        createdAt = 123456,
+                                        user =
+                                            MediaThreadsQuery.User(
+                                                id = 79,
+                                                name = "User",
+                                                avatar = null,
+                                            ),
+                                    ),
+                                ),
+                        ),
+                )
+
+            // Create the query with test parameters
+            val query =
+                MediaThreadsQuery(
+                    page = defaultParams.pageNumber,
+                    perPage = Optional.present(defaultParams.perPage),
+                    mediaCategoryId = Optional.present(defaultParams.mediaId),
+                )
+
+            // Enqueue the test response
+            testClient.enqueueTestResponse(operation = query, data = testData, errors = null)
+
+            // When
+            val result =
+                mediaService.getMediaThreads(
+                    pageNumber = defaultParams.pageNumber,
+                    perPage = defaultParams.perPage,
+                    mediaId = defaultParams.mediaId,
+                )
+
+            // Then
+            assertTrue(result.isSuccess)
+            result.onSuccess { page ->
+                assertEquals(1, page.data.size)
+                with(page.data.first()) {
+                    assertEquals("Media Thread", title)
+                    assertEquals("Media Thread Body", body)
+                    assertEquals(50, id)
+                    assertEquals(30, likeCount)
+                    assertEquals(25, replyCount)
+                    assertEquals("User", user?.name)
+                }
+                with(page.pageInfo!!) {
+                    assertEquals(1, currentPage)
+                    assertEquals(5, total)
+                    assertTrue(hasNextPage == true)
+                }
+            }
+        }
+
+    @Test
+    fun `getMediaThreads returns empty list when API returns null media list`() =
+        runTest {
+            // Given
+            val testData =
+                MediaThreadsQuery.Data(
+                    Page =
+                        MediaThreadsQuery.Page(
+                            pageInfo = null,
+                            threads = null,
+                        ),
+                )
+
+            val query =
+                MediaThreadsQuery(
+                    page = defaultParams.pageNumber,
+                    perPage = Optional.present(defaultParams.perPage),
+                    mediaCategoryId = Optional.present(defaultParams.mediaId),
+                )
+
+            testClient.enqueueTestResponse(operation = query, data = testData, errors = null)
+
+            // When
+            val result =
+                mediaService.getMediaThreads(
+                    pageNumber = defaultParams.pageNumber,
+                    perPage = defaultParams.perPage,
+                    mediaId = defaultParams.mediaId,
+                )
+
+            // Then
+            assertTrue(result.isSuccess)
+            result.onSuccess { page ->
+                assertTrue(page.data.isEmpty())
+                assertNull(page.pageInfo)
+            }
+        }
+
+    @Test
+    fun `getMediaThreads returns failure result when API returns errors`() =
+        runTest {
+            // Given
+            val query =
+                MediaThreadsQuery(
+                    page = defaultParams.pageNumber,
+                    perPage = Optional.present(defaultParams.perPage),
+                    mediaCategoryId = Optional.present(defaultParams.mediaId),
+                )
+
+            testClient.enqueueTestResponse(
+                operation = query,
+                data = null,
+                errors =
+                    listOf(
+                        Error(
+                            message = "GraphQL Error",
+                            locations = null,
+                            path = null,
+                            extensions = null,
+                            nonStandardFields = null,
+                        ),
+                    ),
+            )
+
+            // When
+            val result =
+                mediaService.getMediaThreads(
+                    pageNumber = defaultParams.pageNumber,
+                    perPage = defaultParams.perPage,
+                    mediaId = defaultParams.mediaId,
+                )
+
+            // Then
+            assertTrue(result.isFailure)
+            result.onFailure { exception ->
+                assertEquals("GraphQL Error", exception.message)
+            }
+        }
+
+    @Test
+    fun `getMediaThreads returns failure result when ApolloException occurs`() =
+        runTest {
+            // Create custom transport that throws exception
+            val errorClient =
+                ApolloClient.Builder()
+                    .networkTransport(
+                        object : NetworkTransport {
+                            override fun <D : Operation.Data> execute(request: ApolloRequest<D>): Flow<ApolloResponse<D>> {
+                                throw ApolloException("Network error")
+                            }
+
+                            override fun dispose() {}
+                        },
+                    )
+                    .build()
+
+            mediaService = MediaServiceImpl(errorClient)
+
+            // When
+            val result =
+                mediaService.getMediaThreads(
+                    pageNumber = defaultParams.pageNumber,
+                    perPage = defaultParams.perPage,
+                    mediaId = defaultParams.mediaId,
+                )
+
+            // Then
+            assertTrue(result.isFailure)
+            result.onFailure { exception ->
+                assertTrue(exception is ApolloException)
+                assertEquals("Network error", exception.message)
             }
         }
 
