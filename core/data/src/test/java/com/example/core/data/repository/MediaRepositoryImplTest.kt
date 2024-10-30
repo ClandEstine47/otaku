@@ -3,6 +3,7 @@ package com.example.core.data.repository
 import com.apollographql.apollo3.exception.ApolloException
 import com.example.core.domain.model.Page
 import com.example.core.domain.model.PageInfo
+import com.example.core.domain.model.airing.AiringSchedule
 import com.example.core.domain.model.media.Media
 import com.example.core.domain.model.media.MediaFormat
 import com.example.core.domain.model.media.MediaSeason
@@ -160,6 +161,120 @@ class MediaRepositoryImplTest {
                     seasonYear = defaultParams.seasonYear,
                     season = defaultParams.season,
                     mediaType = defaultParams.mediaType,
+                )
+
+            // Then
+            assertTrue(result.isFailure)
+            assertEquals(expectedError, result.exceptionOrNull())
+        }
+
+    @Test
+    fun `getRecentlyUpdatedAnimeList returns success when service call succeeds`() =
+        runTest {
+            // Given
+            val expectedPage =
+                Page(
+                    pageInfo =
+                        PageInfo(
+                            total = 500,
+                            perPage = 21,
+                            currentPage = 1,
+                            lastPage = null,
+                            hasNextPage = true,
+                        ),
+                    data =
+                        listOf(
+                            AiringSchedule(episode = 1120, media = Media(idAniList = 1, title = MediaTitle(english = "One Piece"))),
+                            AiringSchedule(episode = null, media = Media(idAniList = 2, title = MediaTitle(english = "Naruto"))),
+                        ),
+                )
+
+            coEvery {
+                mediaService.getRecentlyUpdatedAnimeList(
+                    pageNumber = defaultParams.pageNumber,
+                    perPage = defaultParams.perPage,
+                    airingAtLesser = defaultParams.airingAtLesser,
+                    airingAtGreater = defaultParams.airingAtGreater,
+                )
+            } returns Result.success(expectedPage)
+
+            // When
+            val result =
+                mediaRepository.getRecentlyUpdatedAnimeList(
+                    pageNumber = defaultParams.pageNumber,
+                    perPage = defaultParams.perPage,
+                    airingAtLesser = defaultParams.airingAtLesser,
+                    airingAtGreater = defaultParams.airingAtGreater,
+                )
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(expectedPage, result.getOrNull())
+        }
+
+    @Test
+    fun `getRecentlyUpdatedAnimeList with empty page returns success with empty list`() =
+        runTest {
+            // Given
+            val expectedPage =
+                Page<AiringSchedule>(
+                    pageInfo =
+                        PageInfo(
+                            total = 0,
+                            perPage = 20,
+                            currentPage = 1,
+                            hasNextPage = false,
+                            lastPage = null,
+                        ),
+                    data = emptyList(),
+                )
+
+            coEvery {
+                mediaService.getRecentlyUpdatedAnimeList(
+                    pageNumber = defaultParams.pageNumber,
+                    perPage = defaultParams.perPage,
+                    airingAtLesser = defaultParams.airingAtLesser,
+                    airingAtGreater = defaultParams.airingAtGreater,
+                )
+            } returns Result.success(expectedPage)
+
+            // When
+            val result =
+                mediaRepository.getRecentlyUpdatedAnimeList(
+                    pageNumber = defaultParams.pageNumber,
+                    perPage = defaultParams.perPage,
+                    airingAtLesser = defaultParams.airingAtLesser,
+                    airingAtGreater = defaultParams.airingAtGreater,
+                )
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(expectedPage, result.getOrNull())
+            assertEquals(0, result.getOrNull()?.data?.size)
+        }
+
+    @Test
+    fun `getRecentlyUpdatedAnimeList returns failure when Apollo throws exception`() =
+        runTest {
+            // Given
+            val expectedError = ApolloException("Network error")
+
+            coEvery {
+                mediaService.getRecentlyUpdatedAnimeList(
+                    pageNumber = defaultParams.pageNumber,
+                    perPage = defaultParams.perPage,
+                    airingAtLesser = defaultParams.airingAtLesser,
+                    airingAtGreater = defaultParams.airingAtGreater,
+                )
+            } returns Result.failure(expectedError)
+
+            // When
+            val result =
+                mediaRepository.getRecentlyUpdatedAnimeList(
+                    pageNumber = defaultParams.pageNumber,
+                    perPage = defaultParams.perPage,
+                    airingAtLesser = defaultParams.airingAtLesser,
+                    airingAtGreater = defaultParams.airingAtGreater,
                 )
 
             // Then
