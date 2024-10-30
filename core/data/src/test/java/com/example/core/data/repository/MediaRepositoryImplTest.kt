@@ -510,6 +510,52 @@ class MediaRepositoryImplTest {
             assertEquals(expectedError, result.exceptionOrNull())
         }
 
+    @Test
+    fun `getMediaById returns success when service call succeeds`() =
+        runTest {
+            // Given
+            val expectedMedia = Media(idAniList = 1, title = MediaTitle(english = "One Piece"))
+
+            coEvery {
+                mediaService.getMediaById(
+                    id = defaultParams.mediaId,
+                )
+            } returns Result.success(expectedMedia)
+
+            // When
+            val result =
+                mediaRepository.getMediaById(
+                    id = defaultParams.mediaId,
+                )
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(expectedMedia, result.getOrNull())
+        }
+
+    @Test
+    fun `getMediaById returns failure when Apollo throws exception`() =
+        runTest {
+            // Given
+            val expectedError = ApolloException("Network error")
+
+            coEvery {
+                mediaService.getMediaById(
+                    id = defaultParams.mediaId,
+                )
+            } returns Result.failure(expectedError)
+
+            // When
+            val result =
+                mediaRepository.getMediaById(
+                    id = defaultParams.mediaId,
+                )
+
+            // Then
+            assertTrue(result.isFailure)
+            assertEquals(expectedError, result.exceptionOrNull())
+        }
+
     private data class TestParams(
         val pageNumber: Int,
         val perPage: Int,
