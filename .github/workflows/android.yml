@@ -32,6 +32,9 @@ jobs:
       - name: Run Android Lint
         run: ./gradlew lintDebug
 
+      - name: Run Unit Tests
+        run: ./gradlew testDebugUnitTest
+
   build:
     runs-on: ubuntu-latest
 
