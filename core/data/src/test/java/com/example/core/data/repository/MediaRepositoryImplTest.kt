@@ -282,6 +282,114 @@ class MediaRepositoryImplTest {
             assertEquals(expectedError, result.exceptionOrNull())
         }
 
+    @Test
+    fun `getTrendingNowMedia returns success when service call succeeds`() =
+        runTest {
+            // Given
+            val expectedPage =
+                Page(
+                    pageInfo =
+                        PageInfo(
+                            total = 500,
+                            perPage = 21,
+                            currentPage = 1,
+                            lastPage = null,
+                            hasNextPage = true,
+                        ),
+                    data =
+                        listOf(
+                            Media(idAniList = 1, title = MediaTitle(english = "One Piece")),
+                            Media(idAniList = 2, title = MediaTitle(english = "Naruto")),
+                        ),
+                )
+
+            coEvery {
+                mediaService.getTrendingNowMediaList(
+                    pageNumber = defaultParams.pageNumber,
+                    perPage = defaultParams.perPage,
+                    mediaType = defaultParams.mediaType,
+                )
+            } returns Result.success(expectedPage)
+
+            // When
+            val result =
+                mediaRepository.getTrendingNowMedia(
+                    pageNumber = defaultParams.pageNumber,
+                    perPage = defaultParams.perPage,
+                    mediaType = defaultParams.mediaType,
+                )
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(expectedPage, result.getOrNull())
+        }
+
+    @Test
+    fun `getTrendingNowMedia with empty page returns success with empty list`() =
+        runTest {
+            // Given
+            val expectedPage =
+                Page<Media>(
+                    pageInfo =
+                        PageInfo(
+                            total = 0,
+                            perPage = 20,
+                            currentPage = 1,
+                            hasNextPage = false,
+                            lastPage = null,
+                        ),
+                    data = emptyList(),
+                )
+
+            coEvery {
+                mediaService.getTrendingNowMediaList(
+                    pageNumber = defaultParams.pageNumber,
+                    perPage = defaultParams.perPage,
+                    mediaType = defaultParams.mediaType,
+                )
+            } returns Result.success(expectedPage)
+
+            // When
+            val result =
+                mediaRepository.getTrendingNowMedia(
+                    pageNumber = defaultParams.pageNumber,
+                    perPage = defaultParams.perPage,
+                    mediaType = defaultParams.mediaType,
+                )
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(expectedPage, result.getOrNull())
+            assertEquals(0, result.getOrNull()?.data?.size)
+        }
+
+    @Test
+    fun `getTrendingNowMedia returns failure when Apollo throws exception`() =
+        runTest {
+            // Given
+            val expectedError = ApolloException("Network error")
+
+            coEvery {
+                mediaService.getTrendingNowMediaList(
+                    pageNumber = defaultParams.pageNumber,
+                    perPage = defaultParams.perPage,
+                    mediaType = defaultParams.mediaType,
+                )
+            } returns Result.failure(expectedError)
+
+            // When
+            val result =
+                mediaRepository.getTrendingNowMedia(
+                    pageNumber = defaultParams.pageNumber,
+                    perPage = defaultParams.perPage,
+                    mediaType = defaultParams.mediaType,
+                )
+
+            // Then
+            assertTrue(result.isFailure)
+            assertEquals(expectedError, result.exceptionOrNull())
+        }
+
     private data class TestParams(
         val pageNumber: Int,
         val perPage: Int,
