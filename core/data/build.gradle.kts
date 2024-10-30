@@ -57,4 +57,11 @@ dependencies {
 
     // timber
     implementation(libs.timber)
+
+    // mockk
+    testImplementation(libs.mockk)
+
+    // coroutines test
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.kotlinx.coroutines.android)
 }
