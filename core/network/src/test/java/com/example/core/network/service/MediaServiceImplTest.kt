@@ -14,6 +14,7 @@ import com.apollographql.apollo3.testing.enqueueTestResponse
 import com.example.core.domain.model.media.MediaFormat
 import com.example.core.domain.model.media.MediaSeason
 import com.example.core.domain.model.media.MediaType
+import com.example.core.network.MediaQuery
 import com.example.core.network.RecentlyUpdatedQuery
 import com.example.core.network.SeasonalAnimeQuery
 import com.example.core.network.TrendingNowQuery
@@ -25,6 +26,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 import com.example.core.network.type.MediaFormat as NetworkMediaFormat
+import com.example.core.network.type.MediaSeason as NetworkMediaSeason
 import com.example.core.network.type.MediaStatus as NetworkMediaStatus
 import com.example.core.network.type.MediaType as NetworkMediaType
 
@@ -45,6 +47,7 @@ class MediaServiceImplTest {
             airingAtLesser = 1698710400,
             airingAtGreater = 1698624000,
             countryOfOrigin = "JP",
+            mediaId = 123,
         )
 
     @Before
@@ -962,6 +965,201 @@ class MediaServiceImplTest {
             }
         }
 
+    @Test
+    fun `getMediaById returns success result with mapped data when API call is successful`() =
+        runTest {
+            // Given
+            val testData =
+                MediaQuery.Data(
+                    Media =
+                        MediaQuery.Media(
+                            id = 123,
+                            idMal = 123,
+                            status = NetworkMediaStatus.FINISHED,
+                            chapters = 30,
+                            episodes = 12,
+                            nextAiringEpisode =
+                                MediaQuery.NextAiringEpisode(
+                                    episode = 12,
+                                    airingAt = 1698624000,
+                                    timeUntilAiring = 0,
+                                ),
+                            isAdult = false,
+                            type = NetworkMediaType.ANIME,
+                            description = "",
+                            genres = emptyList(),
+                            meanScore = 90,
+                            averageScore = 90,
+                            characters =
+                                MediaQuery.Characters(
+                                    edges =
+                                        listOf(
+                                            MediaQuery.Edge3(
+                                                role = null,
+                                                node =
+                                                    MediaQuery.Node3(
+                                                        id = 5,
+                                                        name =
+                                                            MediaQuery.Name(
+                                                                full = "Saitama",
+                                                            ),
+                                                        image = null,
+                                                    ),
+                                            ),
+                                        ),
+                                ),
+                            isFavourite = false,
+                            format = NetworkMediaFormat.TV,
+                            bannerImage = "",
+                            countryOfOrigin = "JP",
+                            coverImage =
+                                MediaQuery.CoverImage(
+                                    large = "",
+                                    extraLarge = "",
+                                ),
+                            title =
+                                MediaQuery.Title(
+                                    romaji = "Test Anime",
+                                    english = "Test Anime EN",
+                                    native = "Test Anime",
+                                    userPreferred = "Test Anime EN",
+                                ),
+                            mediaListEntry =
+                                MediaQuery.MediaListEntry(
+                                    progress = 12,
+                                    private = false,
+                                    score = 10.0,
+                                    status = null,
+                                ),
+                            duration = 12,
+                            startDate =
+                                MediaQuery.StartDate(
+                                    year = 2000,
+                                    month = 12,
+                                    day = 12,
+                                ),
+                            endDate =
+                                MediaQuery.EndDate(
+                                    year = 2010,
+                                    month = 11,
+                                    day = 21,
+                                ),
+                            externalLinks = null,
+                            favourites = 4590,
+                            popularity = 1000,
+                            season = NetworkMediaSeason.FALL,
+                            seasonYear = 2000,
+                            rankings = null,
+                            recommendations = null,
+                            relations = null,
+                            reviews = null,
+                            siteUrl = "siteurl",
+                            source = null,
+                            staff = null,
+                            synonyms = listOf("action", "adventure"),
+                            stats = null,
+                            studios = null,
+                            tags = null,
+                            trailer = null,
+                            trending = 10,
+                        ),
+                )
+
+            // Create the query with test parameters
+            val query =
+                MediaQuery(
+                    id = defaultParams.mediaId,
+                )
+
+            // Enqueue the test response
+            testClient.enqueueTestResponse(operation = query, data = testData, errors = null)
+
+            // When
+            val result =
+                mediaService.getMediaById(
+                    id = defaultParams.mediaId,
+                )
+
+            // Then
+            assertTrue(result.isSuccess)
+            result.onSuccess { media ->
+                assertEquals(123, media.idAniList)
+                assertEquals("Test Anime", media.title.romaji)
+                assertEquals(90, media.meanScore)
+                assertEquals(10, media.trending)
+            }
+        }
+
+    @Test
+    fun `getMediaById returns failure result when API returns errors`() =
+        runTest {
+            // Given
+            val query =
+                MediaQuery(
+                    id = defaultParams.mediaId,
+                )
+
+            testClient.enqueueTestResponse(
+                operation = query,
+                data = null,
+                errors =
+                    listOf(
+                        Error(
+                            message = "GraphQL Error",
+                            locations = null,
+                            path = null,
+                            extensions = null,
+                            nonStandardFields = null,
+                        ),
+                    ),
+            )
+
+            // When
+            val result =
+                mediaService.getMediaById(
+                    id = defaultParams.mediaId,
+                )
+
+            // Then
+            assertTrue(result.isFailure)
+            result.onFailure { exception ->
+                assertEquals("GraphQL Error", exception.message)
+            }
+        }
+
+    @Test
+    fun `getMediaById returns failure result when ApolloException occurs`() =
+        runTest {
+            // Create custom transport that throws exception
+            val errorClient =
+                ApolloClient.Builder()
+                    .networkTransport(
+                        object : NetworkTransport {
+                            override fun <D : Operation.Data> execute(request: ApolloRequest<D>): Flow<ApolloResponse<D>> {
+                                throw ApolloException("Unknown GraphQL error")
+                            }
+
+                            override fun dispose() {}
+                        },
+                    )
+                    .build()
+
+            mediaService = MediaServiceImpl(errorClient)
+
+            // When
+            val result =
+                mediaService.getMediaById(
+                    id = defaultParams.mediaId,
+                )
+
+            // Then
+            assertTrue(result.isFailure)
+            result.onFailure { exception ->
+                assertTrue(exception is ApolloException)
+                assertEquals("Unknown GraphQL error", exception.message)
+            }
+        }
+
     private data class TestParams(
         val pageNumber: Int,
         val perPage: Int,
@@ -972,5 +1170,6 @@ class MediaServiceImplTest {
         val airingAtLesser: Int,
         val airingAtGreater: Int,
         val countryOfOrigin: String,
+        val mediaId: Int,
     )
 }
