@@ -17,6 +17,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.core.domain.model.media.Media
 import com.example.core.domain.model.media.MediaStatus
+import com.example.core.domain.model.media.MediaType
 import com.example.feature.R
 import com.example.feature.Utils
 import com.example.feature.anime.OtakuTitle
@@ -101,13 +102,16 @@ fun MediaInfo(
         TagItem(key = R.string.mean_score, value = "$meanScore | 10")
         TagItem(key = R.string.status, value = media.status?.name ?: "-")
         TagItem(key = R.string.format, value = media.format?.name ?: "-")
-        TagItem(key = R.string.episodes, value = episodes)
-        TagItem(key = R.string.episode_duration, value = "${media.duration ?: "?"} mins")
+        if (media.type == MediaType.ANIME) {
+            TagItem(key = R.string.season, value = season)
+            TagItem(key = R.string.episodes, value = episodes)
+            TagItem(key = R.string.episode_duration, value = "${media.duration ?: "?"} mins")
+        } else {
+            TagItem(key = R.string.chapters, value = "${media.chapters ?: "?"}")
+        }
         TagItem(key = R.string.source, value = media.source?.name ?: "-")
         TagItem(key = R.string.start_date, value = startDate)
         TagItem(key = R.string.end_date, value = endDate)
-        TagItem(key = R.string.end_date, value = endDate)
-        TagItem(key = R.string.season, value = season)
         TagItem(key = R.string.popularity, value = popularity)
         TagItem(key = R.string.favourites, value = favourites)
 

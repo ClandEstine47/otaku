@@ -22,7 +22,6 @@ import com.example.core.navigation.OtakuScreen
 import com.example.core.navigation.StartDestination
 import com.example.core.navigation.navigateAndReplaceStartRoute
 import com.example.feature.BottomNavBar
-import com.example.feature.NavBarItem
 import com.example.otaku.ui.theme.OtakuTheme
 import dev.chrisbanes.haze.HazeState
 import kotlinx.coroutines.launch
@@ -55,12 +54,6 @@ fun OtakuMain() {
                 OtakuScreen.MangaTab.toString(),
             )
 
-        val navBarItems =
-            listOf(
-                NavBarItem(mediaType = MediaType.ANIME, iconEnabled = com.example.feature.R.drawable.anime_enabled, iconDisabled = com.example.feature.R.drawable.anime_disabled),
-                NavBarItem(mediaType = MediaType.MANGA, iconEnabled = com.example.feature.R.drawable.manga_enabled, iconDisabled = com.example.feature.R.drawable.manga_disabled),
-            )
-
         LaunchedEffect(Unit) {
             bottomTabIndex = if (startDestination == OtakuScreen.AnimeTab.toString()) 0 else 1
         }
@@ -80,7 +73,6 @@ fun OtakuMain() {
                     if (showBottomBar) {
                         bottomTabIndex?.let { index ->
                             BottomNavBar(
-                                navBarItems = navBarItems,
                                 hazeState = hazeState,
                                 tabIndex = index,
                                 navigate = { mediaType ->
@@ -110,7 +102,6 @@ fun OtakuMain() {
                     navController = navController,
                     navActionManager = navActionManager,
                     startDestination = startDestination,
-                    deepLink = null,
                     padding = padding,
                     hazeState = hazeState,
                 )

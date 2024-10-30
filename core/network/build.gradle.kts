@@ -61,8 +61,16 @@ dependencies {
 
     // apollo graphql
     implementation(libs.apollo.runtime)
+    testImplementation(libs.apollo.testing.support)
 
     // di
     implementation(libs.dagger.hilt)
     ksp(libs.dagger.hilt.compiler)
+
+    // mockk
+    testImplementation(libs.mockk)
+
+    // coroutines test
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.kotlinx.coroutines.android)
 }
