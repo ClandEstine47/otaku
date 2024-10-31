@@ -5,8 +5,9 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
+import com.example.core.domain.model.MediaListItem
 import com.example.core.navigation.NavActionManager
-import com.example.feature.medialist.MediaListItem
+import com.example.feature.screens.medialist.MediaListItem
 
 @Composable
 fun MediaListViewContent(

@@ -12,11 +12,11 @@ import com.example.core.domain.model.media.MediaType
 import com.example.core.navigation.CustomNavType
 import com.example.core.navigation.NavActionManager
 import com.example.core.navigation.OtakuScreen
-import com.example.feature.anime.AnimeView
-import com.example.feature.manga.MangaView
-import com.example.feature.mediadetail.MediaDetailView
-import com.example.feature.medialist.MediaListView
-import com.example.feature.search.MediaSearchView
+import com.example.feature.screens.anime.AnimeView
+import com.example.feature.screens.manga.MangaView
+import com.example.feature.screens.mediadetail.MediaDetailView
+import com.example.feature.screens.medialist.MediaListView
+import com.example.feature.screens.search.MediaSearchView
 import dev.chrisbanes.haze.HazeState
 import kotlin.reflect.typeOf
 

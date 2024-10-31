@@ -21,7 +21,7 @@ import com.example.core.navigation.NavActionManager
 import com.example.core.navigation.OtakuScreen
 import com.example.core.navigation.StartDestination
 import com.example.core.navigation.navigateAndReplaceStartRoute
-import com.example.feature.BottomNavBar
+import com.example.feature.screens.BottomNavBar
 import com.example.otaku.ui.theme.OtakuTheme
 import dev.chrisbanes.haze.HazeState
 import kotlinx.coroutines.launch
