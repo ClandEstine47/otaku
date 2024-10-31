@@ -91,4 +91,11 @@ dependencies {
 
     // youtube player
     implementation(libs.android.youtube.player)
+
+    // mockk
+    testImplementation(libs.mockk)
+
+    // coroutines test
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.kotlinx.coroutines.android)
 }
