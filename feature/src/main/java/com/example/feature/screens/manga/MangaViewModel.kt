@@ -33,7 +33,7 @@ class MangaViewModel
             }
         }
 
-        private suspend fun loadData() {
+        private fun loadData() {
             viewModelScope.launch {
                 _state.update {
                     it.copy(
