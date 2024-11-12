@@ -25,7 +25,7 @@ import java.time.LocalDateTime
 import javax.inject.Inject
 
 @HiltViewModel
-class MediaListViewViewModel
+class MediaListViewModel
     @Inject
     constructor(
         private val mediaRepository: MediaRepository,

@@ -57,7 +57,7 @@ import kotlinx.coroutines.launch
 fun MediaListView(
     arguments: OtakuScreen.MediaList,
     navActionManager: NavActionManager,
-    mediaListViewModel: MediaListViewViewModel = hiltViewModel(),
+    mediaListViewModel: MediaListViewModel = hiltViewModel(),
 ) {
     val uiState by mediaListViewModel.state.collectAsStateWithLifecycle()
     var viewType by rememberSaveable {

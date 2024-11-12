@@ -32,7 +32,7 @@ import java.time.LocalDateTime
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MediaListViewModelTest {
-    private lateinit var viewModel: MediaListViewViewModel
+    private lateinit var viewModel: MediaListViewModel
     private lateinit var mediaRepository: MediaRepository
     private val testDispatcher = StandardTestDispatcher()
     private val currentTime = LocalDateTime.now()
@@ -43,7 +43,7 @@ class MediaListViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         mediaRepository = mockk()
-        viewModel = MediaListViewViewModel(mediaRepository)
+        viewModel = MediaListViewModel(mediaRepository)
     }
 
     @After
