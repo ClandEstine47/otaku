@@ -22,7 +22,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.core.domain.model.media.MediaType
 import com.example.feature.R
-import com.example.feature.anime.OtakuTitle
 
 @Composable
 fun SearchBar(

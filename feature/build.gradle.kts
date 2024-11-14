@@ -10,7 +10,7 @@ apply(from = rootProject.file("spotless.gradle"))
 
 android {
     namespace = "com.example.feature"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 24
@@ -91,4 +91,11 @@ dependencies {
 
     // youtube player
     implementation(libs.android.youtube.player)
+
+    // mockk
+    testImplementation(libs.mockk)
+
+    // coroutines test
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.kotlinx.coroutines.android)
 }

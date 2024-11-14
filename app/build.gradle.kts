@@ -11,7 +11,7 @@ apply(from = rootProject.file("spotless.gradle"))
 
 android {
     namespace = "com.example.otaku"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.otaku"

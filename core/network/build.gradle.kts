@@ -10,7 +10,7 @@ apply(from = rootProject.file("spotless.gradle"))
 
 android {
     namespace = "com.example.core.network"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 24

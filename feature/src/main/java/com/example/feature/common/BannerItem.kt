@@ -32,10 +32,6 @@ import coil.request.ImageRequest
 import com.example.core.domain.model.media.Media
 import com.example.core.domain.model.media.MediaRankType
 import com.example.feature.R
-import com.example.feature.anime.BannerCard
-import com.example.feature.anime.ImageCard
-import com.example.feature.anime.OtakuTitle
-import com.example.feature.mediadetail.ExpandableHtmlText
 
 @OptIn(ExperimentalFoundationApi::class)
 @SuppressLint("RememberReturnType")
@@ -72,8 +68,6 @@ fun BannerItem(
     Box(modifier = Modifier.fillMaxSize()) {
         BannerCard(
             bannerPainter = bannerPainter,
-            coverPainter = coverPainter,
-            score = (media.meanScore.toDouble() / 10),
         )
 
         Column(

@@ -14,10 +14,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
+import com.example.core.domain.model.MediaListItem
 import com.example.core.domain.model.media.MediaType
 import com.example.core.navigation.NavActionManager
-import com.example.feature.anime.ImageCard
-import com.example.feature.anime.OtakuImageCardTitle
 
 @Composable
 fun MediaGridViewContent(
