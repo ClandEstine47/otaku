@@ -6,7 +6,7 @@ ksp = "2.0.0-1.0.22"
 # AndroidX
 androidxActivityCompose = "1.9.3"
 androidxAppcompat = "1.7.0"
-androidxComposeBom = "2024.10.01"
+androidxComposeBom = "2024.11.00"
 androidxCore = "1.15.0"
 androidxDatastore = "1.1.1"
 androidxHiltNavigationCompose = "1.2.0"
