@@ -1,7 +1,6 @@
 package com.example.feature.screens.anime
 
 import android.os.Build
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,16 +23,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.rememberAsyncImagePainter
 import com.example.core.domain.model.MediaListContentType
 import com.example.core.domain.model.airing.AiringSchedule
 import com.example.core.domain.model.media.Media
 import com.example.core.domain.model.media.MediaType
 import com.example.core.navigation.NavActionManager
 import com.example.feature.R
-import com.example.feature.common.ImageCard
 import com.example.feature.common.InfiniteHorizontalPager
-import com.example.feature.common.OtakuImageCardTitle
+import com.example.feature.common.MediaItem
 import com.example.feature.common.SearchBar
 import com.example.feature.common.TitleWithExpandButton
 import dev.chrisbanes.haze.HazeDefaults
@@ -145,33 +142,17 @@ fun AnimeContent(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             items(recentlyUpdatedAnime) { anime ->
-                val painter =
-                    rememberAsyncImagePainter(
-                        model = anime.media.coverImage.large,
-                    )
-
-                Column(
-                    horizontalAlignment = Alignment.Start,
-                    verticalArrangement = Arrangement.spacedBy(3.dp),
-                    modifier =
-                        Modifier.clickable {
-                            navActionManager.toMediaDetail(
-                                id = anime.media.idAniList,
-                                mediaType = mediaType,
-                            )
-                        },
-                ) {
-                    ImageCard(
-                        painter = painter,
-                        score = (anime.media.meanScore.toDouble()) / 10,
-                        isAnime = true,
-                        totalEpisodes = anime.media.episodes,
-                        releasedEpisodes = anime.episode,
-                        format = anime.media.format?.name,
-                    )
-
-                    OtakuImageCardTitle(title = anime.media.title.english.ifBlank { anime.media.title.romaji })
-                }
+                MediaItem(
+                    media = anime.media,
+                    isAnime = true,
+                    releasedEpisodes = anime.episode,
+                    onClick = { id ->
+                        navActionManager.toMediaDetail(
+                            id = id,
+                            mediaType = mediaType,
+                        )
+                    },
+                )
             }
         }
     }
@@ -196,34 +177,17 @@ fun AnimeContent(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             items(currentSeasonAnime) { anime ->
-                val painter =
-                    rememberAsyncImagePainter(
-                        model = anime.coverImage.large,
-                    )
-
-                Column(
-                    horizontalAlignment = Alignment.Start,
-                    verticalArrangement = Arrangement.spacedBy(3.dp),
-                    modifier =
-                        Modifier
-                            .clickable {
-                                navActionManager.toMediaDetail(
-                                    id = anime.idAniList,
-                                    mediaType = mediaType,
-                                )
-                            },
-                ) {
-                    ImageCard(
-                        painter = painter,
-                        score = (anime.meanScore.toDouble()) / 10,
-                        isAnime = true,
-                        totalEpisodes = anime.episodes,
-                        releasedEpisodes = anime.nextAiringEpisode?.episode?.minus(1),
-                        format = anime.format?.name,
-                    )
-
-                    OtakuImageCardTitle(title = anime.title.english.ifBlank { anime.title.romaji })
-                }
+                MediaItem(
+                    media = anime,
+                    isAnime = true,
+                    releasedEpisodes = anime.nextAiringEpisode?.episode?.minus(1),
+                    onClick = { id ->
+                        navActionManager.toMediaDetail(
+                            id = id,
+                            mediaType = mediaType,
+                        )
+                    },
+                )
             }
         }
     }
@@ -248,34 +212,17 @@ fun AnimeContent(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             items(popularAnime) { anime ->
-                val painter =
-                    rememberAsyncImagePainter(
-                        model = anime.coverImage.large,
-                    )
-
-                Column(
-                    horizontalAlignment = Alignment.Start,
-                    verticalArrangement = Arrangement.spacedBy(3.dp),
-                    modifier =
-                        Modifier
-                            .clickable {
-                                navActionManager.toMediaDetail(
-                                    id = anime.idAniList,
-                                    mediaType = mediaType,
-                                )
-                            },
-                ) {
-                    ImageCard(
-                        painter = painter,
-                        score = (anime.meanScore.toDouble()) / 10,
-                        isAnime = true,
-                        totalEpisodes = anime.episodes,
-                        releasedEpisodes = anime.nextAiringEpisode?.episode?.minus(1),
-                        format = anime.format?.name,
-                    )
-
-                    OtakuImageCardTitle(title = anime.title.english.ifBlank { anime.title.romaji })
-                }
+                MediaItem(
+                    media = anime,
+                    isAnime = true,
+                    releasedEpisodes = anime.nextAiringEpisode?.episode?.minus(1),
+                    onClick = { id ->
+                        navActionManager.toMediaDetail(
+                            id = id,
+                            mediaType = mediaType,
+                        )
+                    },
+                )
             }
         }
     }
@@ -300,35 +247,17 @@ fun AnimeContent(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             items(nextSeasonAnime) { anime ->
-                val painter =
-                    rememberAsyncImagePainter(
-                        model = anime.coverImage.large,
-                    )
-
-                Column(
-                    horizontalAlignment = Alignment.Start,
-                    verticalArrangement = Arrangement.spacedBy(3.dp),
-                    modifier =
-                        Modifier
-                            .clickable {
-                                navActionManager.toMediaDetail(
-                                    id = anime.idAniList,
-                                    mediaType = mediaType,
-                                )
-                            },
-                ) {
-                    ImageCard(
-                        painter = painter,
-                        score = (anime.meanScore.toDouble()) / 10,
-                        isAnime = true,
-                        showScore = false,
-                        totalEpisodes = anime.episodes,
-                        releasedEpisodes = null,
-                        format = anime.format?.name,
-                    )
-
-                    OtakuImageCardTitle(title = anime.title.english.ifBlank { anime.title.romaji })
-                }
+                MediaItem(
+                    media = anime,
+                    isAnime = true,
+                    showScore = false,
+                    onClick = { id ->
+                        navActionManager.toMediaDetail(
+                            id = id,
+                            mediaType = mediaType,
+                        )
+                    },
+                )
             }
         }
     }
