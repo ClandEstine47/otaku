@@ -36,8 +36,9 @@ fun MediaItem(
             painter = painter,
             score = (media.meanScore.toDouble()) / 10,
             isAnime = isAnime,
-            totalEpisodes = media.episodes,
-            releasedEpisodes = releasedEpisodes,
+            totalEpisodes = if (isAnime) media.episodes else null,
+            releasedEpisodes = if (isAnime) releasedEpisodes else null,
+            totalChapters = if (!isAnime) media.chapters else null,
             showScore = showScore,
             format = media.format?.name,
         )
