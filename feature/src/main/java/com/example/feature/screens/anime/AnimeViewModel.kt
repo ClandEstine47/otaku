@@ -39,7 +39,7 @@ class AnimeViewModel
             }
         }
 
-        private fun loadData() {
+        fun loadData() {
             viewModelScope.launch {
                 _state.update {
                     it.copy(

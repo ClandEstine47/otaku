@@ -28,6 +28,7 @@ import com.example.core.domain.model.media.Media
 import com.example.core.domain.model.media.MediaType
 import com.example.core.navigation.NavActionManager
 import com.example.feature.R
+import com.example.feature.common.ErrorScreen
 import com.example.feature.common.InfiniteHorizontalPager
 import com.example.feature.common.MediaItem
 import com.example.feature.common.SearchBar
@@ -75,14 +76,22 @@ fun MangaView(
                 CircularProgressIndicator()
             }
         } else {
-            MangaContent(
-                navActionManager = navActionManager,
-                trendingMangaList = uiState.trendingMangaList,
-                popularMangaList = uiState.popularMangaList,
-                popularManhwaList = uiState.popularManhwaList,
-                popularNovelList = uiState.popularNovelList,
-                popularOneShotList = uiState.popularOneShotList,
-            )
+            if (uiState.error == null) {
+                MangaContent(
+                    navActionManager = navActionManager,
+                    trendingMangaList = uiState.trendingMangaList,
+                    popularMangaList = uiState.popularMangaList,
+                    popularManhwaList = uiState.popularManhwaList,
+                    popularNovelList = uiState.popularNovelList,
+                    popularOneShotList = uiState.popularOneShotList,
+                )
+            } else {
+                ErrorScreen(
+                    onRetryClick = {
+                        mangaViewModel.loadData()
+                    },
+                )
+            }
         }
     }
 }

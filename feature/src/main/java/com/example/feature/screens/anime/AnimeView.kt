@@ -29,6 +29,7 @@ import com.example.core.domain.model.media.Media
 import com.example.core.domain.model.media.MediaType
 import com.example.core.navigation.NavActionManager
 import com.example.feature.R
+import com.example.feature.common.ErrorScreen
 import com.example.feature.common.InfiniteHorizontalPager
 import com.example.feature.common.MediaItem
 import com.example.feature.common.SearchBar
@@ -76,14 +77,22 @@ fun AnimeView(
                 CircularProgressIndicator()
             }
         } else {
-            AnimeContent(
-                navActionManager = navActionManager,
-                trendingNowMedia = uiState.trendingNowMedia,
-                recentlyUpdatedMedia = uiState.recentlyUpdatedMedia,
-                currentSeasonMedia = uiState.currentSeasonMedia,
-                popularNowMedia = uiState.popularMedia,
-                nextSeasonMedia = uiState.nextSeasonMedia,
-            )
+            if (uiState.error == null) {
+                AnimeContent(
+                    navActionManager = navActionManager,
+                    trendingNowMedia = uiState.trendingNowMedia,
+                    recentlyUpdatedMedia = uiState.recentlyUpdatedMedia,
+                    currentSeasonMedia = uiState.currentSeasonMedia,
+                    popularNowMedia = uiState.popularMedia,
+                    nextSeasonMedia = uiState.nextSeasonMedia,
+                )
+            } else {
+                ErrorScreen(
+                    onRetryClick = {
+                        animeViewModel.loadData()
+                    },
+                )
+            }
         }
     }
 }
