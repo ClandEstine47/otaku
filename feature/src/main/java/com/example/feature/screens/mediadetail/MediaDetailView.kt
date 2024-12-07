@@ -33,10 +33,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.core.data.service.isOnline
 import com.example.core.domain.model.media.Media
 import com.example.core.domain.model.thread.Thread
 import com.example.core.navigation.NavActionManager
@@ -44,6 +47,7 @@ import com.example.core.navigation.OtakuScreen
 import com.example.feature.R
 import com.example.feature.common.BackButton
 import com.example.feature.common.BannerItem
+import com.example.feature.common.ErrorScreen
 import com.example.feature.common.OtakuTitle
 import com.example.feature.common.ShareButton
 import com.example.feature.screens.mediadetail.components.MediaCharacters
@@ -73,10 +77,13 @@ fun MediaDetailView(
     viewModel: MediaDetailViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.state.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    var isOnline by remember {
+        mutableStateOf(isOnline(context))
+    }
 
     LaunchedEffect(Unit) {
-        viewModel.getMediaDetail(id = arguments.id)
-        viewModel.getMediaThreads(mediaId = arguments.id)
+        viewModel.loadData(arguments.id)
     }
 
     Column(
@@ -85,22 +92,41 @@ fun MediaDetailView(
                 .fillMaxSize()
                 .absolutePadding(),
     ) {
-        if (uiState.isLoadingMediaDetails || uiState.isLoadingMediaThreads) {
-            Column(
-                modifier =
-                    Modifier
-                        .fillMaxSize()
-                        .padding(top = 60.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                CircularProgressIndicator()
+        if (isOnline) {
+            if (uiState.isLoadingMediaDetails || uiState.isLoadingMediaThreads) {
+                Column(
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .padding(top = 60.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                if (uiState.error == null) {
+                    MediaDetailContent(
+                        navActionManager = navActionManager,
+                        mediaDetail = uiState.media,
+                        mediaThreads = uiState.mediaThreads,
+                    )
+                } else {
+                    ErrorScreen(
+                        onRetryClick = {
+                            isOnline = isOnline(context)
+                            viewModel.loadData(arguments.id)
+                        },
+                    )
+                }
             }
         } else {
-            MediaDetailContent(
-                navActionManager = navActionManager,
-                mediaDetail = uiState.media,
-                mediaThreads = uiState.mediaThreads,
+            ErrorScreen(
+                errorMessage = stringResource(R.string.no_internet),
+                onRetryClick = {
+                    isOnline = isOnline(context)
+                    viewModel.loadData(arguments.id)
+                },
             )
         }
     }
