@@ -25,14 +25,14 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun ErrorScreen(
+    modifier: Modifier = Modifier,
     errorMessage: String = "Something went wrong. Please try again.",
     onRetryClick: () -> Unit,
 ) {
     Box(
         modifier =
-            Modifier
-                .fillMaxSize()
-                .padding(top = 350.dp),
+            modifier
+                .fillMaxSize(),
         contentAlignment = Alignment.Center,
     ) {
         Column(

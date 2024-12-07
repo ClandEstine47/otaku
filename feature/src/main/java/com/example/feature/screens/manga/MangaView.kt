@@ -18,11 +18,17 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.core.data.service.isOnline
 import com.example.core.domain.model.MediaListContentType
 import com.example.core.domain.model.media.Media
 import com.example.core.domain.model.media.MediaType
@@ -45,6 +51,10 @@ fun MangaView(
     mangaViewModel: MangaViewModel = hiltViewModel(),
 ) {
     val uiState by mangaViewModel.state.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    var isOnline by remember {
+        mutableStateOf(isOnline(context))
+    }
 
     /**
      * Haze blur effect working only for API 32+
@@ -64,34 +74,47 @@ fun MangaView(
                 .absolutePadding()
                 .verticalScroll(rememberScrollState()),
     ) {
-        if (uiState.isLoading) {
-            Column(
-                modifier =
-                    Modifier
-                        .fillMaxSize()
-                        .padding(top = 60.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                CircularProgressIndicator()
+        if (isOnline) {
+            if (uiState.isLoading) {
+                Column(
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .padding(top = 60.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                if (uiState.error == null) {
+                    MangaContent(
+                        navActionManager = navActionManager,
+                        trendingMangaList = uiState.trendingMangaList,
+                        popularMangaList = uiState.popularMangaList,
+                        popularManhwaList = uiState.popularManhwaList,
+                        popularNovelList = uiState.popularNovelList,
+                        popularOneShotList = uiState.popularOneShotList,
+                    )
+                } else {
+                    ErrorScreen(
+                        modifier = Modifier.padding(top = 350.dp),
+                        onRetryClick = {
+                            isOnline = isOnline(context)
+                            mangaViewModel.loadData()
+                        },
+                    )
+                }
             }
         } else {
-            if (uiState.error == null) {
-                MangaContent(
-                    navActionManager = navActionManager,
-                    trendingMangaList = uiState.trendingMangaList,
-                    popularMangaList = uiState.popularMangaList,
-                    popularManhwaList = uiState.popularManhwaList,
-                    popularNovelList = uiState.popularNovelList,
-                    popularOneShotList = uiState.popularOneShotList,
-                )
-            } else {
-                ErrorScreen(
-                    onRetryClick = {
-                        mangaViewModel.loadData()
-                    },
-                )
-            }
+            ErrorScreen(
+                modifier = Modifier.padding(top = 350.dp),
+                errorMessage = stringResource(R.string.no_internet),
+                onRetryClick = {
+                    isOnline = isOnline(context)
+                    mangaViewModel.loadData()
+                },
+            )
         }
     }
 }
