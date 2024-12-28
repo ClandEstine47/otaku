@@ -22,6 +22,11 @@ class MediaDetailViewModel
             )
         val state = _state.asStateFlow()
 
+        fun loadData(id: Int) {
+            getMediaDetail(id)
+            getMediaThreads(id)
+        }
+
         fun getMediaDetail(id: Int) {
             viewModelScope.launch {
                 _state.update {

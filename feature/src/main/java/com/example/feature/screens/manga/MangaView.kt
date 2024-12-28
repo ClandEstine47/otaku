@@ -1,7 +1,6 @@
 package com.example.feature.screens.manga
 
 import android.os.Build
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,20 +18,25 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.rememberAsyncImagePainter
+import com.example.core.data.service.isOnline
 import com.example.core.domain.model.MediaListContentType
 import com.example.core.domain.model.media.Media
 import com.example.core.domain.model.media.MediaType
 import com.example.core.navigation.NavActionManager
 import com.example.feature.R
-import com.example.feature.common.ImageCard
+import com.example.feature.common.ErrorScreen
 import com.example.feature.common.InfiniteHorizontalPager
-import com.example.feature.common.OtakuImageCardTitle
+import com.example.feature.common.MediaItem
 import com.example.feature.common.SearchBar
 import com.example.feature.common.TitleWithExpandButton
 import dev.chrisbanes.haze.HazeDefaults
@@ -47,6 +51,10 @@ fun MangaView(
     mangaViewModel: MangaViewModel = hiltViewModel(),
 ) {
     val uiState by mangaViewModel.state.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    var isOnline by remember {
+        mutableStateOf(isOnline(context))
+    }
 
     /**
      * Haze blur effect working only for API 32+
@@ -66,25 +74,46 @@ fun MangaView(
                 .absolutePadding()
                 .verticalScroll(rememberScrollState()),
     ) {
-        if (uiState.isLoading) {
-            Column(
-                modifier =
-                    Modifier
-                        .fillMaxSize()
-                        .padding(top = 60.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                CircularProgressIndicator()
+        if (isOnline) {
+            if (uiState.isLoading) {
+                Column(
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .padding(top = 60.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                if (uiState.error == null) {
+                    MangaContent(
+                        navActionManager = navActionManager,
+                        trendingMangaList = uiState.trendingMangaList,
+                        popularMangaList = uiState.popularMangaList,
+                        popularManhwaList = uiState.popularManhwaList,
+                        popularNovelList = uiState.popularNovelList,
+                        popularOneShotList = uiState.popularOneShotList,
+                    )
+                } else {
+                    ErrorScreen(
+                        modifier = Modifier.padding(top = 350.dp),
+                        onRetryClick = {
+                            isOnline = isOnline(context)
+                            mangaViewModel.loadData()
+                        },
+                    )
+                }
             }
         } else {
-            MangaContent(
-                navActionManager = navActionManager,
-                trendingMangaList = uiState.trendingMangaList,
-                popularMangaList = uiState.popularMangaList,
-                popularManhwaList = uiState.popularManhwaList,
-                popularNovelList = uiState.popularNovelList,
-                popularOneShotList = uiState.popularOneShotList,
+            ErrorScreen(
+                modifier = Modifier.padding(top = 350.dp),
+                errorMessage = stringResource(R.string.no_internet),
+                onRetryClick = {
+                    isOnline = isOnline(context)
+                    mangaViewModel.loadData()
+                },
             )
         }
     }
@@ -144,33 +173,16 @@ fun MangaContent(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             items(mangas) { manga ->
-                val painter =
-                    rememberAsyncImagePainter(
-                        model = manga.coverImage.large,
-                    )
-
-                Column(
-                    horizontalAlignment = Alignment.Start,
-                    verticalArrangement = Arrangement.spacedBy(3.dp),
-                    modifier =
-                        Modifier
-                            .clickable {
-                                navActionManager.toMediaDetail(
-                                    id = manga.idAniList,
-                                    mediaType = mediaType,
-                                )
-                            },
-                ) {
-                    ImageCard(
-                        painter = painter,
-                        score = (manga.meanScore.toDouble()) / 10,
-                        isAnime = false,
-                        totalChapters = manga.chapters,
-                        format = manga.format?.name,
-                    )
-
-                    OtakuImageCardTitle(title = manga.title.english.ifBlank { manga.title.romaji })
-                }
+                MediaItem(
+                    media = manga,
+                    isAnime = false,
+                    onClick = { id ->
+                        navActionManager.toMediaDetail(
+                            id = id,
+                            mediaType = mediaType,
+                        )
+                    },
+                )
             }
         }
     }
@@ -195,33 +207,16 @@ fun MangaContent(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             items(manhwas) { manhwa ->
-                val painter =
-                    rememberAsyncImagePainter(
-                        model = manhwa.coverImage.large,
-                    )
-
-                Column(
-                    horizontalAlignment = Alignment.Start,
-                    verticalArrangement = Arrangement.spacedBy(3.dp),
-                    modifier =
-                        Modifier
-                            .clickable {
-                                navActionManager.toMediaDetail(
-                                    id = manhwa.idAniList,
-                                    mediaType = mediaType,
-                                )
-                            },
-                ) {
-                    ImageCard(
-                        painter = painter,
-                        score = (manhwa.meanScore.toDouble()) / 10,
-                        isAnime = false,
-                        totalChapters = manhwa.chapters,
-                        format = manhwa.format?.name,
-                    )
-
-                    OtakuImageCardTitle(title = manhwa.title.english.ifBlank { manhwa.title.romaji })
-                }
+                MediaItem(
+                    media = manhwa,
+                    isAnime = false,
+                    onClick = { id ->
+                        navActionManager.toMediaDetail(
+                            id = id,
+                            mediaType = mediaType,
+                        )
+                    },
+                )
             }
         }
     }
@@ -246,33 +241,16 @@ fun MangaContent(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             items(novels) { novel ->
-                val painter =
-                    rememberAsyncImagePainter(
-                        model = novel.coverImage.large,
-                    )
-
-                Column(
-                    horizontalAlignment = Alignment.Start,
-                    verticalArrangement = Arrangement.spacedBy(3.dp),
-                    modifier =
-                        Modifier
-                            .clickable {
-                                navActionManager.toMediaDetail(
-                                    id = novel.idAniList,
-                                    mediaType = mediaType,
-                                )
-                            },
-                ) {
-                    ImageCard(
-                        painter = painter,
-                        score = (novel.meanScore.toDouble()) / 10,
-                        isAnime = false,
-                        totalChapters = novel.chapters,
-                        format = novel.format?.name,
-                    )
-
-                    OtakuImageCardTitle(title = novel.title.english.ifBlank { novel.title.romaji })
-                }
+                MediaItem(
+                    media = novel,
+                    isAnime = false,
+                    onClick = { id ->
+                        navActionManager.toMediaDetail(
+                            id = id,
+                            mediaType = mediaType,
+                        )
+                    },
+                )
             }
         }
     }
@@ -297,33 +275,16 @@ fun MangaContent(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             items(oneShorts) { oneShort ->
-                val painter =
-                    rememberAsyncImagePainter(
-                        model = oneShort.coverImage.large,
-                    )
-
-                Column(
-                    horizontalAlignment = Alignment.Start,
-                    verticalArrangement = Arrangement.spacedBy(3.dp),
-                    modifier =
-                        Modifier
-                            .clickable {
-                                navActionManager.toMediaDetail(
-                                    id = oneShort.idAniList,
-                                    mediaType = mediaType,
-                                )
-                            },
-                ) {
-                    ImageCard(
-                        painter = painter,
-                        score = (oneShort.meanScore.toDouble()) / 10,
-                        isAnime = false,
-                        totalChapters = oneShort.chapters,
-                        format = oneShort.format?.name,
-                    )
-
-                    OtakuImageCardTitle(title = oneShort.title.english.ifBlank { oneShort.title.romaji })
-                }
+                MediaItem(
+                    media = oneShort,
+                    isAnime = false,
+                    onClick = { id ->
+                        navActionManager.toMediaDetail(
+                            id = id,
+                            mediaType = mediaType,
+                        )
+                    },
+                )
             }
         }
     }

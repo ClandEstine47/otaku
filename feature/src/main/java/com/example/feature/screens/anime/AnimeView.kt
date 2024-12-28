@@ -1,7 +1,6 @@
 package com.example.feature.screens.anime
 
 import android.os.Build
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,21 +18,26 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.rememberAsyncImagePainter
+import com.example.core.data.service.isOnline
 import com.example.core.domain.model.MediaListContentType
 import com.example.core.domain.model.airing.AiringSchedule
 import com.example.core.domain.model.media.Media
 import com.example.core.domain.model.media.MediaType
 import com.example.core.navigation.NavActionManager
 import com.example.feature.R
-import com.example.feature.common.ImageCard
+import com.example.feature.common.ErrorScreen
 import com.example.feature.common.InfiniteHorizontalPager
-import com.example.feature.common.OtakuImageCardTitle
+import com.example.feature.common.MediaItem
 import com.example.feature.common.SearchBar
 import com.example.feature.common.TitleWithExpandButton
 import dev.chrisbanes.haze.HazeDefaults
@@ -48,6 +52,10 @@ fun AnimeView(
     animeViewModel: AnimeViewModel = hiltViewModel(),
 ) {
     val uiState by animeViewModel.state.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    var isOnline by remember {
+        mutableStateOf(isOnline(context))
+    }
 
     /**
      * Haze blur effect working only for API 32+
@@ -67,25 +75,46 @@ fun AnimeView(
                 .absolutePadding()
                 .verticalScroll(rememberScrollState()),
     ) {
-        if (uiState.isLoading) {
-            Column(
-                modifier =
-                    Modifier
-                        .fillMaxSize()
-                        .padding(top = 60.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                CircularProgressIndicator()
+        if (isOnline) {
+            if (uiState.isLoading) {
+                Column(
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .padding(top = 60.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                if (uiState.error == null) {
+                    AnimeContent(
+                        navActionManager = navActionManager,
+                        trendingNowMedia = uiState.trendingNowMedia,
+                        recentlyUpdatedMedia = uiState.recentlyUpdatedMedia,
+                        currentSeasonMedia = uiState.currentSeasonMedia,
+                        popularNowMedia = uiState.popularMedia,
+                        nextSeasonMedia = uiState.nextSeasonMedia,
+                    )
+                } else {
+                    ErrorScreen(
+                        modifier = Modifier.padding(top = 350.dp),
+                        onRetryClick = {
+                            isOnline = isOnline(context)
+                            animeViewModel.loadData()
+                        },
+                    )
+                }
             }
         } else {
-            AnimeContent(
-                navActionManager = navActionManager,
-                trendingNowMedia = uiState.trendingNowMedia,
-                recentlyUpdatedMedia = uiState.recentlyUpdatedMedia,
-                currentSeasonMedia = uiState.currentSeasonMedia,
-                popularNowMedia = uiState.popularMedia,
-                nextSeasonMedia = uiState.nextSeasonMedia,
+            ErrorScreen(
+                modifier = Modifier.padding(top = 350.dp),
+                errorMessage = stringResource(R.string.no_internet),
+                onRetryClick = {
+                    isOnline = isOnline(context)
+                    animeViewModel.loadData()
+                },
             )
         }
     }
@@ -145,33 +174,17 @@ fun AnimeContent(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             items(recentlyUpdatedAnime) { anime ->
-                val painter =
-                    rememberAsyncImagePainter(
-                        model = anime.media.coverImage.large,
-                    )
-
-                Column(
-                    horizontalAlignment = Alignment.Start,
-                    verticalArrangement = Arrangement.spacedBy(3.dp),
-                    modifier =
-                        Modifier.clickable {
-                            navActionManager.toMediaDetail(
-                                id = anime.media.idAniList,
-                                mediaType = mediaType,
-                            )
-                        },
-                ) {
-                    ImageCard(
-                        painter = painter,
-                        score = (anime.media.meanScore.toDouble()) / 10,
-                        isAnime = true,
-                        totalEpisodes = anime.media.episodes,
-                        releasedEpisodes = anime.episode,
-                        format = anime.media.format?.name,
-                    )
-
-                    OtakuImageCardTitle(title = anime.media.title.english.ifBlank { anime.media.title.romaji })
-                }
+                MediaItem(
+                    media = anime.media,
+                    isAnime = true,
+                    releasedEpisodes = anime.episode,
+                    onClick = { id ->
+                        navActionManager.toMediaDetail(
+                            id = id,
+                            mediaType = mediaType,
+                        )
+                    },
+                )
             }
         }
     }
@@ -196,34 +209,17 @@ fun AnimeContent(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             items(currentSeasonAnime) { anime ->
-                val painter =
-                    rememberAsyncImagePainter(
-                        model = anime.coverImage.large,
-                    )
-
-                Column(
-                    horizontalAlignment = Alignment.Start,
-                    verticalArrangement = Arrangement.spacedBy(3.dp),
-                    modifier =
-                        Modifier
-                            .clickable {
-                                navActionManager.toMediaDetail(
-                                    id = anime.idAniList,
-                                    mediaType = mediaType,
-                                )
-                            },
-                ) {
-                    ImageCard(
-                        painter = painter,
-                        score = (anime.meanScore.toDouble()) / 10,
-                        isAnime = true,
-                        totalEpisodes = anime.episodes,
-                        releasedEpisodes = anime.nextAiringEpisode?.episode?.minus(1),
-                        format = anime.format?.name,
-                    )
-
-                    OtakuImageCardTitle(title = anime.title.english.ifBlank { anime.title.romaji })
-                }
+                MediaItem(
+                    media = anime,
+                    isAnime = true,
+                    releasedEpisodes = anime.nextAiringEpisode?.episode?.minus(1),
+                    onClick = { id ->
+                        navActionManager.toMediaDetail(
+                            id = id,
+                            mediaType = mediaType,
+                        )
+                    },
+                )
             }
         }
     }
@@ -248,34 +244,17 @@ fun AnimeContent(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             items(popularAnime) { anime ->
-                val painter =
-                    rememberAsyncImagePainter(
-                        model = anime.coverImage.large,
-                    )
-
-                Column(
-                    horizontalAlignment = Alignment.Start,
-                    verticalArrangement = Arrangement.spacedBy(3.dp),
-                    modifier =
-                        Modifier
-                            .clickable {
-                                navActionManager.toMediaDetail(
-                                    id = anime.idAniList,
-                                    mediaType = mediaType,
-                                )
-                            },
-                ) {
-                    ImageCard(
-                        painter = painter,
-                        score = (anime.meanScore.toDouble()) / 10,
-                        isAnime = true,
-                        totalEpisodes = anime.episodes,
-                        releasedEpisodes = anime.nextAiringEpisode?.episode?.minus(1),
-                        format = anime.format?.name,
-                    )
-
-                    OtakuImageCardTitle(title = anime.title.english.ifBlank { anime.title.romaji })
-                }
+                MediaItem(
+                    media = anime,
+                    isAnime = true,
+                    releasedEpisodes = anime.nextAiringEpisode?.episode?.minus(1),
+                    onClick = { id ->
+                        navActionManager.toMediaDetail(
+                            id = id,
+                            mediaType = mediaType,
+                        )
+                    },
+                )
             }
         }
     }
@@ -300,35 +279,17 @@ fun AnimeContent(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             items(nextSeasonAnime) { anime ->
-                val painter =
-                    rememberAsyncImagePainter(
-                        model = anime.coverImage.large,
-                    )
-
-                Column(
-                    horizontalAlignment = Alignment.Start,
-                    verticalArrangement = Arrangement.spacedBy(3.dp),
-                    modifier =
-                        Modifier
-                            .clickable {
-                                navActionManager.toMediaDetail(
-                                    id = anime.idAniList,
-                                    mediaType = mediaType,
-                                )
-                            },
-                ) {
-                    ImageCard(
-                        painter = painter,
-                        score = (anime.meanScore.toDouble()) / 10,
-                        isAnime = true,
-                        showScore = false,
-                        totalEpisodes = anime.episodes,
-                        releasedEpisodes = null,
-                        format = anime.format?.name,
-                    )
-
-                    OtakuImageCardTitle(title = anime.title.english.ifBlank { anime.title.romaji })
-                }
+                MediaItem(
+                    media = anime,
+                    isAnime = true,
+                    showScore = false,
+                    onClick = { id ->
+                        navActionManager.toMediaDetail(
+                            id = id,
+                            mediaType = mediaType,
+                        )
+                    },
+                )
             }
         }
     }

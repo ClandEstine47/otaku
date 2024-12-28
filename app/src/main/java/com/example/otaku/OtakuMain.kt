@@ -76,20 +76,22 @@ fun OtakuMain() {
                                 hazeState = hazeState,
                                 tabIndex = index,
                                 navigate = { mediaType ->
-                                    when (mediaType) {
-                                        MediaType.ANIME -> {
-                                            bottomTabIndex = 0
-                                            navController.navigateAndReplaceStartRoute(OtakuScreen.AnimeTab)
-                                            scope.launch {
-                                                dataStore.saveRoute(OtakuScreen.AnimeTab.toString())
-                                            }
+                                    val newIndex =
+                                        when (mediaType) {
+                                            MediaType.ANIME -> 0
+                                            MediaType.MANGA -> 1
                                         }
-                                        MediaType.MANGA -> {
-                                            bottomTabIndex = 1
-                                            navController.navigateAndReplaceStartRoute(OtakuScreen.MangaTab)
-                                            scope.launch {
-                                                dataStore.saveRoute(OtakuScreen.MangaTab.toString())
+
+                                    if (bottomTabIndex != newIndex) {
+                                        bottomTabIndex = newIndex
+                                        val screen =
+                                            when (mediaType) {
+                                                MediaType.ANIME -> OtakuScreen.AnimeTab
+                                                MediaType.MANGA -> OtakuScreen.MangaTab
                                             }
+                                        navController.navigateAndReplaceStartRoute(screen)
+                                        scope.launch {
+                                            dataStore.saveRoute(screen.toString())
                                         }
                                     }
                                 },
