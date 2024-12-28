@@ -27,7 +27,7 @@ class MediaDetailViewModel
             getMediaThreads(id)
         }
 
-        private fun getMediaDetail(id: Int) {
+        fun getMediaDetail(id: Int) {
             viewModelScope.launch {
                 _state.update {
                     it.copy(
@@ -66,7 +66,7 @@ class MediaDetailViewModel
             }
         }
 
-        private fun getMediaThreads(
+        fun getMediaThreads(
             mediaId: Int,
         ) {
             viewModelScope.launch {
