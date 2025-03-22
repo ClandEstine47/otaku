@@ -19,7 +19,7 @@ androidxJunit = "1.2.1"
 # Other
 apolloGraphql = "3.8.5"
 coilCompose = "2.7.0"
-daggerHilt = "2.55"
+daggerHilt = "2.56"
 desugar = "2.1.5"
 kotlinxSerializationJson = "1.7.1"
 kotlinxCoroutinesTest = "1.8.1"
