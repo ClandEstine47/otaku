@@ -29,7 +29,7 @@ timber = "5.0.1"
 richEditor = "1.0.0-rc13"
 haze = "0.7.3"
 androidYoutubePlayer = "12.1.1"
-mockk = "1.14.2"
+mockk = "1.14.3"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidxCore" }
