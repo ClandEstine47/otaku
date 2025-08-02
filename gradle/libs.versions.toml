@@ -14,7 +14,7 @@ androidxLifecycle = "2.9.2"
 androidxNavigation = "2.9.3"
 espressoCore = "3.7.0"
 junit = "4.13.2"
-androidxJunit = "1.2.1"
+androidxJunit = "1.3.0"
 
 # Other
 apolloGraphql = "3.8.6"
