@@ -11,7 +11,7 @@ apply(from = rootProject.file("spotless.gradle"))
 
 android {
     namespace = "com.example.core.navigation"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 24
