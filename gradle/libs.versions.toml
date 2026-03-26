@@ -1,35 +1,35 @@
 [versions]
-agp ="8.13.2"
-kotlin = "2.0.0"
-ksp = "2.0.0-1.0.22"
+agp = "9.1.0"
+kotlin = "2.3.20"
+ksp = "2.3.2"
 
 # AndroidX
-androidxActivityCompose = "1.10.1"
+androidxActivityCompose = "1.13.0"
 androidxAppcompat = "1.7.1"
-androidxComposeBom = "2024.12.01"
-androidxCore = "1.16.0"
-androidxDatastore = "1.2.0"
+androidxComposeBom = "2026.03.01"
+androidxCore = "1.18.0"
+androidxDatastore = "1.2.1"
 androidxHiltNavigationCompose = "1.3.0"
 androidxLifecycle = "2.10.0"
-androidxNavigation = "2.9.6"
+androidxNavigation = "2.9.7"
 espressoCore = "3.7.0"
 junit = "4.13.2"
 androidxJunit = "1.3.0"
 
 # Other
-apolloGraphql = "3.8.6"
+apolloGraphql = "4.4.2"
 coilCompose = "2.7.0"
-daggerHilt = "2.57.2"
+daggerHilt = "2.59.2"
 desugar = "2.1.5"
-kotlinxSerializationJson = "1.7.1"
-kotlinxCoroutinesTest = "1.8.1"
+kotlinxSerializationJson = "1.10.0"
+kotlinxCoroutinesTest = "1.10.2"
 material = "1.13.0"
-spotless = "6.25.0"
+spotless = "8.4.0"
 timber = "5.0.1"
 richEditor = "1.0.0-rc13"
 haze = "0.7.3"
-androidYoutubePlayer = "12.1.2"
-mockk = "1.14.7"
+androidYoutubePlayer = "13.0.0"
+mockk = "1.14.9"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidxCore" }
@@ -52,8 +52,8 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "androidxHiltNavigationCompose" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidxAppcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
-apollo-runtime = { group = "com.apollographql.apollo3", name = "apollo-runtime", version.ref = "apolloGraphql" }
-apollo-testing-support = { group = "com.apollographql.apollo3", name = "apollo-testing-support", version.ref = "apolloGraphql" }
+apollo-runtime = { group = "com.apollographql.apollo", name = "apollo-runtime", version.ref = "apolloGraphql" }
+apollo-testing-support = { group = "com.apollographql.apollo", name = "apollo-testing-support", version.ref = "apolloGraphql" }
 dagger-hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "daggerHilt" }
 dagger-hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "daggerHilt" }
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
@@ -76,7 +76,7 @@ kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", vers
 kotlinx-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-apollo-graphql = { id = "com.apollographql.apollo3", version.ref = "apolloGraphql" }
+apollo-graphql = { id = "com.apollographql.apollo", version.ref = "apolloGraphql" }
 dagger-hilt = { id = "com.google.dagger.hilt.android", version.ref = "daggerHilt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }

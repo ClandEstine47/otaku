@@ -1,6 +1,6 @@
 package com.example.core.data.di
 
-import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo.ApolloClient
 import com.example.core.domain.service.MediaService
 import com.example.core.network.service.MediaServiceImpl
 import dagger.Module

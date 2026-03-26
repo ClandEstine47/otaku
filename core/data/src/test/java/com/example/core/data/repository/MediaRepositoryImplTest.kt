@@ -1,6 +1,6 @@
 package com.example.core.data.repository
 
-import com.apollographql.apollo3.exception.ApolloException
+import com.apollographql.apollo.exception.ApolloException
 import com.example.core.domain.model.Page
 import com.example.core.domain.model.PageInfo
 import com.example.core.domain.model.airing.AiringSchedule
