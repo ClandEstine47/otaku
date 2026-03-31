@@ -25,7 +25,7 @@ fun MediaItem(
         )
 
     Column(
-        horizontalAlignment = Alignment.Start,
+        horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(3.dp),
         modifier =
             modifier.clickable {
