@@ -157,8 +157,7 @@ fun StatusDistributionDetail(
                         .background(
                             color = color,
                             shape = RoundedCornerShape(50.dp),
-                        )
-                        .size(height),
+                        ).size(height),
             )
 
             Column {

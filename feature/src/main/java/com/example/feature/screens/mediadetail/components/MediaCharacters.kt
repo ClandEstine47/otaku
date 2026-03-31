@@ -55,7 +55,10 @@ fun MediaCharacters(
             items(characters) { character ->
                 val painter =
                     rememberAsyncImagePainter(
-                        model = character.node.image?.medium?.ifBlank { character.node.image?.large },
+                        model =
+                            character.node.image
+                                ?.medium
+                                ?.ifBlank { character.node.image?.large },
                     )
 
                 Column(

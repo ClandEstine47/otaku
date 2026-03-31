@@ -64,7 +64,11 @@ fun MediaThreadItem(
 ) {
     val profileImage =
         rememberAsyncImagePainter(
-            model = thread.user?.avatar?.medium?.ifBlank { thread.user?.avatar?.large },
+            model =
+                thread.user
+                    ?.avatar
+                    ?.medium
+                    ?.ifBlank { thread.user?.avatar?.large },
         )
 
     Card(

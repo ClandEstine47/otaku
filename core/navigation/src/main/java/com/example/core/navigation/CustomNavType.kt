@@ -26,8 +26,7 @@ class CustomNavType<T : Parcelable>(
         bundle: Bundle,
         key: String,
         value: T,
-    ) =
-        bundle.putParcelable(key, value)
+    ) = bundle.putParcelable(key, value)
 
     override fun parseValue(value: String): T = Json.decodeFromString(serializer, value)
 

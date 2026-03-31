@@ -360,6 +360,7 @@ fun MediaSearchView(
                                 },
                             )
                         }
+
                         ViewType.GRID -> {
                             MediaGridViewContent(
                                 navActionManager = navActionManager,

@@ -222,8 +222,7 @@ fun MediaDetailContent(
                                 blurRadius = 30.dp,
                                 noiseFactor = HazeDefaults.noiseFactor,
                             ),
-                        )
-                        .fillMaxSize()
+                        ).fillMaxSize()
                         .absolutePadding()
                         .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(20.dp),

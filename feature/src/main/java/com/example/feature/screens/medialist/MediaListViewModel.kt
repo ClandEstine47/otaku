@@ -65,6 +65,7 @@ class MediaListViewModel
                                     airingAtGreater = startOfDay.toInt(),
                                 )
                             }
+
                             MediaListContentType.CURRENT_SEASON -> {
                                 mediaRepository.getSeasonalMedia(
                                     pageNumber = _state.value.pageNumber,
@@ -74,6 +75,7 @@ class MediaListViewModel
                                     mediaType = mediaType,
                                 )
                             }
+
                             MediaListContentType.POPULAR_NOW -> {
                                 mediaRepository.getPopularMedia(
                                     pageNumber = _state.value.pageNumber,
@@ -81,6 +83,7 @@ class MediaListViewModel
                                     mediaType = mediaType,
                                 )
                             }
+
                             MediaListContentType.NEXT_SEASON -> {
                                 mediaRepository.getSeasonalMedia(
                                     pageNumber = _state.value.pageNumber,
@@ -90,6 +93,7 @@ class MediaListViewModel
                                     mediaType = mediaType,
                                 )
                             }
+
                             MediaListContentType.POPULAR_MANGA -> {
                                 mediaRepository.getPopularMedia(
                                     pageNumber = _state.value.pageNumber,
@@ -98,6 +102,7 @@ class MediaListViewModel
                                     countryOfOrigin = "JP",
                                 )
                             }
+
                             MediaListContentType.POPULAR_MANHWA -> {
                                 mediaRepository.getPopularMedia(
                                     pageNumber = _state.value.pageNumber,
@@ -106,6 +111,7 @@ class MediaListViewModel
                                     countryOfOrigin = "KR",
                                 )
                             }
+
                             MediaListContentType.POPULAR_NOVEL -> {
                                 mediaRepository.getPopularMedia(
                                     pageNumber = _state.value.pageNumber,
@@ -114,6 +120,7 @@ class MediaListViewModel
                                     mediaFormat = MediaFormat.NOVEL,
                                 )
                             }
+
                             MediaListContentType.ONE_SHOT -> {
                                 mediaRepository.getPopularMedia(
                                     pageNumber = _state.value.pageNumber,
@@ -137,9 +144,11 @@ class MediaListViewModel
                                         is Media -> {
                                             MediaListItem.MediaListType(media)
                                         }
+
                                         is AiringSchedule -> {
                                             MediaListItem.ScheduleType(media)
                                         }
+
                                         else -> {
                                             MediaListItem.MediaListType(Media())
                                         }
@@ -154,18 +163,20 @@ class MediaListViewModel
                             )
                         }
 
-                        mediaListResult.isFailure ->
+                        mediaListResult.isFailure -> {
                             currentState.copy(
                                 mediaListByPage = emptyList(),
                                 isLoading = false,
                                 error = mediaListResult.exceptionOrNull()?.message ?: "An unknown error occurred",
                             )
+                        }
 
-                        else ->
+                        else -> {
                             currentState.copy(
                                 isLoading = false,
                                 error = "Unexpected result state",
                             )
+                        }
                     }
                 }
             }
@@ -208,18 +219,20 @@ class MediaListViewModel
                                 )
                             }
 
-                            mediaListResult.isFailure ->
+                            mediaListResult.isFailure -> {
                                 currentState.copy(
                                     mediaListByPage = emptyList(),
                                     isLoading = false,
                                     error = mediaListResult.exceptionOrNull()?.message ?: "An unknown error occurred",
                                 )
+                            }
 
-                            else ->
+                            else -> {
                                 currentState.copy(
                                     isLoading = false,
                                     error = "Unexpected result state",
                                 )
+                            }
                         }
                     }
                 }

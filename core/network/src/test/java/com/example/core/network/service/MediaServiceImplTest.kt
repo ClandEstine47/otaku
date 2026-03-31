@@ -62,7 +62,8 @@ class MediaServiceImplTest {
     @Before
     fun setup() {
         testClient =
-            ApolloClient.Builder()
+            ApolloClient
+                .Builder()
                 .networkTransport(QueueTestNetworkTransport())
                 .build()
         mediaService = MediaServiceImpl(testClient)
@@ -270,17 +271,15 @@ class MediaServiceImplTest {
 
             // Create custom transport that throws exception
             val errorClient =
-                ApolloClient.Builder()
+                ApolloClient
+                    .Builder()
                     .networkTransport(
                         object : NetworkTransport {
-                            override fun <D : Operation.Data> execute(request: ApolloRequest<D>): Flow<ApolloResponse<D>> {
-                                throw ApolloException("Network error")
-                            }
+                            override fun <D : Operation.Data> execute(request: ApolloRequest<D>): Flow<ApolloResponse<D>> = throw ApolloException("Network error")
 
                             override fun dispose() {}
                         },
-                    )
-                    .build()
+                    ).build()
 
             mediaService = MediaServiceImpl(errorClient)
 
@@ -498,17 +497,15 @@ class MediaServiceImplTest {
         runTest {
             // Given
             val errorClient =
-                ApolloClient.Builder()
+                ApolloClient
+                    .Builder()
                     .networkTransport(
                         object : NetworkTransport {
-                            override fun <D : Operation.Data> execute(request: ApolloRequest<D>): Flow<ApolloResponse<D>> {
-                                throw ApolloException("Network connection failed")
-                            }
+                            override fun <D : Operation.Data> execute(request: ApolloRequest<D>): Flow<ApolloResponse<D>> = throw ApolloException("Network connection failed")
 
                             override fun dispose() {}
                         },
-                    )
-                    .build()
+                    ).build()
 
             mediaService = MediaServiceImpl(errorClient)
 
@@ -718,17 +715,15 @@ class MediaServiceImplTest {
 
             // Create custom transport that throws exception
             val errorClient =
-                ApolloClient.Builder()
+                ApolloClient
+                    .Builder()
                     .networkTransport(
                         object : NetworkTransport {
-                            override fun <D : Operation.Data> execute(request: ApolloRequest<D>): Flow<ApolloResponse<D>> {
-                                throw ApolloException("Network error")
-                            }
+                            override fun <D : Operation.Data> execute(request: ApolloRequest<D>): Flow<ApolloResponse<D>> = throw ApolloException("Network error")
 
                             override fun dispose() {}
                         },
-                    )
-                    .build()
+                    ).build()
 
             mediaService = MediaServiceImpl(errorClient)
 
@@ -942,17 +937,15 @@ class MediaServiceImplTest {
         runTest {
             // Create custom transport that throws exception
             val errorClient =
-                ApolloClient.Builder()
+                ApolloClient
+                    .Builder()
                     .networkTransport(
                         object : NetworkTransport {
-                            override fun <D : Operation.Data> execute(request: ApolloRequest<D>): Flow<ApolloResponse<D>> {
-                                throw ApolloException("Network error")
-                            }
+                            override fun <D : Operation.Data> execute(request: ApolloRequest<D>): Flow<ApolloResponse<D>> = throw ApolloException("Network error")
 
                             override fun dispose() {}
                         },
-                    )
-                    .build()
+                    ).build()
 
             mediaService = MediaServiceImpl(errorClient)
 
@@ -1141,17 +1134,15 @@ class MediaServiceImplTest {
         runTest {
             // Create custom transport that throws exception
             val errorClient =
-                ApolloClient.Builder()
+                ApolloClient
+                    .Builder()
                     .networkTransport(
                         object : NetworkTransport {
-                            override fun <D : Operation.Data> execute(request: ApolloRequest<D>): Flow<ApolloResponse<D>> {
-                                throw ApolloException("Unknown GraphQL error")
-                            }
+                            override fun <D : Operation.Data> execute(request: ApolloRequest<D>): Flow<ApolloResponse<D>> = throw ApolloException("Unknown GraphQL error")
 
                             override fun dispose() {}
                         },
-                    )
-                    .build()
+                    ).build()
 
             mediaService = MediaServiceImpl(errorClient)
 
@@ -1330,17 +1321,15 @@ class MediaServiceImplTest {
         runTest {
             // Create custom transport that throws exception
             val errorClient =
-                ApolloClient.Builder()
+                ApolloClient
+                    .Builder()
                     .networkTransport(
                         object : NetworkTransport {
-                            override fun <D : Operation.Data> execute(request: ApolloRequest<D>): Flow<ApolloResponse<D>> {
-                                throw ApolloException("Network error")
-                            }
+                            override fun <D : Operation.Data> execute(request: ApolloRequest<D>): Flow<ApolloResponse<D>> = throw ApolloException("Network error")
 
                             override fun dispose() {}
                         },
-                    )
-                    .build()
+                    ).build()
 
             mediaService = MediaServiceImpl(errorClient)
 
@@ -1595,17 +1584,15 @@ class MediaServiceImplTest {
         runTest {
             // Create custom transport that throws exception
             val errorClient =
-                ApolloClient.Builder()
+                ApolloClient
+                    .Builder()
                     .networkTransport(
                         object : NetworkTransport {
-                            override fun <D : Operation.Data> execute(request: ApolloRequest<D>): Flow<ApolloResponse<D>> {
-                                throw ApolloException("Network error")
-                            }
+                            override fun <D : Operation.Data> execute(request: ApolloRequest<D>): Flow<ApolloResponse<D>> = throw ApolloException("Network error")
 
                             override fun dispose() {}
                         },
-                    )
-                    .build()
+                    ).build()
 
             mediaService = MediaServiceImpl(errorClient)
 

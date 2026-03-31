@@ -11,7 +11,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 
-class StartDestination(private val context: Context) {
+class StartDestination(
+    private val context: Context,
+) {
     // to make sure there's only one instance
     companion object {
         private val Context.dataStoree: DataStore<Preferences> by preferencesDataStore("startRoute")
@@ -25,11 +27,10 @@ class StartDestination(private val context: Context) {
                 preferences[START_ROUTE_KEY] ?: OtakuScreen.AnimeTab.toString()
             }
 
-    fun getInitialRoute(): String {
-        return runBlocking {
+    fun getInitialRoute(): String =
+        runBlocking {
             getRoute.first()
         }
-    }
 
     // save route into datastore
     suspend fun saveRoute(name: String) {

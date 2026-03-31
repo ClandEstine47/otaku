@@ -14,7 +14,5 @@ import javax.inject.Singleton
 object DataModule {
     @Provides
     @Singleton
-    fun provideMediaService(apolloClient: ApolloClient): MediaService {
-        return MediaServiceImpl(apolloClient)
-    }
+    fun provideMediaService(apolloClient: ApolloClient): MediaService = MediaServiceImpl(apolloClient)
 }

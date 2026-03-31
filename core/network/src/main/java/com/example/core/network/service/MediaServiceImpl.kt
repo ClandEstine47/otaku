@@ -32,8 +32,8 @@ class MediaServiceImpl
             seasonYear: Int,
             season: MediaSeason,
             mediaType: MediaType,
-        ): Result<Page<Media>> {
-            return try {
+        ): Result<Page<Media>> =
+            try {
                 val response =
                     apolloClient
                         .query(
@@ -44,8 +44,7 @@ class MediaServiceImpl
                                 season = Optional.present(season.toNetworkMediaSeason()),
                                 mediaType = Optional.present(mediaType.toNetworkMediaType()),
                             ),
-                        )
-                        .execute()
+                        ).execute()
 
                 when {
                     response.hasErrors() -> {
@@ -56,9 +55,15 @@ class MediaServiceImpl
                     }
 
                     else -> {
-                        val pageInfo = response.data?.Page?.pageInfo?.toDomainPageInfo()
+                        val pageInfo =
+                            response.data
+                                ?.Page
+                                ?.pageInfo
+                                ?.toDomainPageInfo()
                         val seasonalMedia =
-                            response.data?.Page?.media
+                            response.data
+                                ?.Page
+                                ?.media
                                 ?.mapNotNull { it?.toDomainMedia() }
                                 ?: emptyList()
                         Result.success(
@@ -74,15 +79,14 @@ class MediaServiceImpl
             } catch (e: Exception) {
                 Result.failure(e)
             }
-        }
 
         override suspend fun getRecentlyUpdatedAnimeList(
             pageNumber: Int,
             perPage: Int,
             airingAtLesser: Int,
             airingAtGreater: Int,
-        ): Result<Page<AiringSchedule>> {
-            return try {
+        ): Result<Page<AiringSchedule>> =
+            try {
                 val response =
                     apolloClient
                         .query(
@@ -92,8 +96,7 @@ class MediaServiceImpl
                                 airingAtLesser = airingAtLesser,
                                 airingAtGreater = Optional.present(airingAtGreater),
                             ),
-                        )
-                        .execute()
+                        ).execute()
 
                 when {
                     response.hasErrors() -> {
@@ -104,9 +107,15 @@ class MediaServiceImpl
                     }
 
                     else -> {
-                        val pageInfo = response.data?.Page?.pageInfo?.toDomainPageInfo()
+                        val pageInfo =
+                            response.data
+                                ?.Page
+                                ?.pageInfo
+                                ?.toDomainPageInfo()
                         val airingSchedules =
-                            response.data?.Page?.airingSchedules
+                            response.data
+                                ?.Page
+                                ?.airingSchedules
                                 ?.mapNotNull { it?.toRecentlyUpdatedMedia() }
                                 ?.filter { it.media.type == MediaType.ANIME }
                                 ?: emptyList()
@@ -123,14 +132,13 @@ class MediaServiceImpl
             } catch (e: Exception) {
                 Result.failure(e)
             }
-        }
 
         override suspend fun getTrendingNowMediaList(
             pageNumber: Int,
             perPage: Int,
             mediaType: MediaType,
-        ): Result<Page<Media>> {
-            return try {
+        ): Result<Page<Media>> =
+            try {
                 val response =
                     apolloClient
                         .query(
@@ -139,8 +147,7 @@ class MediaServiceImpl
                                 perPage = Optional.present(perPage),
                                 mediaType = Optional.present(mediaType.toNetworkMediaType()),
                             ),
-                        )
-                        .execute()
+                        ).execute()
 
                 when {
                     response.hasErrors() -> {
@@ -151,9 +158,15 @@ class MediaServiceImpl
                     }
 
                     else -> {
-                        val pageInfo = response.data?.Page?.pageInfo?.toDomainPageInfo()
+                        val pageInfo =
+                            response.data
+                                ?.Page
+                                ?.pageInfo
+                                ?.toDomainPageInfo()
                         val trendingNow =
-                            response.data?.Page?.media
+                            response.data
+                                ?.Page
+                                ?.media
                                 ?.mapNotNull { it?.toDomainMedia() }
                                 ?: emptyList()
                         Result.success(
@@ -169,7 +182,6 @@ class MediaServiceImpl
             } catch (e: Exception) {
                 Result.failure(e)
             }
-        }
 
         override suspend fun getPopularMediaList(
             pageNumber: Int,
@@ -177,8 +189,8 @@ class MediaServiceImpl
             mediaType: MediaType,
             mediaFormat: MediaFormat?,
             countryOfOrigin: String?,
-        ): Result<Page<Media>> {
-            return try {
+        ): Result<Page<Media>> =
+            try {
                 val response =
                     apolloClient
                         .query(
@@ -189,8 +201,7 @@ class MediaServiceImpl
                                 mediaFormat = Optional.presentIfNotNull(mediaFormat?.toNetworkMediaFormat()),
                                 countryOfOrigin = Optional.presentIfNotNull(countryOfOrigin),
                             ),
-                        )
-                        .execute()
+                        ).execute()
 
                 when {
                     response.hasErrors() -> {
@@ -201,9 +212,15 @@ class MediaServiceImpl
                     }
 
                     else -> {
-                        val pageInfo = response.data?.Page?.pageInfo?.toDomainPageInfo()
+                        val pageInfo =
+                            response.data
+                                ?.Page
+                                ?.pageInfo
+                                ?.toDomainPageInfo()
                         val popularMedia =
-                            response.data?.Page?.media
+                            response.data
+                                ?.Page
+                                ?.media
                                 ?.mapNotNull { it?.toDomainMedia() }
                                 ?: emptyList()
                         Result.success(
@@ -219,10 +236,9 @@ class MediaServiceImpl
             } catch (e: Exception) {
                 Result.failure(e)
             }
-        }
 
-        override suspend fun getMediaById(id: Int): Result<Media> {
-            return try {
+        override suspend fun getMediaById(id: Int): Result<Media> =
+            try {
                 val response =
                     apolloClient
                         .query(
@@ -252,14 +268,13 @@ class MediaServiceImpl
             } catch (e: Exception) {
                 Result.failure(e)
             }
-        }
 
         override suspend fun getMediaThreads(
             pageNumber: Int,
             perPage: Int,
             mediaId: Int,
-        ): Result<Page<Thread>> {
-            return try {
+        ): Result<Page<Thread>> =
+            try {
                 val response =
                     apolloClient
                         .query(
@@ -268,8 +283,7 @@ class MediaServiceImpl
                                 perPage = Optional.present(perPage),
                                 mediaCategoryId = Optional.present(mediaId),
                             ),
-                        )
-                        .execute()
+                        ).execute()
 
                 when {
                     response.hasErrors() -> {
@@ -280,9 +294,15 @@ class MediaServiceImpl
                     }
 
                     else -> {
-                        val pageInfo = response.data?.Page?.pageInfo?.toDomainPageInfo()
+                        val pageInfo =
+                            response.data
+                                ?.Page
+                                ?.pageInfo
+                                ?.toDomainPageInfo()
                         val threads =
-                            response.data?.Page?.threads
+                            response.data
+                                ?.Page
+                                ?.threads
                                 ?.mapNotNull { it?.toDomainThread() }
                                 ?: emptyList()
                         Result.success(
@@ -298,7 +318,6 @@ class MediaServiceImpl
             } catch (e: Exception) {
                 Result.failure(e)
             }
-        }
 
         override suspend fun getSearchMedia(
             pageNumber: Int,
@@ -313,8 +332,8 @@ class MediaServiceImpl
             genres: List<String>?,
             tags: List<String>?,
             sortBy: List<MediaSort>?,
-        ): Result<Page<Media>> {
-            return try {
+        ): Result<Page<Media>> =
+            try {
                 val response =
                     apolloClient
                         .query(
@@ -332,8 +351,7 @@ class MediaServiceImpl
                                 tags = Optional.presentIfNotNull(tags),
                                 sort = Optional.presentIfNotNull(sortBy?.map { it.toNetworkMediaSort() }),
                             ),
-                        )
-                        .execute()
+                        ).execute()
 
                 when {
                     response.hasErrors() -> {
@@ -344,9 +362,15 @@ class MediaServiceImpl
                     }
 
                     else -> {
-                        val pageInfo = response.data?.Page?.pageInfo?.toDomainPageInfo()
+                        val pageInfo =
+                            response.data
+                                ?.Page
+                                ?.pageInfo
+                                ?.toDomainPageInfo()
                         val mediaSearch =
-                            response.data?.Page?.media
+                            response.data
+                                ?.Page
+                                ?.media
                                 ?.mapNotNull { it?.toDomainMedia() }
                                 ?: emptyList()
                         Result.success(
@@ -362,5 +386,4 @@ class MediaServiceImpl
             } catch (e: Exception) {
                 Result.failure(e)
             }
-        }
     }

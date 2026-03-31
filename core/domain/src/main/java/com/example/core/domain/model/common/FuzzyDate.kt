@@ -5,7 +5,5 @@ data class FuzzyDate(
     val month: Int? = null,
     val day: Int? = null,
 ) {
-    fun isNull(): Boolean {
-        return year == null || month == null || day == null
-    }
+    fun isNull(): Boolean = year == null || month == null || day == null
 }

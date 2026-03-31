@@ -64,11 +64,18 @@ fun MediaRelations(
                         isAnime = media.node.type == MediaType.ANIME,
                         totalChapters = media.node.chapters,
                         totalEpisodes = media.node.episodes,
-                        releasedEpisodes = media.node.nextAiringEpisode?.episode?.minus(1),
+                        releasedEpisodes =
+                            media.node.nextAiringEpisode
+                                ?.episode
+                                ?.minus(1),
                         format = media.node.format?.name,
                     )
 
-                    OtakuImageCardTitle(title = media.node.title.english.ifBlank { media.node.title.romaji })
+                    OtakuImageCardTitle(
+                        title =
+                            media.node.title.english
+                                .ifBlank { media.node.title.romaji },
+                    )
 
                     Spacer(modifier = Modifier.height(3.dp))
 

@@ -55,7 +55,8 @@ fun YouTubePlayer(
 
     LaunchedEffect(youTubePlayerView) {
         val iFramePlayerOptions =
-            IFramePlayerOptions.Builder()
+            IFramePlayerOptions
+                .Builder(context)
                 .controls(1)
                 .build()
         youTubePlayerView.initialize(

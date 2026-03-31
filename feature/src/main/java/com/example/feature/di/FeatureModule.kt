@@ -14,7 +14,5 @@ import javax.inject.Singleton
 object FeatureModule {
     @Provides
     @Singleton
-    fun providesMediaRepository(mediaService: MediaService): MediaRepository {
-        return MediaRepositoryImpl(mediaService)
-    }
+    fun providesMediaRepository(mediaService: MediaService): MediaRepository = MediaRepositoryImpl(mediaService)
 }

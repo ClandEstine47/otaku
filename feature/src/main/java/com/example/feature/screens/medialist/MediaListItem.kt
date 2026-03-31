@@ -54,13 +54,13 @@ fun MediaListItem(
     val bannerImage =
         rememberAsyncImagePainter(
             model =
-                ImageRequest.Builder(LocalContext.current)
+                ImageRequest
+                    .Builder(LocalContext.current)
                     .data(
                         mediaItem.bannerImage.ifBlank {
                             mediaItem.coverImage.extraLarge
                         },
-                    )
-                    .crossfade(true)
+                    ).crossfade(true)
                     .build(),
         )
 
@@ -174,7 +174,9 @@ fun MediaListItem(
     mediaItem: AiringSchedule,
     onClick: (id: Int, mediaType: MediaType) -> Unit,
 ) {
-    val title = mediaItem.media.title.english.ifBlank { mediaItem.media.title.romaji }
+    val title =
+        mediaItem.media.title.english
+            .ifBlank { mediaItem.media.title.romaji }
     val coverImage =
         rememberAsyncImagePainter(
             model = mediaItem.media.coverImage.large,
@@ -182,13 +184,13 @@ fun MediaListItem(
     val bannerImage =
         rememberAsyncImagePainter(
             model =
-                ImageRequest.Builder(LocalContext.current)
+                ImageRequest
+                    .Builder(LocalContext.current)
                     .data(
                         mediaItem.media.bannerImage.ifBlank {
                             mediaItem.media.coverImage.extraLarge
                         },
-                    )
-                    .crossfade(true)
+                    ).crossfade(true)
                     .build(),
         )
 

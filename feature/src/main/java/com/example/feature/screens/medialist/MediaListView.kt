@@ -274,6 +274,7 @@ fun MediaListView(
                                 mediaList = uiState.mediaListByPage[page],
                             ) {}
                         }
+
                         ViewType.GRID -> {
                             MediaGridViewContent(
                                 navActionManager = navActionManager,

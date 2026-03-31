@@ -40,12 +40,10 @@ fun SearchBar(
                     width = 0.5.dp,
                     color = MaterialTheme.colorScheme.primary,
                     shape = RoundedCornerShape(50.dp),
-                )
-                .background(
+                ).background(
                     color = MaterialTheme.colorScheme.background.copy(alpha = 0.2f),
                     shape = RoundedCornerShape(50.dp),
-                )
-                .clip(RoundedCornerShape(50.dp))
+                ).clip(RoundedCornerShape(50.dp))
                 .clickable {
                     onSearchBarClick()
                 },

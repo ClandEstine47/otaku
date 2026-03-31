@@ -47,16 +47,15 @@ import com.example.core.network.type.MediaStatus as NetworkMediaStatus
 import com.example.core.network.type.MediaType as NetworkMediaType
 import com.example.core.network.type.ReviewRating as NetworkReviewRating
 
-fun RecentlyUpdatedQuery.AiringSchedule.toRecentlyUpdatedMedia(): AiringSchedule {
-    return AiringSchedule(
+fun RecentlyUpdatedQuery.AiringSchedule.toRecentlyUpdatedMedia(): AiringSchedule =
+    AiringSchedule(
         airingAt = airingAt,
         episode = episode,
         media = media?.toDomainMedia() ?: Media(),
     )
-}
 
-fun RecentlyUpdatedQuery.Media.toDomainMedia(): Media {
-    return Media(
+fun RecentlyUpdatedQuery.Media.toDomainMedia(): Media =
+    Media(
         idAniList = id,
         idMal = idMal,
         status = status?.toDomainMediaStatus(),
@@ -85,34 +84,30 @@ fun RecentlyUpdatedQuery.Media.toDomainMedia(): Media {
                 status = mediaListEntry?.status?.toDomainMediaListStatus(),
             ),
     )
-}
 
-fun RecentlyUpdatedQuery.PageInfo.toDomainPageInfo(): PageInfo {
-    return PageInfo(
+fun RecentlyUpdatedQuery.PageInfo.toDomainPageInfo(): PageInfo =
+    PageInfo(
         total = total,
         currentPage = currentPage,
         hasNextPage = hasNextPage,
     )
-}
 
-fun MediaThreadsQuery.PageInfo.toDomainPageInfo(): PageInfo {
-    return PageInfo(
+fun MediaThreadsQuery.PageInfo.toDomainPageInfo(): PageInfo =
+    PageInfo(
         total = total,
         currentPage = currentPage,
         hasNextPage = hasNextPage,
     )
-}
 
-fun MediaSearchQuery.PageInfo.toDomainPageInfo(): PageInfo {
-    return PageInfo(
+fun MediaSearchQuery.PageInfo.toDomainPageInfo(): PageInfo =
+    PageInfo(
         total = total,
         currentPage = currentPage,
         hasNextPage = hasNextPage,
     )
-}
 
-fun TrendingNowQuery.Medium.toDomainMedia(): Media {
-    return Media(
+fun TrendingNowQuery.Medium.toDomainMedia(): Media =
+    Media(
         idAniList = id,
         idMal = idMal,
         status = status?.toDomainMediaStatus(),
@@ -147,10 +142,9 @@ fun TrendingNowQuery.Medium.toDomainMedia(): Media {
                 status = mediaListEntry?.status?.toDomainMediaListStatus(),
             ),
     )
-}
 
-fun MediaThreadsQuery.Thread.toDomainThread(): Thread {
-    return Thread(
+fun MediaThreadsQuery.Thread.toDomainThread(): Thread =
+    Thread(
         id = id,
         title = title,
         body = body,
@@ -163,10 +157,9 @@ fun MediaThreadsQuery.Thread.toDomainThread(): Thread {
         user = user?.toDomainMediaThreadUser(),
         createdAt = createdAt,
     )
-}
 
-fun MediaThreadsQuery.User.toDomainMediaThreadUser(): User {
-    return User(
+fun MediaThreadsQuery.User.toDomainMediaThreadUser(): User =
+    User(
         id = id,
         name = name,
         avatar =
@@ -175,26 +168,23 @@ fun MediaThreadsQuery.User.toDomainMediaThreadUser(): User {
                 large = avatar?.large,
             ),
     )
-}
 
-fun TrendingNowQuery.PageInfo.toDomainPageInfo(): PageInfo {
-    return PageInfo(
+fun TrendingNowQuery.PageInfo.toDomainPageInfo(): PageInfo =
+    PageInfo(
         total = total,
         currentPage = currentPage,
         hasNextPage = hasNextPage,
     )
-}
 
-fun SeasonalAnimeQuery.PageInfo.toDomainPageInfo(): PageInfo {
-    return PageInfo(
+fun SeasonalAnimeQuery.PageInfo.toDomainPageInfo(): PageInfo =
+    PageInfo(
         total = total,
         currentPage = currentPage,
         hasNextPage = hasNextPage,
     )
-}
 
-fun SeasonalAnimeQuery.Medium.toDomainMedia(): Media {
-    return Media(
+fun SeasonalAnimeQuery.Medium.toDomainMedia(): Media =
+    Media(
         idAniList = id,
         idMal = idMal,
         status = status?.toDomainMediaStatus(),
@@ -228,10 +218,9 @@ fun SeasonalAnimeQuery.Medium.toDomainMedia(): Media {
                 status = mediaListEntry?.status?.toDomainMediaListStatus(),
             ),
     )
-}
 
-fun MediaQuery.Media.toDomainMedia(): Media {
-    return Media(
+fun MediaQuery.Media.toDomainMedia(): Media =
+    Media(
         idAniList = id,
         idMal = idMal,
         status = status?.toDomainMediaStatus(),
@@ -325,10 +314,9 @@ fun MediaQuery.Media.toDomainMedia(): Media {
                 edges = reviews?.toDomainReviews(),
             ),
     )
-}
 
-fun MediaSearchQuery.Medium.toDomainMedia(): Media {
-    return Media(
+fun MediaSearchQuery.Medium.toDomainMedia(): Media =
+    Media(
         idAniList = id,
         idMal = idMal,
         status = status?.toDomainMediaStatus(),
@@ -362,10 +350,9 @@ fun MediaSearchQuery.Medium.toDomainMedia(): Media {
                 status = mediaListEntry?.status?.toDomainMediaListStatus(),
             ),
     )
-}
 
-fun MediaQuery.Reviews.toDomainReviews(): List<ReviewEdge>? {
-    return edges?.map { edge ->
+fun MediaQuery.Reviews.toDomainReviews(): List<ReviewEdge>? =
+    edges?.map { edge ->
         ReviewEdge(
             node =
                 Review(
@@ -380,8 +367,18 @@ fun MediaQuery.Reviews.toDomainReviews(): List<ReviewEdge>? {
                             name = edge?.node?.user?.name,
                             avatar =
                                 UserAvatar(
-                                    medium = edge?.node?.user?.avatar?.medium,
-                                    large = edge?.node?.user?.avatar?.large,
+                                    medium =
+                                        edge
+                                            ?.node
+                                            ?.user
+                                            ?.avatar
+                                            ?.medium,
+                                    large =
+                                        edge
+                                            ?.node
+                                            ?.user
+                                            ?.avatar
+                                            ?.large,
                                 ),
                         ),
                     mediaType = edge?.node?.mediaType.toDomainMediaType(),
@@ -389,33 +386,29 @@ fun MediaQuery.Reviews.toDomainReviews(): List<ReviewEdge>? {
                 ),
         )
     }
-}
 
-fun MediaQuery.ScoreDistribution.toDomainScoreDistribution(): ScoreDistribution {
-    return ScoreDistribution(
+fun MediaQuery.ScoreDistribution.toDomainScoreDistribution(): ScoreDistribution =
+    ScoreDistribution(
         score = score,
         amount = amount,
     )
-}
 
-fun MediaQuery.StatusDistribution.toDomainStatusDistribution(): StatusDistribution {
-    return StatusDistribution(
+fun MediaQuery.StatusDistribution.toDomainStatusDistribution(): StatusDistribution =
+    StatusDistribution(
         status = status.toDomainMediaListStatus(),
         amount = amount,
     )
-}
 
-fun NetworkCharacterRole.toDomainCharacterRole(): CharacterRole {
-    return when (this) {
+fun NetworkCharacterRole.toDomainCharacterRole(): CharacterRole =
+    when (this) {
         NetworkCharacterRole.MAIN -> CharacterRole.MAIN
         NetworkCharacterRole.SUPPORTING -> CharacterRole.SUPPORTING
         NetworkCharacterRole.BACKGROUND -> CharacterRole.BACKGROUND
         NetworkCharacterRole.UNKNOWN__ -> CharacterRole.UNKNOWN
     }
-}
 
-fun MediaQuery.Characters.toDomainCharacters(): List<CharacterEdge>? {
-    return edges?.map { edge ->
+fun MediaQuery.Characters.toDomainCharacters(): List<CharacterEdge>? =
+    edges?.map { edge ->
         CharacterEdge(
             role = edge?.role?.toDomainCharacterRole(),
             node =
@@ -433,10 +426,9 @@ fun MediaQuery.Characters.toDomainCharacters(): List<CharacterEdge>? {
                 ),
         )
     }
-}
 
-fun MediaQuery.Staff.toDomainStaffs(): List<StaffEdge>? {
-    return edges?.map { edge ->
+fun MediaQuery.Staff.toDomainStaffs(): List<StaffEdge>? =
+    edges?.map { edge ->
         StaffEdge(
             role = edge?.role,
             node =
@@ -454,14 +446,11 @@ fun MediaQuery.Staff.toDomainStaffs(): List<StaffEdge>? {
                 ),
         )
     }
-}
 
-fun MediaQuery.Recommendations.toDomainMediaRecommendations(): List<Recommendation>? {
-    return edges?.map { edge -> Recommendation(mediaRecommendation = edge?.node?.mediaRecommendation?.toDomainMediaRecommendation()) }
-}
+fun MediaQuery.Recommendations.toDomainMediaRecommendations(): List<Recommendation>? = edges?.map { edge -> Recommendation(mediaRecommendation = edge?.node?.mediaRecommendation?.toDomainMediaRecommendation()) }
 
-fun MediaQuery.MediaRecommendation.toDomainMediaRecommendation(): Media {
-    return Media(
+fun MediaQuery.MediaRecommendation.toDomainMediaRecommendation(): Media =
+    Media(
         idAniList = id,
         idMal = idMal,
         title =
@@ -485,14 +474,11 @@ fun MediaQuery.MediaRecommendation.toDomainMediaRecommendation(): Media {
                 episode = nextAiringEpisode?.episode,
             ),
     )
-}
 
-fun MediaQuery.Relations.toDomainMediaRelations(): List<MediaEdge>? {
-    return edges?.map { edge -> edge?.toDomainMediaEdge() ?: MediaEdge() }
-}
+fun MediaQuery.Relations.toDomainMediaRelations(): List<MediaEdge>? = edges?.map { edge -> edge?.toDomainMediaEdge() ?: MediaEdge() }
 
-fun MediaQuery.Edge1.toDomainMediaEdge(): MediaEdge {
-    return MediaEdge(
+fun MediaQuery.Edge1.toDomainMediaEdge(): MediaEdge =
+    MediaEdge(
         relationType = relationType?.toDomainMediaRelation(),
         node =
             Media(
@@ -520,10 +506,9 @@ fun MediaQuery.Edge1.toDomainMediaEdge(): MediaEdge {
                     ),
             ),
     )
-}
 
-fun NetworkMediaRelation.toDomainMediaRelation(): MediaRelation {
-    return when (this) {
+fun NetworkMediaRelation.toDomainMediaRelation(): MediaRelation =
+    when (this) {
         NetworkMediaRelation.ADAPTATION -> MediaRelation.ADAPTATION
         NetworkMediaRelation.PREQUEL -> MediaRelation.PREQUEL
         NetworkMediaRelation.SEQUEL -> MediaRelation.SEQUEL
@@ -539,61 +524,54 @@ fun NetworkMediaRelation.toDomainMediaRelation(): MediaRelation {
         NetworkMediaRelation.CONTAINS -> MediaRelation.CONTAINS
         NetworkMediaRelation.UNKNOWN__ -> MediaRelation.UNKNOWN
     }
-}
 
-fun MediaQuery.ExternalLink.toDomainExternalLink(): MediaExternalLink {
-    return MediaExternalLink(
+fun MediaQuery.ExternalLink.toDomainExternalLink(): MediaExternalLink =
+    MediaExternalLink(
         url = url,
         site = site,
         color = color,
         icon = icon,
     )
-}
 
-fun TrendingNowQuery.Ranking.toDomainRankings(): MediaRank {
-    return MediaRank(
+fun TrendingNowQuery.Ranking.toDomainRankings(): MediaRank =
+    MediaRank(
         id = id,
         rank = rank,
         allTime = allTime,
         type = type.toDomainMediaRankType(),
     )
-}
 
-fun MediaQuery.Ranking.toDomainRankings(): MediaRank {
-    return MediaRank(
+fun MediaQuery.Ranking.toDomainRankings(): MediaRank =
+    MediaRank(
         id = id,
         rank = rank,
         allTime = allTime,
         type = type.toDomainMediaRankType(),
     )
-}
 
-fun NetworkMediaRankType.toDomainMediaRankType(): MediaRankType {
-    return when (this) {
+fun NetworkMediaRankType.toDomainMediaRankType(): MediaRankType =
+    when (this) {
         NetworkMediaRankType.RATED -> MediaRankType.RATED
         NetworkMediaRankType.POPULAR -> MediaRankType.POPULAR
         NetworkMediaRankType.UNKNOWN__ -> MediaRankType.UNKNOWN
     }
-}
 
-fun NetworkStudios.toDomainStudios(): StudioConnection {
-    return StudioConnection(
+fun NetworkStudios.toDomainStudios(): StudioConnection =
+    StudioConnection(
         edges = edges?.map { edge -> edge?.toDomainEdge() ?: StudioEdge() },
     )
-}
 
-fun MediaQuery.Edge.toDomainEdge(): StudioEdge {
-    return StudioEdge(
+fun MediaQuery.Edge.toDomainEdge(): StudioEdge =
+    StudioEdge(
         isMain = isMain,
         node =
             Studio(
                 name = node?.name ?: "",
             ),
     )
-}
 
-fun NetworkMediaSource.toDomainMediaSource(): MediaSource {
-    return when (this) {
+fun NetworkMediaSource.toDomainMediaSource(): MediaSource =
+    when (this) {
         NetworkMediaSource.ORIGINAL -> MediaSource.ORIGINAL
         NetworkMediaSource.MANGA -> MediaSource.MANGA
         NetworkMediaSource.LIGHT_NOVEL -> MediaSource.LIGHT_NOVEL
@@ -611,50 +589,42 @@ fun NetworkMediaSource.toDomainMediaSource(): MediaSource {
         NetworkMediaSource.PICTURE_BOOK -> MediaSource.PICTURE_BOOK
         NetworkMediaSource.UNKNOWN__ -> MediaSource.UNKNOWN
     }
-}
 
-fun MediaQuery.Tag.toDomainMediaTag(): MediaTag {
-    return MediaTag(
+fun MediaQuery.Tag.toDomainMediaTag(): MediaTag =
+    MediaTag(
         name = name,
         rank = rank,
         isGeneralSpoiler = isGeneralSpoiler,
     )
-}
 
-fun RecentlyUpdatedQuery.CoverImage.toDomainMediaCoverImage(): MediaCoverImage {
-    return MediaCoverImage(large = large.orEmpty(), extraLarge = extraLarge.orEmpty())
-}
+fun RecentlyUpdatedQuery.CoverImage.toDomainMediaCoverImage(): MediaCoverImage = MediaCoverImage(large = large.orEmpty(), extraLarge = extraLarge.orEmpty())
 
-fun TrendingNowQuery.CoverImage.toDomainMediaCoverImage(): MediaCoverImage {
-    return MediaCoverImage(
+fun TrendingNowQuery.CoverImage.toDomainMediaCoverImage(): MediaCoverImage =
+    MediaCoverImage(
         large = large.orEmpty(),
         extraLarge = extraLarge.orEmpty(),
     )
-}
 
-fun SeasonalAnimeQuery.CoverImage.toDomainMediaCoverImage(): MediaCoverImage {
-    return MediaCoverImage(
+fun SeasonalAnimeQuery.CoverImage.toDomainMediaCoverImage(): MediaCoverImage =
+    MediaCoverImage(
         large = large.orEmpty(),
         extraLarge = extraLarge.orEmpty(),
     )
-}
 
-fun MediaQuery.CoverImage.toDomainMediaCoverImage(): MediaCoverImage {
-    return MediaCoverImage(
+fun MediaQuery.CoverImage.toDomainMediaCoverImage(): MediaCoverImage =
+    MediaCoverImage(
         large = large.orEmpty(),
         extraLarge = extraLarge.orEmpty(),
     )
-}
 
-fun MediaSearchQuery.CoverImage.toDomainMediaCoverImage(): MediaCoverImage {
-    return MediaCoverImage(
+fun MediaSearchQuery.CoverImage.toDomainMediaCoverImage(): MediaCoverImage =
+    MediaCoverImage(
         large = large.orEmpty(),
         extraLarge = extraLarge.orEmpty(),
     )
-}
 
-fun NetworkMediaStatus?.toDomainMediaStatus(): MediaStatus? {
-    return when (this) {
+fun NetworkMediaStatus?.toDomainMediaStatus(): MediaStatus? =
+    when (this) {
         NetworkMediaStatus.FINISHED -> MediaStatus.FINISHED
         NetworkMediaStatus.RELEASING -> MediaStatus.RELEASING
         NetworkMediaStatus.NOT_YET_RELEASED -> MediaStatus.NOT_YET_RELEASED
@@ -662,27 +632,24 @@ fun NetworkMediaStatus?.toDomainMediaStatus(): MediaStatus? {
         NetworkMediaStatus.HIATUS -> MediaStatus.HIATUS
         else -> null
     }
-}
 
-fun NetworkMediaType?.toDomainMediaType(): MediaType? {
-    return when (this) {
+fun NetworkMediaType?.toDomainMediaType(): MediaType? =
+    when (this) {
         NetworkMediaType.ANIME -> MediaType.ANIME
         NetworkMediaType.MANGA -> MediaType.MANGA
         else -> null
     }
-}
 
-fun NetworkReviewRating.toDomainReviewRating(): ReviewRating {
-    return when (this) {
+fun NetworkReviewRating.toDomainReviewRating(): ReviewRating =
+    when (this) {
         NetworkReviewRating.NO_VOTE -> ReviewRating.NO_VOTE
         NetworkReviewRating.UP_VOTE -> ReviewRating.UP_VOTE
         NetworkReviewRating.DOWN_VOTE -> ReviewRating.DOWN_VOTE
         NetworkReviewRating.UNKNOWN__ -> ReviewRating.UNKNOWN
     }
-}
 
-fun NetworkMediaFormat?.toDomainMediaFormat(): MediaFormat? {
-    return when (this) {
+fun NetworkMediaFormat?.toDomainMediaFormat(): MediaFormat? =
+    when (this) {
         NetworkMediaFormat.TV -> MediaFormat.TV
         NetworkMediaFormat.TV_SHORT -> MediaFormat.TV_SHORT
         NetworkMediaFormat.MOVIE -> MediaFormat.MOVIE
@@ -695,10 +662,9 @@ fun NetworkMediaFormat?.toDomainMediaFormat(): MediaFormat? {
         NetworkMediaFormat.ONE_SHOT -> MediaFormat.ONE_SHOT
         else -> null
     }
-}
 
-fun NetworkMediaListStatus?.toDomainMediaListStatus(): MediaListStatus? {
-    return when (this) {
+fun NetworkMediaListStatus?.toDomainMediaListStatus(): MediaListStatus? =
+    when (this) {
         NetworkMediaListStatus.CURRENT -> MediaListStatus.CURRENT
         NetworkMediaListStatus.PLANNING -> MediaListStatus.PLANNING
         NetworkMediaListStatus.COMPLETED -> MediaListStatus.COMPLETED
@@ -707,37 +673,33 @@ fun NetworkMediaListStatus?.toDomainMediaListStatus(): MediaListStatus? {
         NetworkMediaListStatus.REPEATING -> MediaListStatus.REPEATING
         else -> null
     }
-}
 
-fun NetworkMediaSeason.toDomainMediaSeason(): MediaSeason {
-    return when (this) {
+fun NetworkMediaSeason.toDomainMediaSeason(): MediaSeason =
+    when (this) {
         NetworkMediaSeason.WINTER -> MediaSeason.WINTER
         NetworkMediaSeason.SPRING -> MediaSeason.SPRING
         NetworkMediaSeason.SUMMER -> MediaSeason.SUMMER
         NetworkMediaSeason.FALL -> MediaSeason.FALL
         NetworkMediaSeason.UNKNOWN__ -> MediaSeason.UNKNOWN
     }
-}
 
-fun MediaSeason.toNetworkMediaSeason(): NetworkMediaSeason {
-    return when (this) {
+fun MediaSeason.toNetworkMediaSeason(): NetworkMediaSeason =
+    when (this) {
         MediaSeason.WINTER -> NetworkMediaSeason.WINTER
         MediaSeason.SPRING -> NetworkMediaSeason.SPRING
         MediaSeason.SUMMER -> NetworkMediaSeason.SUMMER
         MediaSeason.FALL -> NetworkMediaSeason.FALL
         MediaSeason.UNKNOWN -> NetworkMediaSeason.UNKNOWN__
     }
-}
 
-fun MediaType.toNetworkMediaType(): com.example.core.network.type.MediaType {
-    return when (this) {
+fun MediaType.toNetworkMediaType(): com.example.core.network.type.MediaType =
+    when (this) {
         MediaType.ANIME -> com.example.core.network.type.MediaType.ANIME
         MediaType.MANGA -> com.example.core.network.type.MediaType.MANGA
     }
-}
 
-fun MediaFormat.toNetworkMediaFormat(): com.example.core.network.type.MediaFormat {
-    return when (this) {
+fun MediaFormat.toNetworkMediaFormat(): com.example.core.network.type.MediaFormat =
+    when (this) {
         MediaFormat.TV -> com.example.core.network.type.MediaFormat.TV
         MediaFormat.TV_SHORT -> com.example.core.network.type.MediaFormat.TV_SHORT
         MediaFormat.MOVIE -> com.example.core.network.type.MediaFormat.MOVIE
@@ -749,23 +711,20 @@ fun MediaFormat.toNetworkMediaFormat(): com.example.core.network.type.MediaForma
         MediaFormat.NOVEL -> com.example.core.network.type.MediaFormat.NOVEL
         MediaFormat.ONE_SHOT -> com.example.core.network.type.MediaFormat.ONE_SHOT
     }
-}
 
-fun MediaStatus.toNetworkMediaStatus(): com.example.core.network.type.MediaStatus {
-    return when (this) {
+fun MediaStatus.toNetworkMediaStatus(): com.example.core.network.type.MediaStatus =
+    when (this) {
         MediaStatus.FINISHED -> com.example.core.network.type.MediaStatus.FINISHED
         MediaStatus.RELEASING -> com.example.core.network.type.MediaStatus.RELEASING
         MediaStatus.NOT_YET_RELEASED -> com.example.core.network.type.MediaStatus.NOT_YET_RELEASED
         MediaStatus.CANCELLED -> com.example.core.network.type.MediaStatus.CANCELLED
         MediaStatus.HIATUS -> com.example.core.network.type.MediaStatus.HIATUS
     }
-}
 
-fun MediaSort.toNetworkMediaSort(): com.example.core.network.type.MediaSort {
-    return when (this) {
+fun MediaSort.toNetworkMediaSort(): com.example.core.network.type.MediaSort =
+    when (this) {
         MediaSort.SCORE -> com.example.core.network.type.MediaSort.SCORE_DESC
         MediaSort.POPULARITY -> com.example.core.network.type.MediaSort.POPULARITY_DESC
         MediaSort.TRENDING -> com.example.core.network.type.MediaSort.TRENDING_DESC
         MediaSort.FAVOURITES -> com.example.core.network.type.MediaSort.FAVOURITES_DESC
     }
-}

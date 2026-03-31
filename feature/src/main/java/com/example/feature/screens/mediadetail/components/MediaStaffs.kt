@@ -55,7 +55,9 @@ fun MediaStaffs(
             items(staffs) { staff ->
                 val painter =
                     rememberAsyncImagePainter(
-                        model = staff.node.image.medium?.ifBlank { staff.node.image.large },
+                        model =
+                            staff.node.image.medium
+                                ?.ifBlank { staff.node.image.large },
                     )
 
                 Column(

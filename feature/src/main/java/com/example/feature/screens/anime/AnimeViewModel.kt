@@ -101,7 +101,7 @@ class AnimeViewModel
 
                 _state.update { currentState ->
                     when {
-                        recentlyUpdatedResult.isSuccess && trendingNowResult.isSuccess && currentSeasonResult.isSuccess && nextSeasonResult.isSuccess && popularResult.isSuccess ->
+                        recentlyUpdatedResult.isSuccess && trendingNowResult.isSuccess && currentSeasonResult.isSuccess && nextSeasonResult.isSuccess && popularResult.isSuccess -> {
                             currentState.copy(
                                 trendingNowMedia = trendingNowResult.getOrNull()?.data,
                                 recentlyUpdatedMedia = recentlyUpdatedResult.getOrNull()?.data,
@@ -111,8 +111,9 @@ class AnimeViewModel
                                 isLoading = false,
                                 error = null,
                             )
+                        }
 
-                        recentlyUpdatedResult.isFailure || trendingNowResult.isFailure || currentSeasonResult.isFailure || nextSeasonResult.isFailure || popularResult.isFailure ->
+                        recentlyUpdatedResult.isFailure || trendingNowResult.isFailure || currentSeasonResult.isFailure || nextSeasonResult.isFailure || popularResult.isFailure -> {
                             currentState.copy(
                                 trendingNowMedia = null,
                                 recentlyUpdatedMedia = null,
@@ -122,12 +123,14 @@ class AnimeViewModel
                                 isLoading = false,
                                 error = recentlyUpdatedResult.exceptionOrNull()?.message ?: "An unknown error occurred",
                             )
+                        }
 
-                        else ->
+                        else -> {
                             currentState.copy(
                                 isLoading = false,
                                 error = "Unexpected result state",
                             )
+                        }
                     }
                 }
             }

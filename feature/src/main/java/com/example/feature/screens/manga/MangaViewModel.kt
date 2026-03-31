@@ -94,7 +94,7 @@ class MangaViewModel
 
                 _state.update { currentState ->
                     when {
-                        trendingNowResult.isSuccess && popularMangaResult.isSuccess && popularManhwaResult.isSuccess && popularNovelResult.isSuccess && popularOneShotResult.isSuccess ->
+                        trendingNowResult.isSuccess && popularMangaResult.isSuccess && popularManhwaResult.isSuccess && popularNovelResult.isSuccess && popularOneShotResult.isSuccess -> {
                             currentState.copy(
                                 trendingMangaList = trendingNowResult.getOrNull()?.data,
                                 popularMangaList = popularMangaResult.getOrNull()?.data,
@@ -104,8 +104,9 @@ class MangaViewModel
                                 isLoading = false,
                                 error = null,
                             )
+                        }
 
-                        trendingNowResult.isFailure || popularMangaResult.isFailure || popularManhwaResult.isFailure || popularNovelResult.isFailure || popularOneShotResult.isFailure ->
+                        trendingNowResult.isFailure || popularMangaResult.isFailure || popularManhwaResult.isFailure || popularNovelResult.isFailure || popularOneShotResult.isFailure -> {
                             currentState.copy(
                                 trendingMangaList = null,
                                 popularMangaList = null,
@@ -115,12 +116,14 @@ class MangaViewModel
                                 isLoading = false,
                                 error = trendingNowResult.exceptionOrNull()?.message ?: "An unknown error occurred",
                             )
+                        }
 
-                        else ->
+                        else -> {
                             currentState.copy(
                                 isLoading = false,
                                 error = "Unexpected result state",
                             )
+                        }
                     }
                 }
             }

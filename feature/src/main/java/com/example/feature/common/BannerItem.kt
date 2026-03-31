@@ -46,20 +46,21 @@ fun BannerItem(
     val bannerPainter =
         rememberAsyncImagePainter(
             model =
-                ImageRequest.Builder(LocalContext.current)
+                ImageRequest
+                    .Builder(LocalContext.current)
                     .data(
                         media.bannerImage.ifBlank {
                             media.coverImage.extraLarge
                         },
-                    )
-                    .crossfade(true)
+                    ).crossfade(true)
                     .build(),
         )
 
     val coverPainter =
         rememberAsyncImagePainter(
             model =
-                ImageRequest.Builder(LocalContext.current)
+                ImageRequest
+                    .Builder(LocalContext.current)
                     .data(media.coverImage.large)
                     .crossfade(true)
                     .build(),

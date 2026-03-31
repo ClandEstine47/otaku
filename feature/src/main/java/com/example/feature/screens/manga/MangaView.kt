@@ -56,9 +56,7 @@ fun MangaView(
         mutableStateOf(isOnline(context))
     }
 
-    /**
-     * Haze blur effect working only for API 32+
-     */
+    // Haze blur effect working only for API 32+
     Column(
         modifier =
             Modifier
@@ -69,8 +67,7 @@ fun MangaView(
                         blurRadius = 30.dp,
                         noiseFactor = HazeDefaults.noiseFactor,
                     ),
-                )
-                .fillMaxSize()
+                ).fillMaxSize()
                 .absolutePadding()
                 .verticalScroll(rememberScrollState()),
     ) {

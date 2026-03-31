@@ -212,8 +212,7 @@ fun ScoreDistributionChart(
                                                 bottomStart = 2.dp,
                                                 bottomEnd = 2.dp,
                                             ),
-                                        )
-                                        .width(horizontalLineHeight)
+                                        ).width(horizontalLineHeight)
                                         .height(lineHeightXAxis)
                                         .background(color = lightPaintColor),
                             )

@@ -15,15 +15,14 @@ import java.util.Locale
 object Utils {
     private val defaultZoneOffset get() = ZonedDateTime.now(ZoneId.systemDefault()).offset
 
-    private fun LocalDateTime.season(): MediaSeason {
-        return when (this.month) {
+    private fun LocalDateTime.season(): MediaSeason =
+        when (this.month) {
             Month.JANUARY, Month.FEBRUARY, Month.DECEMBER -> MediaSeason.WINTER
             Month.MARCH, Month.APRIL, Month.MAY -> MediaSeason.SPRING
             Month.JUNE, Month.JULY, Month.AUGUST -> MediaSeason.SUMMER
             Month.SEPTEMBER, Month.OCTOBER, Month.NOVEMBER -> MediaSeason.FALL
             else -> MediaSeason.UNKNOWN
         }
-    }
 
     fun LocalDateTime.currentAnimeSeason(): AnimeSeason {
         var animeSeason = AnimeSeason(year = year, season = season())
@@ -36,16 +35,28 @@ object Utils {
     fun LocalDateTime.nextAnimeSeason(): AnimeSeason {
         val current = currentAnimeSeason()
         return when (current.season) {
-            MediaSeason.WINTER -> current.copy(season = MediaSeason.SPRING)
-            MediaSeason.SPRING -> current.copy(season = MediaSeason.SUMMER)
-            MediaSeason.SUMMER -> current.copy(season = MediaSeason.FALL)
-            MediaSeason.FALL ->
+            MediaSeason.WINTER -> {
+                current.copy(season = MediaSeason.SPRING)
+            }
+
+            MediaSeason.SPRING -> {
+                current.copy(season = MediaSeason.SUMMER)
+            }
+
+            MediaSeason.SUMMER -> {
+                current.copy(season = MediaSeason.FALL)
+            }
+
+            MediaSeason.FALL -> {
                 current.copy(
                     season = MediaSeason.WINTER,
                     year = year + 1,
                 )
+            }
 
-            else -> current
+            else -> {
+                current
+            }
         }
     }
 
@@ -60,7 +71,12 @@ object Utils {
     ): Long {
         val targetDate = this.plusDays(dayOffset.toLong()).toLocalDate()
         return if (isEndOfDay) {
-            targetDate.plusDays(1).atStartOfDay().minusNanos(1).toInstant(defaultZoneOffset).epochSecond
+            targetDate
+                .plusDays(1)
+                .atStartOfDay()
+                .minusNanos(1)
+                .toInstant(defaultZoneOffset)
+                .epochSecond
         } else {
             targetDate.atStartOfDay().toInstant(defaultZoneOffset).epochSecond
         }
@@ -90,7 +106,5 @@ object Utils {
         return dateTime.format(formatter)
     }
 
-    fun <T> getFormattedString(value: T?): String {
-        return value?.toString()?.replace("_", " ") ?: ""
-    }
+    fun <T> getFormattedString(value: T?): String = value?.toString()?.replace("_", " ") ?: ""
 }

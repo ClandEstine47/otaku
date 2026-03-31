@@ -84,7 +84,10 @@ fun MediaRecommendations(
 
                     OtakuImageCardTitle(
                         title =
-                            media.mediaRecommendation?.title?.english?.ifBlank { media.mediaRecommendation?.title?.romaji }
+                            media.mediaRecommendation
+                                ?.title
+                                ?.english
+                                ?.ifBlank { media.mediaRecommendation?.title?.romaji }
                                 ?: "",
                     )
                 }

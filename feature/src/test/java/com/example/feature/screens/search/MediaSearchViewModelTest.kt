@@ -94,8 +94,18 @@ class MediaSearchViewModelTest {
 
             coEvery {
                 mediaRepository.getSearchMedia(
-                    any(), any(), any(), any(), any(), any(),
-                    any(), any(), any(), any(), any(), any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
                 )
             } returns searchResult
 
@@ -124,8 +134,18 @@ class MediaSearchViewModelTest {
             val errorMessage = "Network error"
             coEvery {
                 mediaRepository.getSearchMedia(
-                    any(), any(), any(), any(), any(), any(),
-                    any(), any(), any(), any(), any(), any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
                 )
             } returns Result.failure(Exception(errorMessage))
 
@@ -154,8 +174,18 @@ class MediaSearchViewModelTest {
             // Set initial state
             coEvery {
                 mediaRepository.getSearchMedia(
-                    any(), any(), any(), any(), any(), any(),
-                    any(), any(), any(), any(), any(), any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
                 )
             } returns
                 Result.success(
@@ -178,8 +208,18 @@ class MediaSearchViewModelTest {
             // Mock load more response
             coEvery {
                 mediaRepository.getSearchMedia(
-                    any(), any(), any(), any(), any(), any(),
-                    any(), any(), any(), any(), any(), any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
                 )
             } returns
                 Result.success(

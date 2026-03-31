@@ -66,16 +66,17 @@ fun InfiniteHorizontalPager(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(0.dp),
             ) { index ->
-                mediaList.getOrNull(
-                    index % (mediaList.size),
-                )?.let { media ->
-                    BannerItem(
-                        media = media,
-                        onBannerItemClick = { mediaId ->
-                            onBannerItemClick(mediaId)
-                        },
-                    )
-                }
+                mediaList
+                    .getOrNull(
+                        index % (mediaList.size),
+                    )?.let { media ->
+                        BannerItem(
+                            media = media,
+                            onBannerItemClick = { mediaId ->
+                                onBannerItemClick(mediaId)
+                            },
+                        )
+                    }
             }
         }
     }

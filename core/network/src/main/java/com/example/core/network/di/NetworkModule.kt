@@ -18,10 +18,12 @@ object NetworkModule {
     @Provides
     fun provideApolloClient(): ApolloClient {
         val okHttpClient =
-            OkHttpClient.Builder()
+            OkHttpClient
+                .Builder()
                 .build()
 
-        return ApolloClient.Builder()
+        return ApolloClient
+            .Builder()
             .serverUrl(ANILIST_GRAPHQL_URL)
             .okHttpClient(okHttpClient)
             .build()

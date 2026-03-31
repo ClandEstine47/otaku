@@ -65,7 +65,9 @@ fun MediaReviewItem(
 ) {
     val profileImage =
         rememberAsyncImagePainter(
-            model = review.user.avatar.medium?.ifBlank { review.user.avatar.large },
+            model =
+                review.user.avatar.medium
+                    ?.ifBlank { review.user.avatar.large },
         )
 
     Card(
