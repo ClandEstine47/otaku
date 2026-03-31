@@ -60,6 +60,3 @@ Some apps that I referred to while developing:
 - [AL-chan](https://github.com/zend10/AL-chan)
 
 <br>
-
-## Notes  
-This project, **Otaku**, was developed as a **learning experience** to explore modern Android development practices. While it is functional, it is **not intended for publishing on app stores**. Contributions, suggestions, and feedback are welcome to enhance and refine the project further!
