@@ -1,6 +1,7 @@
 package com.example.core.data.repository
 
 import com.apollographql.apollo.exception.ApolloException
+import com.apollographql.apollo.exception.ApolloNetworkException
 import com.example.core.domain.model.Page
 import com.example.core.domain.model.PageInfo
 import com.example.core.domain.model.airing.AiringSchedule
@@ -142,7 +143,7 @@ class MediaRepositoryImplTest {
     fun `getSeasonalMedia returns failure when Apollo throws exception`() =
         runTest {
             // Given
-            val expectedError = ApolloException("Network error")
+            val expectedError = ApolloNetworkException("Network error")
 
             coEvery {
                 mediaService.getSeasonalMediaList(
@@ -258,7 +259,7 @@ class MediaRepositoryImplTest {
     fun `getRecentlyUpdatedAnimeList returns failure when Apollo throws exception`() =
         runTest {
             // Given
-            val expectedError = ApolloException("Network error")
+            val expectedError = ApolloNetworkException("Network error")
 
             coEvery {
                 mediaService.getRecentlyUpdatedAnimeList(
@@ -368,7 +369,7 @@ class MediaRepositoryImplTest {
     fun `getTrendingNowMedia returns failure when Apollo throws exception`() =
         runTest {
             // Given
-            val expectedError = ApolloException("Network error")
+            val expectedError = ApolloNetworkException("Network error")
 
             coEvery {
                 mediaService.getTrendingNowMediaList(
@@ -484,7 +485,7 @@ class MediaRepositoryImplTest {
     fun `getPopularMedia returns failure when Apollo throws exception`() =
         runTest {
             // Given
-            val expectedError = ApolloException("Network error")
+            val expectedError = ApolloNetworkException("Network error")
 
             coEvery {
                 mediaService.getPopularMediaList(
@@ -538,7 +539,7 @@ class MediaRepositoryImplTest {
     fun `getMediaById returns failure when Apollo throws exception`() =
         runTest {
             // Given
-            val expectedError = ApolloException("Network error")
+            val expectedError = ApolloNetworkException("Network error")
 
             coEvery {
                 mediaService.getMediaById(
@@ -642,7 +643,7 @@ class MediaRepositoryImplTest {
     fun `getMediaThreads returns failure when Apollo throws exception`() =
         runTest {
             // Given
-            val expectedError = ApolloException("Network error")
+            val expectedError = ApolloNetworkException("Network error")
 
             coEvery {
                 mediaService.getMediaThreads(
@@ -786,7 +787,7 @@ class MediaRepositoryImplTest {
     fun `getSearchMedia returns failure when Apollo throws exception`() =
         runTest {
             // Given
-            val expectedError = ApolloException("Network error")
+            val expectedError = ApolloNetworkException("Network error")
 
             coEvery {
                 mediaService.getSearchMedia(

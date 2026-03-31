@@ -8,6 +8,7 @@ import com.apollographql.apollo.api.Error
 import com.apollographql.apollo.api.Operation
 import com.apollographql.apollo.api.Optional
 import com.apollographql.apollo.exception.ApolloException
+import com.apollographql.apollo.exception.ApolloNetworkException
 import com.apollographql.apollo.network.NetworkTransport
 import com.apollographql.apollo.testing.QueueTestNetworkTransport
 import com.apollographql.apollo.testing.enqueueTestResponse
@@ -275,7 +276,7 @@ class MediaServiceImplTest {
                     .Builder()
                     .networkTransport(
                         object : NetworkTransport {
-                            override fun <D : Operation.Data> execute(request: ApolloRequest<D>): Flow<ApolloResponse<D>> = throw ApolloException("Network error")
+                            override fun <D : Operation.Data> execute(request: ApolloRequest<D>): Flow<ApolloResponse<D>> = throw ApolloNetworkException("Network error")
 
                             override fun dispose() {}
                         },
@@ -501,7 +502,7 @@ class MediaServiceImplTest {
                     .Builder()
                     .networkTransport(
                         object : NetworkTransport {
-                            override fun <D : Operation.Data> execute(request: ApolloRequest<D>): Flow<ApolloResponse<D>> = throw ApolloException("Network connection failed")
+                            override fun <D : Operation.Data> execute(request: ApolloRequest<D>): Flow<ApolloResponse<D>> = throw ApolloNetworkException("Network connection failed")
 
                             override fun dispose() {}
                         },
@@ -719,7 +720,7 @@ class MediaServiceImplTest {
                     .Builder()
                     .networkTransport(
                         object : NetworkTransport {
-                            override fun <D : Operation.Data> execute(request: ApolloRequest<D>): Flow<ApolloResponse<D>> = throw ApolloException("Network error")
+                            override fun <D : Operation.Data> execute(request: ApolloRequest<D>): Flow<ApolloResponse<D>> = throw ApolloNetworkException("Network error")
 
                             override fun dispose() {}
                         },
@@ -941,7 +942,7 @@ class MediaServiceImplTest {
                     .Builder()
                     .networkTransport(
                         object : NetworkTransport {
-                            override fun <D : Operation.Data> execute(request: ApolloRequest<D>): Flow<ApolloResponse<D>> = throw ApolloException("Network error")
+                            override fun <D : Operation.Data> execute(request: ApolloRequest<D>): Flow<ApolloResponse<D>> = throw ApolloNetworkException("Network error")
 
                             override fun dispose() {}
                         },
@@ -1138,7 +1139,7 @@ class MediaServiceImplTest {
                     .Builder()
                     .networkTransport(
                         object : NetworkTransport {
-                            override fun <D : Operation.Data> execute(request: ApolloRequest<D>): Flow<ApolloResponse<D>> = throw ApolloException("Unknown GraphQL error")
+                            override fun <D : Operation.Data> execute(request: ApolloRequest<D>): Flow<ApolloResponse<D>> = throw ApolloNetworkException("Unknown GraphQL error")
 
                             override fun dispose() {}
                         },
@@ -1325,7 +1326,7 @@ class MediaServiceImplTest {
                     .Builder()
                     .networkTransport(
                         object : NetworkTransport {
-                            override fun <D : Operation.Data> execute(request: ApolloRequest<D>): Flow<ApolloResponse<D>> = throw ApolloException("Network error")
+                            override fun <D : Operation.Data> execute(request: ApolloRequest<D>): Flow<ApolloResponse<D>> = throw ApolloNetworkException("Network error")
 
                             override fun dispose() {}
                         },
@@ -1588,7 +1589,7 @@ class MediaServiceImplTest {
                     .Builder()
                     .networkTransport(
                         object : NetworkTransport {
-                            override fun <D : Operation.Data> execute(request: ApolloRequest<D>): Flow<ApolloResponse<D>> = throw ApolloException("Network error")
+                            override fun <D : Operation.Data> execute(request: ApolloRequest<D>): Flow<ApolloResponse<D>> = throw ApolloNetworkException("Network error")
 
                             override fun dispose() {}
                         },
