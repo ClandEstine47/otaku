@@ -27,7 +27,7 @@ material = "1.13.0"
 spotless = "8.4.0"
 timber = "5.0.1"
 richEditor = "1.0.0-rc13"
-haze = "0.7.3"
+haze = "1.7.2"
 androidYoutubePlayer = "13.0.0"
 mockk = "1.14.9"
 
