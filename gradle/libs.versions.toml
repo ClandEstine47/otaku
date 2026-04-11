@@ -17,7 +17,7 @@ junit = "4.13.2"
 androidxJunit = "1.3.0"
 
 # Other
-apolloGraphql = "4.4.2"
+apolloGraphql = "4.4.3"
 coilCompose = "2.7.0"
 daggerHilt = "2.59.2"
 desugar = "2.1.5"
