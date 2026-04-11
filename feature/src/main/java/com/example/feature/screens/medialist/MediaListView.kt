@@ -180,7 +180,6 @@ fun MediaListView(
                         HorizontalDivider(color = MaterialTheme.colorScheme.background)
                     },
                     tabs = {
-                        val tabWidthModifier = Modifier.width(IntrinsicSize.Max)
                         daysSorted.forEachIndexed { index, day ->
                             val isCurrentTabSelected = selectedTabIndex == index
 
@@ -192,7 +191,6 @@ fun MediaListView(
                                         pagerState.animateScrollToPage(index)
                                     }
                                 },
-                                modifier = tabWidthModifier,
                             ) {
                                 Box(
                                     modifier =
