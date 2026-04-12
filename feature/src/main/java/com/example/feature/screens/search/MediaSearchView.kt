@@ -138,7 +138,9 @@ fun MediaSearchView(
         }
 
     LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
+        if (inputText.isEmpty()) {
+            focusRequester.requestFocus()
+        }
     }
 
     Scaffold(
@@ -146,7 +148,7 @@ fun MediaSearchView(
             Modifier
                 .absolutePadding()
                 .padding(horizontal = 5.dp),
-    ) { innerPadding ->
+    ) { padding ->
 
         if (openBottomSheet) {
             ModalBottomSheet(
@@ -208,7 +210,6 @@ fun MediaSearchView(
                 modifier =
                     Modifier
                         .fillMaxSize()
-                        .padding(innerPadding.calculateBottomPadding())
                         .padding(5.dp),
                 verticalArrangement = Arrangement.Top,
             ) {
