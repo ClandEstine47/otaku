@@ -4,6 +4,7 @@ import android.os.Handler
 import android.os.Looper
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,6 +38,7 @@ import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,6 +48,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -113,6 +119,7 @@ fun MediaSearchView(
     var skipPartiallyExpanded by rememberSaveable { mutableStateOf(false) }
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = skipPartiallyExpanded)
     val focusManager = LocalFocusManager.current
+    val focusRequester = remember { FocusRequester() }
     val handler = Handler(Looper.getMainLooper())
     val searchRunnable =
         Runnable {
@@ -129,6 +136,10 @@ fun MediaSearchView(
                 sortBy = selectedSort,
             )
         }
+
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+    }
 
     Scaffold(
         modifier =
@@ -183,207 +194,224 @@ fun MediaSearchView(
             )
         }
 
-        Column(
+        Box(
             modifier =
                 Modifier
                     .fillMaxSize()
-                    .padding(innerPadding.calculateBottomPadding())
-                    .padding(5.dp),
-            verticalArrangement = Arrangement.Top,
-        ) {
-            SearchBar(
-                inputField = {
-                    SearchBarDefaults.InputField(
-                        query = inputText,
-                        onQueryChange = { query ->
-                            inputText = query
-                            handler.removeCallbacks(searchRunnable)
-                            handler.postDelayed(searchRunnable, 500L)
-                        },
-                        onSearch = {
-                            expanded = false
+                    .pointerInput(Unit) {
+                        detectTapGestures(onTap = {
                             focusManager.clearFocus()
-                        },
-                        expanded = expanded,
-                        onExpandedChange = {
-                            expanded = false
-                            isClicked = it
-                        },
-                        placeholder = {
-                            if (!isClicked) {
+                        })
+                    },
+        ) {
+            Column(
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding.calculateBottomPadding())
+                        .padding(5.dp),
+                verticalArrangement = Arrangement.Top,
+            ) {
+                SearchBar(
+                    inputField = {
+                        SearchBarDefaults.InputField(
+                            query = inputText,
+                            onQueryChange = { query ->
+                                inputText = query
+                                handler.removeCallbacks(searchRunnable)
+                                handler.postDelayed(searchRunnable, 500L)
+                            },
+                            onSearch = {
+                                expanded = false
+                                focusManager.clearFocus()
+                            },
+                            expanded = expanded,
+                            onExpandedChange = {
+                                expanded = false
+                                isClicked = it
+                            },
+                            placeholder = {
+                                if (!isClicked) {
+                                    Box(
+                                        modifier = Modifier.fillMaxHeight(),
+                                        contentAlignment = Alignment.Center,
+                                    ) {
+                                        OtakuTitle(
+                                            id = if (arguments.mediaType == MediaType.ANIME) R.string.anime else R.string.manga,
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+                                        )
+                                    }
+                                }
+                            },
+                            leadingIcon = {
                                 Box(
                                     modifier = Modifier.fillMaxHeight(),
                                     contentAlignment = Alignment.Center,
                                 ) {
-                                    OtakuTitle(
-                                        id = if (arguments.mediaType == MediaType.ANIME) R.string.anime else R.string.manga,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+                                    Icon(
+                                        imageVector = Icons.Default.Search,
+                                        contentDescription = "search",
+                                        tint = if (isClicked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+                                    )
+                                }
+                            },
+                            trailingIcon = {
+                                Box(
+                                    modifier = Modifier.fillMaxHeight(),
+                                    contentAlignment = Alignment.Center,
+                                ) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.filter),
+                                        contentDescription = "search",
+                                        tint = if (isClicked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+                                        modifier =
+                                            Modifier
+                                                .clip(CircleShape)
+                                                .clickable {
+                                                    openBottomSheet = true
+                                                },
+                                    )
+                                }
+                            },
+                            modifier =
+                                Modifier
+                                    .padding(vertical = 0.dp)
+                                    .focusRequester(focusRequester)
+                                    .onFocusChanged { focusState ->
+                                        isClicked = focusState.isFocused
+                                    },
+                        )
+                    },
+                    expanded = expanded,
+                    onExpandedChange = {
+                        expanded = false
+                        isClicked = it
+                    },
+                    colors = SearchBarDefaults.colors(containerColor = MaterialTheme.colorScheme.onBackground.copy(0.1f)),
+                    modifier = Modifier,
+                ) {}
+
+                if (uiState.isLoading) {
+                    Column(
+                        modifier =
+                            Modifier
+                                .fillMaxSize()
+                                .padding(top = 60.dp),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                } else {
+                    if (!uiState.mediaList.isNullOrEmpty()) {
+                        Box(
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = 5.dp, bottom = 15.dp, end = 5.dp, top = 15.dp),
+                        ) {
+                            OtakuTitle(
+                                id = R.string.search_results,
+                                modifier =
+                                    Modifier
+                                        .align(Alignment.CenterStart),
+                            )
+
+                            Row(
+                                modifier = Modifier.align(Alignment.CenterEnd),
+                                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                            ) {
+                                IconButton(
+                                    onClick = {
+                                        viewType = ViewType.LIST
+                                    },
+                                    colors =
+                                        if (viewType == ViewType.LIST) {
+                                            IconButtonDefaults.iconButtonColors()
+                                        } else {
+                                            IconButtonDefaults.iconButtonColors(
+                                                contentColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f),
+                                            )
+                                        },
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Filled.List,
+                                        contentDescription = "List View",
+                                    )
+                                }
+
+                                IconButton(
+                                    onClick = {
+                                        viewType = ViewType.GRID
+                                    },
+                                    colors =
+                                        if (viewType == ViewType.GRID) {
+                                            IconButtonDefaults.iconButtonColors()
+                                        } else {
+                                            IconButtonDefaults.iconButtonColors(
+                                                contentColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f),
+                                            )
+                                        },
+                                ) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.grid_view_24px),
+                                        contentDescription = "Grid View",
                                     )
                                 }
                             }
-                        },
-                        leadingIcon = {
-                            Box(
-                                modifier = Modifier.fillMaxHeight(),
-                                contentAlignment = Alignment.Center,
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Search,
-                                    contentDescription = "search",
-                                    tint = if (isClicked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
-                                )
-                            }
-                        },
-                        trailingIcon = {
-                            Box(
-                                modifier = Modifier.fillMaxHeight(),
-                                contentAlignment = Alignment.Center,
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.filter),
-                                    contentDescription = "search",
-                                    tint = if (isClicked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
-                                    modifier =
-                                        Modifier
-                                            .clip(CircleShape)
-                                            .clickable {
-                                                openBottomSheet = true
-                                            },
-                                )
-                            }
-                        },
-                        modifier = Modifier.padding(vertical = 0.dp),
-                    )
-                },
-                expanded = expanded,
-                onExpandedChange = {
-                    expanded = false
-                    isClicked = it
-                },
-                colors = SearchBarDefaults.colors(containerColor = MaterialTheme.colorScheme.onBackground.copy(0.1f)),
-                modifier = Modifier,
-            ) {}
-
-            if (uiState.isLoading) {
-                Column(
-                    modifier =
-                        Modifier
-                            .fillMaxSize()
-                            .padding(top = 60.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    CircularProgressIndicator()
-                }
-            } else {
-                if (!uiState.mediaList.isNullOrEmpty()) {
-                    Box(
-                        modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .padding(start = 5.dp, bottom = 15.dp, end = 5.dp, top = 15.dp),
-                    ) {
-                        OtakuTitle(
-                            id = R.string.search_results,
-                            modifier =
-                                Modifier
-                                    .align(Alignment.CenterStart),
-                        )
-
-                        Row(
-                            modifier = Modifier.align(Alignment.CenterEnd),
-                            horizontalArrangement = Arrangement.spacedBy(10.dp),
-                        ) {
-                            IconButton(
-                                onClick = {
-                                    viewType = ViewType.LIST
-                                },
-                                colors =
-                                    if (viewType == ViewType.LIST) {
-                                        IconButtonDefaults.iconButtonColors()
-                                    } else {
-                                        IconButtonDefaults.iconButtonColors(
-                                            contentColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f),
-                                        )
-                                    },
-                            ) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.List,
-                                    contentDescription = "List View",
-                                )
-                            }
-
-                            IconButton(
-                                onClick = {
-                                    viewType = ViewType.GRID
-                                },
-                                colors =
-                                    if (viewType == ViewType.GRID) {
-                                        IconButtonDefaults.iconButtonColors()
-                                    } else {
-                                        IconButtonDefaults.iconButtonColors(
-                                            contentColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f),
-                                        )
-                                    },
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.grid_view_24px),
-                                    contentDescription = "Grid View",
-                                )
-                            }
-                        }
-                    }
-
-                    when (viewType) {
-                        ViewType.LIST -> {
-                            MediaListViewContent(
-                                navActionManager = navActionManager,
-                                mediaList = uiState.mediaList!!.map { MediaListItem.MediaListType(it) },
-                                onLoadMore = {
-                                    if (uiState.hasNextPage) {
-                                        mediaSearchViewModel.incrementPageNumber()
-                                        mediaSearchViewModel.loadSearchResult(
-                                            mediaType = arguments.mediaType,
-                                            searchQuery = inputText,
-                                            season = selectedSeason,
-                                            seasonYear = selectedYear,
-                                            format = selectedFormat,
-                                            status = selectedStatus,
-                                            countryOfOrigin = selectedCountry?.code,
-                                            genres = null,
-                                            tags = null,
-                                            sortBy = selectedSort,
-                                            loadMore = true,
-                                        )
-                                    }
-                                },
-                            )
                         }
 
-                        ViewType.GRID -> {
-                            MediaGridViewContent(
-                                navActionManager = navActionManager,
-                                mediaList = uiState.mediaList!!.map { MediaListItem.MediaListType(it) },
-                                onLoadMore = {
-                                    if (uiState.hasNextPage) {
-                                        mediaSearchViewModel.incrementPageNumber()
-                                        mediaSearchViewModel.loadSearchResult(
-                                            mediaType = arguments.mediaType,
-                                            searchQuery = inputText,
-                                            season = selectedSeason,
-                                            seasonYear = selectedYear,
-                                            format = selectedFormat,
-                                            status = selectedStatus,
-                                            countryOfOrigin = selectedCountry?.code,
-                                            genres = null,
-                                            tags = null,
-                                            sortBy = selectedSort,
-                                            loadMore = true,
-                                        )
-                                    }
-                                },
-                            )
+                        when (viewType) {
+                            ViewType.LIST -> {
+                                MediaListViewContent(
+                                    navActionManager = navActionManager,
+                                    mediaList = uiState.mediaList!!.map { MediaListItem.MediaListType(it) },
+                                    onLoadMore = {
+                                        if (uiState.hasNextPage) {
+                                            mediaSearchViewModel.incrementPageNumber()
+                                            mediaSearchViewModel.loadSearchResult(
+                                                mediaType = arguments.mediaType,
+                                                searchQuery = inputText,
+                                                season = selectedSeason,
+                                                seasonYear = selectedYear,
+                                                format = selectedFormat,
+                                                status = selectedStatus,
+                                                countryOfOrigin = selectedCountry?.code,
+                                                genres = null,
+                                                tags = null,
+                                                sortBy = selectedSort,
+                                                loadMore = true,
+                                            )
+                                        }
+                                    },
+                                )
+                            }
+
+                            ViewType.GRID -> {
+                                MediaGridViewContent(
+                                    navActionManager = navActionManager,
+                                    mediaList = uiState.mediaList!!.map { MediaListItem.MediaListType(it) },
+                                    onLoadMore = {
+                                        if (uiState.hasNextPage) {
+                                            mediaSearchViewModel.incrementPageNumber()
+                                            mediaSearchViewModel.loadSearchResult(
+                                                mediaType = arguments.mediaType,
+                                                searchQuery = inputText,
+                                                season = selectedSeason,
+                                                seasonYear = selectedYear,
+                                                format = selectedFormat,
+                                                status = selectedStatus,
+                                                countryOfOrigin = selectedCountry?.code,
+                                                genres = null,
+                                                tags = null,
+                                                sortBy = selectedSort,
+                                                loadMore = true,
+                                            )
+                                        }
+                                    },
+                                )
+                            }
                         }
                     }
                 }
