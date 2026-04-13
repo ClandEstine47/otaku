@@ -15,4 +15,5 @@ enum class MediaListContentType : Parcelable {
     POPULAR_MANHWA,
     POPULAR_NOVEL,
     ONE_SHOT,
+    RECOMMENDED,
 }

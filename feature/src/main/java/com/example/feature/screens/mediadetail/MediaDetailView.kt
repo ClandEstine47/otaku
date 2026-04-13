@@ -326,10 +326,14 @@ private fun MediaInfoTab(
     )
 
     // Media Recommendations
-    MediaRecommendations(
-        mediaRecommendation = media.recommendations,
-        navActionManager = navActionManager,
-    )
+    if (!media.recommendations.nodes.isNullOrEmpty()) {
+        MediaRecommendations(
+            mediaId = media.idAniList,
+            mediaRecommendation = media.recommendations,
+            mediaType = media.type!!,
+            navActionManager = navActionManager,
+        )
+    }
 
     // External Links
     media.externalLinks?.let { links ->
