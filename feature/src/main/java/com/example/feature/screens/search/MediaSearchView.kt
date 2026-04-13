@@ -290,7 +290,7 @@ fun MediaSearchView(
                         isClicked = it
                     },
                     colors = SearchBarDefaults.colors(containerColor = MaterialTheme.colorScheme.onBackground.copy(0.1f)),
-                    modifier = Modifier,
+                    modifier = Modifier.fillMaxWidth(),
                 ) {}
 
                 if (uiState.isLoading) {
