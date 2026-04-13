@@ -30,6 +30,7 @@ import com.example.core.domain.model.thread.Thread
 import com.example.core.domain.model.user.User
 import com.example.core.domain.model.user.UserAvatar
 import com.example.core.network.MediaQuery
+import com.example.core.network.MediaRecommendationsQuery
 import com.example.core.network.MediaSearchQuery
 import com.example.core.network.MediaThreadsQuery
 import com.example.core.network.RecentlyUpdatedQuery
@@ -464,6 +465,36 @@ fun MediaQuery.MediaRecommendation.toDomainMediaRecommendation(): Media =
         episodes = episodes,
         chapters = chapters,
         volumes = volumes,
+        coverImage =
+            MediaCoverImage(
+                large = coverImage?.large ?: "",
+            ),
+        meanScore = meanScore ?: 0,
+        nextAiringEpisode =
+            AiringSchedule(
+                episode = nextAiringEpisode?.episode,
+            ),
+    )
+
+fun MediaRecommendationsQuery.Recommendations.toDomainMediaRecommendations(): List<Media>? = edges?.map { edge -> edge?.node?.mediaRecommendation?.toDomainMediaRecommendation() ?: Media() }
+
+fun MediaRecommendationsQuery.MediaRecommendation.toDomainMediaRecommendation(): Media =
+    Media(
+        idAniList = id,
+        idMal = idMal,
+        title =
+            MediaTitle(
+                english = title?.english ?: "",
+                romaji = title?.romaji ?: "",
+            ),
+        type = type.toDomainMediaType(),
+        format = format.toDomainMediaFormat(),
+        status = status.toDomainMediaStatus(),
+        episodes = episodes,
+        genres = genres,
+        chapters = chapters,
+        volumes = volumes,
+        bannerImage = bannerImage ?: "",
         coverImage =
             MediaCoverImage(
                 large = coverImage?.large ?: "",

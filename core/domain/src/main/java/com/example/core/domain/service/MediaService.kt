@@ -44,6 +44,10 @@ interface MediaService {
         id: Int,
     ): Result<Media>
 
+    suspend fun getMediaRecommendationsById(
+        id: Int,
+    ): Result<Page<Media>>
+
     suspend fun getMediaThreads(
         pageNumber: Int,
         perPage: Int,
