@@ -70,10 +70,14 @@ fun MediaListView(
         mutableIntStateOf(0)
     }
     val isCalendarMediaList = arguments.contentType == MediaListContentType.RECENTLY_UPDATED
+
+    // Hide page change buttons for recommended medias
+    val showPageButtons = arguments.contentType != MediaListContentType.RECOMMENDED
     val pagerState = rememberPagerState(initialPage = selectedTabIndex) { if (isCalendarMediaList) daysSorted.size else 1 }
 
     LaunchedEffect(Unit) {
         mediaListViewModel.loadMediaList(
+            mediaId = arguments.mediaId,
             mediaType = arguments.mediaType,
             contentType = arguments.contentType,
         )
@@ -180,7 +184,6 @@ fun MediaListView(
                         HorizontalDivider(color = MaterialTheme.colorScheme.background)
                     },
                     tabs = {
-                        val tabWidthModifier = Modifier.width(IntrinsicSize.Max)
                         daysSorted.forEachIndexed { index, day ->
                             val isCurrentTabSelected = selectedTabIndex == index
 
@@ -192,7 +195,6 @@ fun MediaListView(
                                         pagerState.animateScrollToPage(index)
                                     }
                                 },
-                                modifier = tabWidthModifier,
                             ) {
                                 Box(
                                     modifier =
@@ -211,43 +213,47 @@ fun MediaListView(
                     },
                 )
             } else {
-                Row(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(20.dp, Alignment.CenterHorizontally),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    // Previous Button
-                    PageSelectorButton(
-                        buttonIcon = "<",
-                        enabled = (uiState.pageNumber > 1 && !uiState.isLoading),
-                        onClick = {
-                            mediaListViewModel.decreasePageNumber()
-                            mediaListViewModel.loadMediaList(
-                                mediaType = arguments.mediaType,
-                                contentType = arguments.contentType,
-                            )
-                        },
-                    )
+                if (showPageButtons) {
+                    Row(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(20.dp, Alignment.CenterHorizontally),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        // Previous Button
+                        PageSelectorButton(
+                            buttonIcon = "<",
+                            enabled = (uiState.pageNumber > 1 && !uiState.isLoading),
+                            onClick = {
+                                mediaListViewModel.decreasePageNumber()
+                                mediaListViewModel.loadMediaList(
+                                    mediaId = arguments.mediaId,
+                                    mediaType = arguments.mediaType,
+                                    contentType = arguments.contentType,
+                                )
+                            },
+                        )
 
-                    PageNumberButton(pageNumber = uiState.pageNumber)
+                        PageNumberButton(pageNumber = uiState.pageNumber)
 
-                    // Next Button
-                    PageSelectorButton(
-                        buttonIcon = ">",
-                        enabled = (uiState.hasNextPage == true && !uiState.isLoading),
-                        onClick = {
-                            mediaListViewModel.increasePageNumber()
-                            mediaListViewModel.loadMediaList(
-                                mediaType = arguments.mediaType,
-                                contentType = arguments.contentType,
-                            )
-                        },
-                    )
+                        // Next Button
+                        PageSelectorButton(
+                            buttonIcon = ">",
+                            enabled = (uiState.hasNextPage == true && !uiState.isLoading),
+                            onClick = {
+                                mediaListViewModel.increasePageNumber()
+                                mediaListViewModel.loadMediaList(
+                                    mediaId = arguments.mediaId,
+                                    mediaType = arguments.mediaType,
+                                    contentType = arguments.contentType,
+                                )
+                            },
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(15.dp))
                 }
-
-                Spacer(modifier = Modifier.height(15.dp))
             }
 
             HorizontalPager(

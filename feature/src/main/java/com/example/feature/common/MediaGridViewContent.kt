@@ -31,7 +31,7 @@ fun MediaGridViewContent(
 
     mediaList?.let {
         LazyVerticalGrid(
-            columns = GridCells.Adaptive(110.dp),
+            columns = GridCells.Adaptive(105.dp),
             modifier = Modifier.padding(horizontal = 5.dp, vertical = 5.dp),
             state = gridState,
             verticalArrangement = Arrangement.spacedBy(15.dp),

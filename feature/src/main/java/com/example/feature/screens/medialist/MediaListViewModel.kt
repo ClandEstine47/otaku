@@ -41,6 +41,7 @@ class MediaListViewModel
         val state = _state.asStateFlow()
 
         fun loadMediaList(
+            mediaId: Int?,
             mediaType: MediaType,
             contentType: MediaListContentType,
         ) {
@@ -127,6 +128,12 @@ class MediaListViewModel
                                     perPage = 21,
                                     mediaType = mediaType,
                                     mediaFormat = MediaFormat.ONE_SHOT,
+                                )
+                            }
+
+                            MediaListContentType.RECOMMENDED -> {
+                                mediaRepository.getMediaRecommendationsById(
+                                    id = mediaId!!,
                                 )
                             }
                         }

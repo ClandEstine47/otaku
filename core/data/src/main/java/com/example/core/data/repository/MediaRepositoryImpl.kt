@@ -93,6 +93,14 @@ class MediaRepositoryImpl
                     Timber.e(error, "Failed to get media")
                 }
 
+        override suspend fun getMediaRecommendationsById(id: Int): Result<Page<Media>> =
+            mediaService
+                .getMediaRecommendationsById(
+                    id = id,
+                ).onFailure { error ->
+                    Timber.e(error, "Failed to get media")
+                }
+
         override suspend fun getMediaThreads(
             pageNumber: Int,
             perPage: Int,

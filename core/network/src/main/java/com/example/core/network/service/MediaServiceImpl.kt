@@ -4,6 +4,7 @@ import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Optional
 import com.apollographql.apollo.exception.ApolloException
 import com.example.core.domain.model.Page
+import com.example.core.domain.model.PageInfo
 import com.example.core.domain.model.airing.AiringSchedule
 import com.example.core.domain.model.media.Media
 import com.example.core.domain.model.media.MediaFormat
@@ -14,6 +15,7 @@ import com.example.core.domain.model.media.MediaType
 import com.example.core.domain.model.thread.Thread
 import com.example.core.domain.service.MediaService
 import com.example.core.network.MediaQuery
+import com.example.core.network.MediaRecommendationsQuery
 import com.example.core.network.MediaSearchQuery
 import com.example.core.network.MediaThreadsQuery
 import com.example.core.network.RecentlyUpdatedQuery
@@ -260,6 +262,44 @@ class MediaServiceImpl
                             response.data?.Media?.toDomainMedia() ?: Media()
                         Result.success(
                             media,
+                        )
+                    }
+                }
+            } catch (e: ApolloException) {
+                Result.failure(e)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+
+        override suspend fun getMediaRecommendationsById(id: Int): Result<Page<Media>> =
+            try {
+                val response =
+                    apolloClient
+                        .query(
+                            MediaRecommendationsQuery(
+                                id = id,
+                            ),
+                        ).execute()
+
+                when {
+                    response.hasErrors() -> {
+                        val errorMessage =
+                            response.errors?.joinToString("; ") { it.message }
+                                ?: "Unknown GraphQL error"
+                        Result.failure(Exception(errorMessage))
+                    }
+
+                    else -> {
+                        val mediaRecommendations =
+                            response.data
+                                ?.Media
+                                ?.recommendations
+                                ?.toDomainMediaRecommendations() ?: emptyList()
+                        Result.success(
+                            Page(
+                                pageInfo = PageInfo(),
+                                data = mediaRecommendations,
+                            ),
                         )
                     }
                 }

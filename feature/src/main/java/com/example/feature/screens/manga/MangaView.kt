@@ -220,7 +220,7 @@ fun MangaContent(
 
     popularNovelList?.let { novels ->
         TitleWithExpandButton(
-            titleId = R.string.popular_manhwa,
+            titleId = R.string.popular_novel,
             onExpandClick = {
                 navActionManager.toMediaList(
                     titleId = R.string.popular_novel,

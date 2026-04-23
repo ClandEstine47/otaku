@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
+import com.example.core.domain.model.MediaListContentType
 import com.example.core.domain.model.media.MediaType
 import com.example.core.domain.model.recommendation.RecommendationConnection
 import com.example.core.navigation.NavActionManager
@@ -23,7 +24,9 @@ import com.example.feature.common.OtakuTitle
 
 @Composable
 fun MediaRecommendations(
+    mediaId: Int,
     mediaRecommendation: RecommendationConnection,
+    mediaType: MediaType,
     navActionManager: NavActionManager,
 ) {
     Row(
@@ -35,7 +38,12 @@ fun MediaRecommendations(
         ExpandMediaListButton(
             modifier = Modifier,
             onButtonClick = {
-                // todo: navigate to MediaListView
+                navActionManager.toMediaList(
+                    titleId = R.string.recommendations,
+                    mediaId = mediaId,
+                    mediaType = mediaType,
+                    contentType = MediaListContentType.RECOMMENDED,
+                )
             },
         )
     }

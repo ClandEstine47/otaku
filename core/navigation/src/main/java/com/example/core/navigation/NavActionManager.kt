@@ -28,12 +28,14 @@ class NavActionManager(
 
     fun toMediaList(
         titleId: Int,
+        mediaId: Int? = null,
         mediaType: MediaType,
         contentType: MediaListContentType,
     ) {
         navController.navigate(
             OtakuScreen.MediaList(
                 titleId = titleId,
+                mediaId = mediaId,
                 mediaType = mediaType,
                 contentType = contentType,
             ),
