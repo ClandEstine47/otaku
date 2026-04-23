@@ -77,7 +77,7 @@ class MediaListViewModelTest {
             } returns Result.success(mockResponse)
 
             // When
-            viewModel.loadMediaList(MediaType.ANIME, MediaListContentType.RECENTLY_UPDATED)
+            viewModel.loadMediaList(null, MediaType.ANIME, MediaListContentType.RECENTLY_UPDATED)
 
             // Advance coroutines
             testDispatcher.scheduler.advanceUntilIdle()
@@ -117,7 +117,7 @@ class MediaListViewModelTest {
             } returns Result.success(mockResponse)
 
             // When
-            viewModel.loadMediaList(MediaType.ANIME, MediaListContentType.CURRENT_SEASON)
+            viewModel.loadMediaList(null, MediaType.ANIME, MediaListContentType.CURRENT_SEASON)
 
             // Advance coroutines
             testDispatcher.scheduler.advanceUntilIdle()
@@ -155,7 +155,7 @@ class MediaListViewModelTest {
             } returns Result.success(mockResponse)
 
             // When
-            viewModel.loadMediaList(MediaType.ANIME, MediaListContentType.POPULAR_NOW)
+            viewModel.loadMediaList(null, MediaType.ANIME, MediaListContentType.POPULAR_NOW)
 
             // Advance coroutines
             testDispatcher.scheduler.advanceUntilIdle()
@@ -195,7 +195,7 @@ class MediaListViewModelTest {
             } returns Result.success(mockResponse)
 
             // When
-            viewModel.loadMediaList(MediaType.ANIME, MediaListContentType.NEXT_SEASON)
+            viewModel.loadMediaList(null, MediaType.ANIME, MediaListContentType.NEXT_SEASON)
 
             // Advance coroutines
             testDispatcher.scheduler.advanceUntilIdle()
@@ -234,7 +234,7 @@ class MediaListViewModelTest {
             } returns Result.success(mockResponse)
 
             // When
-            viewModel.loadMediaList(MediaType.MANGA, MediaListContentType.POPULAR_MANGA)
+            viewModel.loadMediaList(null, MediaType.MANGA, MediaListContentType.POPULAR_MANGA)
 
             // Advance coroutines
             testDispatcher.scheduler.advanceUntilIdle()
@@ -273,7 +273,7 @@ class MediaListViewModelTest {
             } returns Result.success(mockResponse)
 
             // When
-            viewModel.loadMediaList(MediaType.MANGA, MediaListContentType.POPULAR_MANHWA)
+            viewModel.loadMediaList(null, MediaType.MANGA, MediaListContentType.POPULAR_MANHWA)
 
             // Advance coroutines
             testDispatcher.scheduler.advanceUntilIdle()
@@ -312,7 +312,7 @@ class MediaListViewModelTest {
             } returns Result.success(mockResponse)
 
             // When
-            viewModel.loadMediaList(MediaType.MANGA, MediaListContentType.POPULAR_NOVEL)
+            viewModel.loadMediaList(null, MediaType.MANGA, MediaListContentType.POPULAR_NOVEL)
 
             // Advance coroutines
             testDispatcher.scheduler.advanceUntilIdle()
@@ -351,7 +351,7 @@ class MediaListViewModelTest {
             } returns Result.success(mockResponse)
 
             // When
-            viewModel.loadMediaList(MediaType.MANGA, MediaListContentType.ONE_SHOT)
+            viewModel.loadMediaList(null, MediaType.MANGA, MediaListContentType.ONE_SHOT)
 
             // Advance coroutines
             testDispatcher.scheduler.advanceUntilIdle()
@@ -380,7 +380,7 @@ class MediaListViewModelTest {
             } returns Result.failure(Exception(errorMessage))
 
             // When
-            viewModel.loadMediaList(MediaType.ANIME, MediaListContentType.RECENTLY_UPDATED)
+            viewModel.loadMediaList(null, MediaType.ANIME, MediaListContentType.RECENTLY_UPDATED)
             testDispatcher.scheduler.advanceUntilIdle()
 
             // Then
