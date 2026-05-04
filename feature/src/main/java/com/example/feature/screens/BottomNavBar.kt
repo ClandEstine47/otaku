@@ -46,11 +46,11 @@ import androidx.compose.ui.graphics.PathMeasure
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.core.domain.model.media.MediaType
 import com.example.feature.R
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeChild
@@ -59,12 +59,13 @@ import dev.chrisbanes.haze.hazeChild
 fun BottomNavBar(
     hazeState: HazeState,
     tabIndex: Int,
-    navigate: (MediaType) -> Unit,
+    navigate: (NavDestination) -> Unit,
 ) {
     val navBarItems =
         listOf(
-            NavBarItem(mediaType = MediaType.ANIME, iconEnabled = R.drawable.anime_enabled, iconDisabled = R.drawable.anime_disabled),
-            NavBarItem(mediaType = MediaType.MANGA, iconEnabled = R.drawable.manga_enabled, iconDisabled = R.drawable.manga_disabled),
+            NavBarItem(destination = NavDestination.Anime, iconEnabled = R.drawable.anime_enabled, iconDisabled = R.drawable.anime_disabled, label = stringResource(R.string.anime)),
+            NavBarItem(destination = NavDestination.Home, iconEnabled = R.drawable.home_enabled, iconDisabled = R.drawable.home_disabled, label = stringResource(R.string.home)),
+            NavBarItem(destination = NavDestination.Manga, iconEnabled = R.drawable.manga_enabled, iconDisabled = R.drawable.manga_disabled, label = stringResource(R.string.manga)),
         )
 
     var selectedTabIndex by rememberSaveable {
@@ -146,7 +147,7 @@ fun BottomNavBar(
                                 .pointerInput(Unit) {
                                     detectTapGestures {
                                         selectedTabIndex = index
-                                        navigate(navBarItem.mediaType)
+                                        navigate(navBarItem.destination)
                                     }
                                 },
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -158,7 +159,7 @@ fun BottomNavBar(
                             contentDescription = "NavBar Icon",
                         )
                         Text(
-                            text = navBarItem.mediaType.name.uppercase(),
+                            text = navBarItem.label,
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onBackground,
                             fontWeight = FontWeight.ExtraBold,
@@ -228,7 +229,16 @@ fun BottomNavBar(
 }
 
 data class NavBarItem(
-    val mediaType: MediaType,
+    val destination: NavDestination,
     val iconEnabled: Int,
     val iconDisabled: Int,
+    val label: String,
 )
+
+sealed class NavDestination {
+    data object Anime : NavDestination()
+
+    data object Manga : NavDestination()
+
+    data object Home : NavDestination()
+}

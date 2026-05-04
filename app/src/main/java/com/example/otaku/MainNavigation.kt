@@ -13,6 +13,7 @@ import com.example.core.navigation.CustomNavType
 import com.example.core.navigation.NavActionManager
 import com.example.core.navigation.OtakuScreen
 import com.example.feature.screens.anime.AnimeView
+import com.example.feature.screens.home.HomeView
 import com.example.feature.screens.manga.MangaView
 import com.example.feature.screens.mediadetail.MediaDetailView
 import com.example.feature.screens.medialist.MediaListView
@@ -28,14 +29,17 @@ fun MainNavigation(
     padding: PaddingValues,
     hazeState: HazeState,
 ) {
+    val initialDestination =
+        when (startDestination) {
+            OtakuScreen.AnimeTab.toString() -> OtakuScreen.AnimeTab
+            OtakuScreen.MangaTab.toString() -> OtakuScreen.MangaTab
+            OtakuScreen.HomeTab.toString() -> OtakuScreen.HomeTab
+            else -> OtakuScreen.HomeTab
+        }
+
     NavHost(
         navController = navController,
-        startDestination =
-            if (startDestination == OtakuScreen.AnimeTab.toString()) {
-                OtakuScreen.AnimeTab
-            } else {
-                OtakuScreen.MangaTab
-            },
+        startDestination = initialDestination,
         modifier =
         Modifier,
     ) {
@@ -48,6 +52,13 @@ fun MainNavigation(
 
         composable<OtakuScreen.MangaTab> {
             MangaView(
+                navActionManager = navActionManager,
+                hazeState = hazeState,
+            )
+        }
+
+        composable<OtakuScreen.HomeTab> {
+            HomeView(
                 navActionManager = navActionManager,
                 hazeState = hazeState,
             )

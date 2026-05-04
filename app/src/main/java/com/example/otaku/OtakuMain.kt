@@ -16,12 +16,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.core.domain.model.media.MediaType
 import com.example.core.navigation.NavActionManager
 import com.example.core.navigation.OtakuScreen
 import com.example.core.navigation.StartDestination
 import com.example.core.navigation.navigateAndReplaceStartRoute
 import com.example.feature.screens.BottomNavBar
+import com.example.feature.screens.NavDestination
 import com.example.otaku.ui.theme.OtakuTheme
 import dev.chrisbanes.haze.HazeState
 import kotlinx.coroutines.launch
@@ -51,11 +51,20 @@ fun OtakuMain() {
         val bottomNavBarRoutes =
             listOf(
                 OtakuScreen.AnimeTab.toString(),
+                OtakuScreen.HomeTab.toString(),
                 OtakuScreen.MangaTab.toString(),
             )
 
+        val destinationToTab =
+            mapOf(
+                OtakuScreen.AnimeTab.toString() to 0,
+                OtakuScreen.HomeTab.toString() to 1,
+                OtakuScreen.MangaTab.toString() to 2,
+            )
+
+        // By default, set index to 1 (Home)
         LaunchedEffect(Unit) {
-            bottomTabIndex = if (startDestination == OtakuScreen.AnimeTab.toString()) 0 else 1
+            bottomTabIndex = destinationToTab[startDestination] ?: 1
         }
 
         LaunchedEffect(navBackStackEntry) {
@@ -75,19 +84,21 @@ fun OtakuMain() {
                             BottomNavBar(
                                 hazeState = hazeState,
                                 tabIndex = index,
-                                navigate = { mediaType ->
+                                navigate = { navDestination ->
                                     val newIndex =
-                                        when (mediaType) {
-                                            MediaType.ANIME -> 0
-                                            MediaType.MANGA -> 1
+                                        when (navDestination) {
+                                            NavDestination.Anime -> 0
+                                            NavDestination.Home -> 1
+                                            NavDestination.Manga -> 2
                                         }
 
                                     if (bottomTabIndex != newIndex) {
                                         bottomTabIndex = newIndex
                                         val screen =
-                                            when (mediaType) {
-                                                MediaType.ANIME -> OtakuScreen.AnimeTab
-                                                MediaType.MANGA -> OtakuScreen.MangaTab
+                                            when (navDestination) {
+                                                NavDestination.Anime -> OtakuScreen.AnimeTab
+                                                NavDestination.Home -> OtakuScreen.HomeTab
+                                                NavDestination.Manga -> OtakuScreen.MangaTab
                                             }
                                         navController.navigateAndReplaceStartRoute(screen)
                                         scope.launch {

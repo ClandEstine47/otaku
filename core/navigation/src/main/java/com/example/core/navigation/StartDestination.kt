@@ -24,7 +24,7 @@ class StartDestination(
     val getRoute: Flow<String> =
         context.dataStoree.data
             .map { preferences ->
-                preferences[START_ROUTE_KEY] ?: OtakuScreen.AnimeTab.toString()
+                preferences[START_ROUTE_KEY] ?: OtakuScreen.HomeTab.toString()
             }
 
     fun getInitialRoute(): String =

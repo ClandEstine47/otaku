@@ -25,6 +25,8 @@ fun InfiniteHorizontalPager(
     mediaList: List<Media>,
     onBannerItemClick: (mediaId: Int) -> Unit,
 ) {
+    if (mediaList.isEmpty()) return
+
     val pagerState = rememberPagerState { Int.MAX_VALUE }
 
     // infinite scroll
