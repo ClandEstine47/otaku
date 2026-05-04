@@ -3,13 +3,16 @@ package com.example.feature.screens.home
 import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -19,16 +22,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.core.data.service.isOnline
-import com.example.core.domain.model.airing.AiringSchedule
-import com.example.core.domain.model.media.Media
 import com.example.core.navigation.NavActionManager
 import com.example.feature.R
 import com.example.feature.common.ErrorScreen
-import com.example.feature.screens.anime.AnimeContent
+import com.example.feature.common.OtakuTitle
 import dev.chrisbanes.haze.HazeDefaults
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
@@ -58,8 +62,7 @@ fun HomeView(
                         noiseFactor = HazeDefaults.noiseFactor,
                     ),
                 ).fillMaxSize()
-                .absolutePadding()
-                .verticalScroll(rememberScrollState()),
+                .absolutePadding(),
     ) {
         if (isOnline) {
             if (uiState.isLoading) {
@@ -75,9 +78,7 @@ fun HomeView(
                 }
             } else {
                 if (uiState.error == null) {
-                    HomeContent(
-                        navActionManager = navActionManager,
-                    )
+                    HomeContent()
                 } else {
                     ErrorScreen(
                         modifier = Modifier.padding(top = 350.dp),
@@ -102,7 +103,73 @@ fun HomeView(
 }
 
 @Composable
-fun HomeContent(
-    navActionManager: NavActionManager,
-) {
+fun HomeContent() {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        OtakuTitle(
+            title = stringResource(R.string.otaku),
+            color = MaterialTheme.colorScheme.primary,
+            style = MaterialTheme.typography.titleLarge,
+            fontSize = 60.sp,
+        )
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        OtakuTitle(
+            id = R.string.powered_by_anilist,
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+            fontWeight = FontWeight.Light,
+            style = MaterialTheme.typography.bodyMedium,
+        )
+
+        Spacer(modifier = Modifier.height(150.dp))
+
+        Button(
+            modifier =
+                Modifier
+                    .fillMaxWidth(0.5f)
+                    .height(50.dp),
+            onClick = {
+                // todo: navigate to login page
+            },
+        ) {
+            OtakuTitle(
+                id = R.string.login,
+                color = MaterialTheme.colorScheme.background,
+            )
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        OutlinedButton(
+            modifier =
+                Modifier
+                    .fillMaxWidth(0.5f)
+                    .height(50.dp),
+            onClick = {
+                // todo: navigate to register page
+            },
+        ) {
+            OtakuTitle(
+                id = R.string.register,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true, device = "id:pixel_8_pro")
+@Composable
+fun HomeContentPreview(modifier: Modifier = Modifier) {
+    Column(
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .absolutePadding(),
+    ) {
+        HomeContent()
+    }
 }

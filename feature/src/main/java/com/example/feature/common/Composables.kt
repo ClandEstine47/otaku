@@ -19,6 +19,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -48,6 +49,7 @@ fun OtakuTitle(
     textAlign: TextAlign = TextAlign.Unspecified,
     style: TextStyle = MaterialTheme.typography.titleMedium,
     fontWeight: FontWeight = FontWeight.Bold,
+    fontSize: TextUnit = TextUnit.Unspecified,
 ) {
     Text(
         text = title,
@@ -58,6 +60,7 @@ fun OtakuTitle(
         overflow = overflow,
         maxLines = maxLines,
         textAlign = textAlign,
+        fontSize = fontSize,
     )
 }
 

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="otaku">Otaku</string>
     <string name="trending_now">Trending Now</string>
     <string name="recently_updated">Recently Updated</string>
     <string name="next_season">Next Season</string>
@@ -56,4 +57,7 @@
     <string name="search_results">Search Results</string>
     <string name="chapters">Chapters</string>
     <string name="no_internet">No Internet Connection.</string>
+    <string name="powered_by_anilist">Powered by AniList</string>
+    <string name="login">Login</string>
+    <string name="register">Register</string>
 </resources>
