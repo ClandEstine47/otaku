@@ -60,4 +60,5 @@
     <string name="powered_by_anilist">Powered by AniList</string>
     <string name="login">Login</string>
     <string name="register">Register</string>
+    <string name="activity_not_found">No application found for this action.</string>
 </resources>

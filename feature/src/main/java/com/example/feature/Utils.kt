@@ -1,7 +1,15 @@
 package com.example.feature
 
+import android.content.ActivityNotFoundException
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.widget.Toast
 import com.example.core.domain.model.AnimeSeason
 import com.example.core.domain.model.media.MediaSeason
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDateTime
@@ -106,5 +114,23 @@ object Utils {
         return dateTime.format(formatter)
     }
 
+    fun Context.showToast(message: String?) = message?.let { Toast.makeText(this, message, Toast.LENGTH_SHORT).show() }
+
+    fun Context.openActionView(url: String) {
+        openActionView(Uri.parse(url))
+    }
+
+    fun Context.openActionView(uri: Uri) {
+        try {
+            Intent(Intent.ACTION_VIEW, uri).apply {
+                startActivity(this)
+            }
+        } catch (e: ActivityNotFoundException) {
+            showToast(getString(R.string.activity_not_found))
+        }
+    }
+
     fun <T> getFormattedString(value: T?): String = value?.toString()?.replace("_", " ") ?: ""
+
+    fun <T> Flow<T>.firstBlocking() = runBlocking { first() }
 }

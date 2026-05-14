@@ -13,6 +13,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,7 +31,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.core.data.service.isOnline
 import com.example.core.navigation.NavActionManager
+import com.example.feature.OTAKU_AUTH_URL
 import com.example.feature.R
+import com.example.feature.Utils.openActionView
 import com.example.feature.common.ErrorScreen
 import com.example.feature.common.OtakuTitle
 import dev.chrisbanes.haze.HazeDefaults
@@ -41,6 +44,7 @@ import dev.chrisbanes.haze.haze
 @Composable
 fun HomeView(
     navActionManager: NavActionManager,
+    isLoggedIn: Boolean,
     hazeState: HazeState,
     homeViewModel: HomeViewModel = hiltViewModel(),
 ) {
@@ -78,7 +82,11 @@ fun HomeView(
                 }
             } else {
                 if (uiState.error == null) {
-                    HomeContent()
+                    if (isLoggedIn) {
+                        HomeContent()
+                    } else {
+                        AuthContent()
+                    }
                 } else {
                     ErrorScreen(
                         modifier = Modifier.padding(top = 350.dp),
@@ -103,7 +111,14 @@ fun HomeView(
 }
 
 @Composable
-fun HomeContent() {
+fun HomeContent(modifier: Modifier = Modifier) {
+    Text("Logged in successfully")
+}
+
+@Composable
+fun AuthContent() {
+    val context = LocalContext.current
+
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -133,7 +148,7 @@ fun HomeContent() {
                     .fillMaxWidth(0.5f)
                     .height(50.dp),
             onClick = {
-                // todo: navigate to login page
+                context.openActionView(OTAKU_AUTH_URL)
             },
         ) {
             OtakuTitle(
@@ -163,13 +178,16 @@ fun HomeContent() {
 
 @Preview(showBackground = true, showSystemUi = true, device = "id:pixel_8_pro")
 @Composable
-fun HomeContentPreview(modifier: Modifier = Modifier) {
+fun AuthContentPreview(
+    modifier: Modifier = Modifier,
+    isLoggedIn: Boolean = false,
+) {
     Column(
         modifier =
             Modifier
                 .fillMaxSize()
                 .absolutePadding(),
     ) {
-        HomeContent()
+        if (isLoggedIn) HomeContent() else AuthContent()
     }
 }

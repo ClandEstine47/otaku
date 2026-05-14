@@ -18,7 +18,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.core.navigation.NavActionManager
 import com.example.core.navigation.OtakuScreen
-import com.example.core.navigation.StartDestination
 import com.example.core.navigation.navigateAndReplaceStartRoute
 import com.example.feature.screens.BottomNavBar
 import com.example.feature.screens.NavDestination
@@ -27,7 +26,9 @@ import dev.chrisbanes.haze.HazeState
 import kotlinx.coroutines.launch
 
 @Composable
-fun OtakuMain() {
+fun OtakuMain(
+    isLoggedIn: Boolean,
+) {
     OtakuTheme {
         val navController = rememberNavController()
         val scope = rememberCoroutineScope()
@@ -35,11 +36,6 @@ fun OtakuMain() {
         val navActionManager = NavActionManager.rememberNavActionManager(navController)
         val hazeState = remember { HazeState() }
         val context = LocalContext.current
-        val dataStore = StartDestination(context)
-        val startDestination =
-            remember {
-                dataStore.getInitialRoute()
-            }
         var bottomTabIndex by rememberSaveable {
             mutableStateOf<Int?>(null)
         }
@@ -55,16 +51,9 @@ fun OtakuMain() {
                 OtakuScreen.MangaTab.toString(),
             )
 
-        val destinationToTab =
-            mapOf(
-                OtakuScreen.AnimeTab.toString() to 0,
-                OtakuScreen.HomeTab.toString() to 1,
-                OtakuScreen.MangaTab.toString() to 2,
-            )
-
         // By default, set index to 1 (Home)
         LaunchedEffect(Unit) {
-            bottomTabIndex = destinationToTab[startDestination] ?: 1
+            bottomTabIndex = 1
         }
 
         LaunchedEffect(navBackStackEntry) {
@@ -101,9 +90,6 @@ fun OtakuMain() {
                                                 NavDestination.Manga -> OtakuScreen.MangaTab
                                             }
                                         navController.navigateAndReplaceStartRoute(screen)
-                                        scope.launch {
-                                            dataStore.saveRoute(screen.toString())
-                                        }
                                     }
                                 },
                             )
@@ -114,8 +100,8 @@ fun OtakuMain() {
                 MainNavigation(
                     navController = navController,
                     navActionManager = navActionManager,
-                    startDestination = startDestination,
                     padding = padding,
+                    isLoggedIn = isLoggedIn,
                     hazeState = hazeState,
                 )
             }

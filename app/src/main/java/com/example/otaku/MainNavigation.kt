@@ -25,17 +25,11 @@ import kotlin.reflect.typeOf
 fun MainNavigation(
     navController: NavHostController,
     navActionManager: NavActionManager,
-    startDestination: String,
+    isLoggedIn: Boolean,
     padding: PaddingValues,
     hazeState: HazeState,
 ) {
-    val initialDestination =
-        when (startDestination) {
-            OtakuScreen.AnimeTab.toString() -> OtakuScreen.AnimeTab
-            OtakuScreen.MangaTab.toString() -> OtakuScreen.MangaTab
-            OtakuScreen.HomeTab.toString() -> OtakuScreen.HomeTab
-            else -> OtakuScreen.HomeTab
-        }
+    val initialDestination = OtakuScreen.HomeTab
 
     NavHost(
         navController = navController,
@@ -60,6 +54,7 @@ fun MainNavigation(
         composable<OtakuScreen.HomeTab> {
             HomeView(
                 navActionManager = navActionManager,
+                isLoggedIn = isLoggedIn,
                 hazeState = hazeState,
             )
         }
