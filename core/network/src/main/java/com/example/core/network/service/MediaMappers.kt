@@ -29,6 +29,9 @@ import com.example.core.domain.model.studio.StudioEdge
 import com.example.core.domain.model.thread.Thread
 import com.example.core.domain.model.user.User
 import com.example.core.domain.model.user.UserAvatar
+import com.example.core.domain.model.user.UserOptions
+import com.example.core.domain.model.user.UserStatisticTypes
+import com.example.core.domain.model.user.UserStatistics
 import com.example.core.network.MediaQuery
 import com.example.core.network.MediaRecommendationsQuery
 import com.example.core.network.MediaSearchQuery
@@ -36,6 +39,7 @@ import com.example.core.network.MediaThreadsQuery
 import com.example.core.network.RecentlyUpdatedQuery
 import com.example.core.network.SeasonalAnimeQuery
 import com.example.core.network.TrendingNowQuery
+import com.example.core.network.ViewerQuery
 import com.example.core.network.MediaQuery.Studios as NetworkStudios
 import com.example.core.network.type.CharacterRole as NetworkCharacterRole
 import com.example.core.network.type.MediaFormat as NetworkMediaFormat
@@ -47,6 +51,66 @@ import com.example.core.network.type.MediaSource as NetworkMediaSource
 import com.example.core.network.type.MediaStatus as NetworkMediaStatus
 import com.example.core.network.type.MediaType as NetworkMediaType
 import com.example.core.network.type.ReviewRating as NetworkReviewRating
+
+fun ViewerQuery.Viewer.toDomainUser(): User =
+    User(
+        id = id,
+        name = name,
+        bannerImage = bannerImage ?: "",
+        unreadNotificationCount = unreadNotificationCount ?: 0,
+        avatar =
+            UserAvatar(
+                medium = avatar?.medium,
+            ),
+        options = UserOptions(displayAdultContent = options?.displayAdultContent == true),
+        mediaListOptions =
+            MediaListOptions(
+                rowOrder = mediaListOptions?.rowOrder ?: "",
+                animeList =
+                    MediaListTypeOptions(
+                        sectionOrder =
+                            mediaListOptions
+                                ?.animeList
+                                ?.sectionOrder
+                                ?.filterNotNull()
+                                .orEmpty(),
+                        customLists =
+                            mediaListOptions
+                                ?.animeList
+                                ?.customLists
+                                ?.filterNotNull()
+                                .orEmpty(),
+                    ),
+                mangaList =
+                    MediaListTypeOptions(
+                        sectionOrder =
+                            mediaListOptions
+                                ?.mangaList
+                                ?.sectionOrder
+                                ?.filterNotNull()
+                                .orEmpty(),
+                        customLists =
+                            mediaListOptions
+                                ?.mangaList
+                                ?.customLists
+                                ?.filterNotNull()
+                                .orEmpty(),
+                    ),
+            ),
+        statistics =
+            UserStatisticTypes(
+                anime =
+                    UserStatistics(
+                        count = statistics?.anime?.count ?: 0,
+                        episodesWatched = statistics?.anime?.episodesWatched ?: 0,
+                    ),
+                manga =
+                    UserStatistics(
+                        count = statistics?.manga?.count ?: 0,
+                        chaptersRead = statistics?.manga?.chaptersRead ?: 0,
+                    ),
+            ),
+    )
 
 fun RecentlyUpdatedQuery.AiringSchedule.toRecentlyUpdatedMedia(): AiringSchedule =
     AiringSchedule(

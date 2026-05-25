@@ -13,6 +13,7 @@ import com.example.core.domain.model.media.MediaSort
 import com.example.core.domain.model.media.MediaStatus
 import com.example.core.domain.model.media.MediaType
 import com.example.core.domain.model.thread.Thread
+import com.example.core.domain.model.user.User
 import com.example.core.domain.service.MediaService
 import com.example.core.network.MediaQuery
 import com.example.core.network.MediaRecommendationsQuery
@@ -21,6 +22,7 @@ import com.example.core.network.MediaThreadsQuery
 import com.example.core.network.RecentlyUpdatedQuery
 import com.example.core.network.SeasonalAnimeQuery
 import com.example.core.network.TrendingNowQuery
+import com.example.core.network.ViewerQuery
 import javax.inject.Inject
 
 class MediaServiceImpl
@@ -28,6 +30,38 @@ class MediaServiceImpl
     constructor(
         private val apolloClient: ApolloClient,
     ) : MediaService {
+        override suspend fun getUserDetails(): Result<User> =
+            try {
+                val response =
+                    apolloClient
+                        .query(ViewerQuery())
+                        .execute()
+
+                when {
+                    response.hasErrors() -> {
+                        val errorMessage =
+                            response.errors?.joinToString("; ") { it.message }
+                                ?: "Unknown GraphQL error"
+
+                        Result.failure(Exception(errorMessage))
+                    }
+
+                    else -> {
+                        val user = response.data?.Viewer?.toDomainUser()
+
+                        if (user != null) {
+                            Result.success(user)
+                        } else {
+                            Result.failure(Exception("User data is null"))
+                        }
+                    }
+                }
+            } catch (e: ApolloException) {
+                Result.failure(e)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+
         override suspend fun getSeasonalMediaList(
             pageNumber: Int,
             perPage: Int,

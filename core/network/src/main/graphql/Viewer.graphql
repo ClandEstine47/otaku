@@ -1,0 +1,42 @@
+query Viewer {
+    Viewer {
+        id
+        name
+        bannerImage
+        unreadNotificationCount
+
+        avatar {
+            medium
+        }
+
+        options {
+            displayAdultContent
+        }
+
+        mediaListOptions {
+            rowOrder
+
+            animeList {
+                sectionOrder
+                customLists
+            }
+
+            mangaList {
+                sectionOrder
+                customLists
+            }
+        }
+
+        statistics {
+            anime {
+                episodesWatched
+                count
+            }
+
+            manga {
+                chaptersRead
+                count
+            }
+        }
+    }
+}

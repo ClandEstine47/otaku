@@ -1,14 +1,21 @@
 package com.example.feature.screens.home
 
 import android.os.Build
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -22,6 +29,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -30,7 +40,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.rememberAsyncImagePainter
 import com.example.core.data.service.isOnline
+import com.example.core.domain.model.user.User
 import com.example.core.navigation.NavActionManager
 import com.example.feature.OTAKU_AUTH_URL
 import com.example.feature.R
@@ -85,7 +97,7 @@ fun HomeView(
             } else {
                 if (uiState.error == null) {
                     if (isLoggedIn) {
-                        HomeContent()
+                        HomeContent(user = uiState.user)
                     } else {
                         AuthContent()
                     }
@@ -113,8 +125,137 @@ fun HomeView(
 }
 
 @Composable
-fun HomeContent(modifier: Modifier = Modifier) {
-    Text("Logged in successfully")
+fun HomeContent(
+    modifier: Modifier = Modifier,
+    user: User,
+) {
+    Column(
+        modifier =
+            modifier
+                .fillMaxSize()
+                .padding(20.dp)
+                .padding(top = 30.dp),
+    ) {
+        Row(
+            modifier = Modifier,
+            horizontalArrangement = Arrangement.spacedBy(40.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Image(
+                painter =
+                    rememberAsyncImagePainter(
+                        model = user.avatar.medium,
+                    ),
+                contentDescription = "profile picture",
+                modifier =
+                    Modifier
+                        .size(70.dp)
+                        .clip(RoundedCornerShape(30.dp)),
+            )
+
+            Column(
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                OtakuTitle(
+                    title = user.name ?: "-",
+                    color = MaterialTheme.colorScheme.onBackground,
+                    style = MaterialTheme.typography.titleMedium,
+                )
+
+                Row(
+                    modifier = Modifier,
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                ) {
+                    Column {
+                        OtakuTitle(
+                            title =
+                                user.statistics.anime.count
+                                    .toString(),
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                        OtakuTitle(
+                            title = stringResource(R.string.anime),
+                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+                            fontWeight = FontWeight.Medium,
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    }
+
+                    Column {
+                        OtakuTitle(
+                            title =
+                                user.statistics.manga.count
+                                    .toString(),
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                        OtakuTitle(
+                            title = stringResource(R.string.manga),
+                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+                            fontWeight = FontWeight.Medium,
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    }
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(50.dp))
+
+        Row(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 25.dp),
+            horizontalArrangement = Arrangement.spacedBy(20.dp, Alignment.CenterHorizontally),
+        ) {
+            HomeListTile(
+                imageRes = R.drawable.anime_banner_preview,
+                title = "ANIME LIST",
+            )
+
+            HomeListTile(
+                imageRes = R.drawable.anime_cover_preview,
+                title = "MANGA LIST",
+            )
+        }
+
+        Spacer(modifier = Modifier.height(50.dp))
+    }
+}
+
+@Composable
+private fun RowScope.HomeListTile(
+    imageRes: Int,
+    title: String,
+) {
+    Box(
+        modifier =
+            Modifier
+                .weight(1f)
+                .height(70.dp)
+                .clip(RoundedCornerShape(15.dp)),
+    ) {
+        Image(
+            painter = painterResource(imageRes),
+            contentDescription = title,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize(),
+        )
+
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.6f)),
+            contentAlignment = Alignment.Center,
+        ) {
+            OtakuTitle(
+                title = title,
+                color = Color.White,
+                style = MaterialTheme.typography.titleMedium,
+            )
+        }
+    }
 }
 
 @Composable
@@ -179,7 +320,7 @@ fun AuthContent() {
 @Composable
 fun AuthContentPreview(
     modifier: Modifier = Modifier,
-    isLoggedIn: Boolean = false,
+    isLoggedIn: Boolean = true,
 ) {
     Column(
         modifier =
@@ -187,6 +328,6 @@ fun AuthContentPreview(
                 .fillMaxSize()
                 .absolutePadding(),
     ) {
-        if (isLoggedIn) HomeContent() else AuthContent()
+        if (isLoggedIn) HomeContent(user = User()) else AuthContent()
     }
 }

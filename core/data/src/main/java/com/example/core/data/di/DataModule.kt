@@ -6,7 +6,9 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import com.apollographql.apollo.ApolloClient
+import com.example.core.data.auth.DataStoreAuthTokenProvider
 import com.example.core.data.repository.MainRepositoryImpl
+import com.example.core.domain.auth.AuthTokenProvider
 import com.example.core.domain.repository.MainRepository
 import com.example.core.domain.service.MediaService
 import com.example.core.network.service.MediaServiceImpl
@@ -58,6 +60,13 @@ object DataModule {
     @Provides
     @Singleton
     fun provideMainRepository(
+        mediaService: MediaService,
         dataStore: DataStore<Preferences>,
-    ): MainRepository = MainRepositoryImpl(dataStore)
+    ): MainRepository = MainRepositoryImpl(mediaService = mediaService, dataStore = dataStore)
+
+    @Provides
+    @Singleton
+    fun provideAuthTokenProvider(
+        dataStore: DataStore<Preferences>,
+    ): AuthTokenProvider = DataStoreAuthTokenProvider(dataStore)
 }

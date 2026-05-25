@@ -9,8 +9,11 @@ import com.example.core.domain.model.media.MediaSort
 import com.example.core.domain.model.media.MediaStatus
 import com.example.core.domain.model.media.MediaType
 import com.example.core.domain.model.thread.Thread
+import com.example.core.domain.model.user.User
 
 interface MediaService {
+    suspend fun getUserDetails(): Result<User>
+
     suspend fun getSeasonalMediaList(
         pageNumber: Int,
         perPage: Int,
