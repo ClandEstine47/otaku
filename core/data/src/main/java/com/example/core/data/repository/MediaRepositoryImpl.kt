@@ -57,6 +57,24 @@ class MediaRepositoryImpl
                     Timber.e(error, "Failed to get anime by status")
                 }
 
+        override suspend fun getMangaByStatus(
+            pageNumber: Int,
+            perPage: Int,
+            status: MediaListStatus,
+            userId: Int?,
+            sortBy: List<MediaListSort>?,
+        ): Result<Page<Media>> =
+            mediaService
+                .getMangaByStatusList(
+                    pageNumber = pageNumber,
+                    perPage = perPage,
+                    status = status,
+                    userId = userId,
+                    sortBy = sortBy,
+                ).onFailure { error ->
+                    Timber.e(error, "Failed to get manga by status")
+                }
+
         override suspend fun getRecentlyUpdatedAnimeList(
             pageNumber: Int,
             perPage: Int,

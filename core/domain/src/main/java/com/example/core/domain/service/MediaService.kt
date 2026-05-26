@@ -32,6 +32,14 @@ interface MediaService {
         sortBy: List<MediaListSort>? = null,
     ): Result<Page<Media>>
 
+    suspend fun getMangaByStatusList(
+        pageNumber: Int,
+        perPage: Int,
+        status: MediaListStatus,
+        userId: Int? = null,
+        sortBy: List<MediaListSort>? = null,
+    ): Result<Page<Media>>
+
     suspend fun getRecentlyUpdatedAnimeList(
         pageNumber: Int,
         perPage: Int,

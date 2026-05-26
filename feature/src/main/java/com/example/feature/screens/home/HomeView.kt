@@ -17,7 +17,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -43,7 +45,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.rememberAsyncImagePainter
 import com.example.core.data.service.isOnline
-import com.example.core.domain.model.MediaListContentType
 import com.example.core.domain.model.media.Media
 import com.example.core.domain.model.media.MediaType
 import com.example.core.domain.model.user.User
@@ -107,6 +108,7 @@ fun HomeView(
                             navActionManager = navActionManager,
                             user = uiState.user,
                             currentAnimeMedia = uiState.currentAnimeMedia,
+                            currentMangaMedia = uiState.currentMangaMedia,
                         )
                     } else {
                         AuthContent()
@@ -140,13 +142,15 @@ fun HomeContent(
     navActionManager: NavActionManager,
     user: User,
     currentAnimeMedia: List<Media>? = null,
+    currentMangaMedia: List<Media>? = null,
 ) {
     Column(
         modifier =
             modifier
                 .fillMaxSize()
                 .padding(20.dp)
-                .padding(top = 30.dp),
+                .padding(top = 30.dp)
+                .verticalScroll(rememberScrollState()),
     ) {
         Row(
             modifier = Modifier,
@@ -265,6 +269,40 @@ fun HomeContent(
                 }
             }
         }
+
+        currentMangaMedia?.takeIf { it.isNotEmpty() }?.let { currentManga ->
+            TitleWithExpandButton(
+                titleId = R.string.current_manga,
+                onExpandClick = {
+                    // todo: browse users current manga lists
+                },
+            )
+
+            LazyRow(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                items(currentManga) { manga ->
+                    MediaItem(
+                        media = manga,
+                        isAnime = false,
+                        progressCount = manga.mediaListEntry?.progress,
+                        showProgress = true,
+                        onClick = { id ->
+                            navActionManager.toMediaDetail(
+                                id = id,
+                                mediaType = MediaType.MANGA,
+                            )
+                        },
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(60.dp))
     }
 }
 

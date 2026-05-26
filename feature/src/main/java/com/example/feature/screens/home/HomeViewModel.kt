@@ -46,6 +46,7 @@ class HomeViewModel
                                 error = null,
                                 user = User(),
                                 currentAnimeMedia = null,
+                                currentMangaMedia = null,
                             )
                         }
                     }
@@ -84,12 +85,35 @@ class HomeViewModel
                         sortBy = listOf(MediaListSort.UPDATED_TIME_DESC),
                     )
 
+                val currentMangaResult =
+                    mediaRepository.getMangaByStatus(
+                        pageNumber = 1,
+                        perPage = 20,
+                        status = MediaListStatus.CURRENT,
+                        userId = userIdFromState,
+                        sortBy = listOf(MediaListSort.UPDATED_TIME_DESC),
+                    )
+
+                val currentError =
+                    userResult.exceptionOrNull()?.message
+                        ?: when {
+                            currentAnimeResult.isFailure && currentMangaResult.isFailure -> {
+                                currentAnimeResult.exceptionOrNull()?.message
+                                    ?: currentMangaResult.exceptionOrNull()?.message
+                            }
+
+                            else -> {
+                                null
+                            }
+                        }
+
                 _state.update { currentState ->
                     currentState.copy(
                         user = userResult.getOrNull() ?: currentState.user,
                         currentAnimeMedia = currentAnimeResult.getOrNull()?.data,
+                        currentMangaMedia = currentMangaResult.getOrNull()?.data,
                         isLoading = false,
-                        error = userResult.exceptionOrNull()?.message ?: currentAnimeResult.exceptionOrNull()?.message,
+                        error = currentError,
                     )
                 }
             }

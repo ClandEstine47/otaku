@@ -11,3 +11,6 @@ local.properties
 
 # Kotlin
 .kotlin
+
+# Logs
+*.log

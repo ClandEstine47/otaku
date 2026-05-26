@@ -127,15 +127,48 @@ class MediaServiceImpl
             userId: Int?,
             sortBy: List<MediaListSort>?,
         ): Result<Page<Media>> =
+            getMediaByStatusList(
+                pageNumber = pageNumber,
+                perPage = perPage,
+                mediaType = MediaType.ANIME,
+                status = status,
+                userId = userId,
+                sortBy = sortBy,
+            )
+
+        override suspend fun getMangaByStatusList(
+            pageNumber: Int,
+            perPage: Int,
+            status: MediaListStatus,
+            userId: Int?,
+            sortBy: List<MediaListSort>?,
+        ): Result<Page<Media>> =
+            getMediaByStatusList(
+                pageNumber = pageNumber,
+                perPage = perPage,
+                mediaType = MediaType.MANGA,
+                status = status,
+                userId = userId,
+                sortBy = sortBy,
+            )
+
+        private suspend fun getMediaByStatusList(
+            pageNumber: Int,
+            perPage: Int,
+            mediaType: MediaType,
+            status: MediaListStatus,
+            userId: Int?,
+            sortBy: List<MediaListSort>?,
+        ): Result<Page<Media>> =
             try {
                 val response =
                     apolloClient
                         .query(
                             UserListCollectionQuery(
                                 userId = Optional.presentIfNotNull(userId),
-                                type = Optional.present(MediaType.ANIME.toNetworkMediaType()),
+                                type = Optional.present(mediaType.toNetworkMediaType()),
                                 status = Optional.present(status.toNetworkMediaListStatus()),
-                                sort = Optional.present(sortBy?.map { it.toNetworkMediaListSort() } ?: listOf(MediaListSort.UPDATED_TIME.toNetworkMediaListSort())),
+                                sort = Optional.present(sortBy?.map { it.toNetworkMediaListSort() } ?: listOf(MediaListSort.UPDATED_TIME_DESC.toNetworkMediaListSort())),
                                 chunk = Optional.present(pageNumber),
                                 perChunk = Optional.present(perPage),
                             ),
@@ -152,7 +185,7 @@ class MediaServiceImpl
                     else -> {
                         val hasNextChunk = response.data?.MediaListCollection?.hasNextChunk
                         val pageInfo = PageInfo(currentPage = pageNumber, perPage = perPage, hasNextPage = hasNextChunk)
-                        val animeByStatus =
+                        val mediaByStatus =
                             response.data
                                 ?.MediaListCollection
                                 ?.lists
@@ -183,7 +216,7 @@ class MediaServiceImpl
                         Result.success(
                             Page(
                                 pageInfo = pageInfo,
-                                data = animeByStatus,
+                                data = mediaByStatus,
                             ),
                         )
                     }
