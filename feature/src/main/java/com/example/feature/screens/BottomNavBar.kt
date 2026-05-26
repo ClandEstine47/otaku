@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
@@ -95,6 +96,7 @@ fun BottomNavBar(
         modifier =
             Modifier
                 .padding(vertical = 24.dp, horizontal = 64.dp)
+                .navigationBarsPadding()
                 .fillMaxWidth()
                 .height(64.dp)
                 .hazeChild(state = hazeState, shape = CircleShape)
