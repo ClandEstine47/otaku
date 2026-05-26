@@ -12,6 +12,7 @@ import com.example.core.domain.model.character.CharacterName
 import com.example.core.domain.model.character.CharacterRole
 import com.example.core.domain.model.common.FuzzyDate
 import com.example.core.domain.model.media.*
+import com.example.core.domain.model.medialistcollection.MediaListSort
 import com.example.core.domain.model.recommendation.Recommendation
 import com.example.core.domain.model.recommendation.RecommendationConnection
 import com.example.core.domain.model.review.Review
@@ -39,10 +40,12 @@ import com.example.core.network.MediaThreadsQuery
 import com.example.core.network.RecentlyUpdatedQuery
 import com.example.core.network.SeasonalAnimeQuery
 import com.example.core.network.TrendingNowQuery
+import com.example.core.network.UserListCollectionQuery
 import com.example.core.network.ViewerQuery
 import com.example.core.network.MediaQuery.Studios as NetworkStudios
 import com.example.core.network.type.CharacterRole as NetworkCharacterRole
 import com.example.core.network.type.MediaFormat as NetworkMediaFormat
+import com.example.core.network.type.MediaListSort as NetworkMediaListSort
 import com.example.core.network.type.MediaListStatus as NetworkMediaListStatus
 import com.example.core.network.type.MediaRankType as NetworkMediaRankType
 import com.example.core.network.type.MediaRelation as NetworkMediaRelation
@@ -718,6 +721,81 @@ fun MediaSearchQuery.CoverImage.toDomainMediaCoverImage(): MediaCoverImage =
         extraLarge = extraLarge.orEmpty(),
     )
 
+fun UserListCollectionQuery.CoverImage.toDomainMediaCoverImage(): MediaCoverImage =
+    MediaCoverImage(
+        large = large.orEmpty(),
+        extraLarge = extraLarge.orEmpty(),
+    )
+
+fun UserListCollectionQuery.Media.toDomainMediaFromListCollection(): Media =
+    Media(
+        idAniList = id,
+        idMal = idMal,
+        status = status?.toDomainMediaStatus(),
+        chapters = chapters,
+        episodes = episodes,
+        duration = duration,
+        startDate = FuzzyDate(year = startDate?.year, month = startDate?.month, day = startDate?.day),
+        endDate = FuzzyDate(year = endDate?.year, month = endDate?.month, day = endDate?.day),
+        season = season?.toDomainMediaSeason(),
+        seasonYear = seasonYear,
+        isAdult = isAdult ?: false,
+        type = type?.toDomainMediaType(),
+        description = description,
+        source = source?.toDomainMediaSource(),
+        synonyms = synonyms?.filterNotNull(),
+        genres = genres,
+        meanScore = meanScore ?: 0,
+        averageScore = averageScore ?: 0,
+        isFavourite = isFavourite,
+        popularity = popularity,
+        trending = trending,
+        favourites = favourites,
+        rankings = rankings?.map { it?.toDomainListCollectionRankings() ?: MediaRank() },
+        format = format?.toDomainMediaFormat(),
+        bannerImage = bannerImage.orEmpty(),
+        countryOfOrigin = countryOfOrigin.toString(),
+        coverImage = coverImage?.toDomainMediaCoverImage() ?: MediaCoverImage(),
+        title = MediaTitle(english = title?.english ?: "", romaji = title?.romaji ?: "", native = title?.native ?: "", userPreferred = title?.userPreferred ?: ""),
+        trailer = MediaTrailer(id = trailer?.id, site = trailer?.site, thumbnail = trailer?.thumbnail),
+        externalLinks = externalLinks?.map { it?.toDomainListCollectionExternalLink() ?: MediaExternalLink() },
+        stats =
+            MediaStats(
+                scoreDistribution = stats?.scoreDistribution?.map { it?.toDomainListCollectionScoreDistribution() ?: ScoreDistribution() },
+                statusDistribution = stats?.statusDistribution?.map { it?.toDomainListCollectionStatusDistribution() ?: StatusDistribution() },
+            ),
+        siteUrl = siteUrl,
+        nextAiringEpisode = AiringSchedule(airingAt = nextAiringEpisode?.airingAt, timeUntilAiring = nextAiringEpisode?.timeUntilAiring, episode = nextAiringEpisode?.episode),
+    )
+
+fun UserListCollectionQuery.Ranking.toDomainListCollectionRankings(): MediaRank =
+    MediaRank(
+        id = id,
+        rank = rank,
+        allTime = allTime,
+        type = type.toDomainMediaRankType(),
+    )
+
+fun UserListCollectionQuery.ExternalLink.toDomainListCollectionExternalLink(): MediaExternalLink =
+    MediaExternalLink(
+        url = url,
+        site = site,
+        color = color,
+        icon = icon,
+    )
+
+fun UserListCollectionQuery.ScoreDistribution.toDomainListCollectionScoreDistribution(): ScoreDistribution =
+    ScoreDistribution(
+        score = score,
+        amount = amount,
+    )
+
+fun UserListCollectionQuery.StatusDistribution.toDomainListCollectionStatusDistribution(): StatusDistribution =
+    StatusDistribution(
+        status = status.toDomainMediaListStatus(),
+        amount = amount,
+    )
+
 fun NetworkMediaStatus?.toDomainMediaStatus(): MediaStatus? =
     when (this) {
         NetworkMediaStatus.FINISHED -> MediaStatus.FINISHED
@@ -815,6 +893,18 @@ fun MediaStatus.toNetworkMediaStatus(): com.example.core.network.type.MediaStatu
         MediaStatus.CANCELLED -> com.example.core.network.type.MediaStatus.CANCELLED
         MediaStatus.HIATUS -> com.example.core.network.type.MediaStatus.HIATUS
     }
+
+fun MediaListStatus.toNetworkMediaListStatus(): NetworkMediaListStatus =
+    when (this) {
+        MediaListStatus.CURRENT -> NetworkMediaListStatus.CURRENT
+        MediaListStatus.PLANNING -> NetworkMediaListStatus.PLANNING
+        MediaListStatus.COMPLETED -> NetworkMediaListStatus.COMPLETED
+        MediaListStatus.DROPPED -> NetworkMediaListStatus.DROPPED
+        MediaListStatus.PAUSED -> NetworkMediaListStatus.PAUSED
+        MediaListStatus.REPEATING -> NetworkMediaListStatus.REPEATING
+    }
+
+fun MediaListSort.toNetworkMediaListSort(): NetworkMediaListSort = NetworkMediaListSort.safeValueOf(name)
 
 fun MediaSort.toNetworkMediaSort(): com.example.core.network.type.MediaSort =
     when (this) {

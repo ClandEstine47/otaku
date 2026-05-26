@@ -8,10 +8,13 @@ import com.example.core.domain.model.PageInfo
 import com.example.core.domain.model.airing.AiringSchedule
 import com.example.core.domain.model.media.Media
 import com.example.core.domain.model.media.MediaFormat
+import com.example.core.domain.model.media.MediaList
+import com.example.core.domain.model.media.MediaListStatus
 import com.example.core.domain.model.media.MediaSeason
 import com.example.core.domain.model.media.MediaSort
 import com.example.core.domain.model.media.MediaStatus
 import com.example.core.domain.model.media.MediaType
+import com.example.core.domain.model.medialistcollection.MediaListSort
 import com.example.core.domain.model.thread.Thread
 import com.example.core.domain.model.user.User
 import com.example.core.domain.service.MediaService
@@ -22,6 +25,7 @@ import com.example.core.network.MediaThreadsQuery
 import com.example.core.network.RecentlyUpdatedQuery
 import com.example.core.network.SeasonalAnimeQuery
 import com.example.core.network.TrendingNowQuery
+import com.example.core.network.UserListCollectionQuery
 import com.example.core.network.ViewerQuery
 import javax.inject.Inject
 
@@ -106,6 +110,80 @@ class MediaServiceImpl
                             Page(
                                 pageInfo = pageInfo,
                                 data = seasonalMedia,
+                            ),
+                        )
+                    }
+                }
+            } catch (e: ApolloException) {
+                Result.failure(e)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+
+        override suspend fun getAnimeByStatusList(
+            pageNumber: Int,
+            perPage: Int,
+            status: MediaListStatus,
+            userId: Int?,
+            sortBy: List<MediaListSort>?,
+        ): Result<Page<Media>> =
+            try {
+                val response =
+                    apolloClient
+                        .query(
+                            UserListCollectionQuery(
+                                userId = Optional.presentIfNotNull(userId),
+                                type = Optional.present(MediaType.ANIME.toNetworkMediaType()),
+                                status = Optional.present(status.toNetworkMediaListStatus()),
+                                sort = Optional.present(sortBy?.map { it.toNetworkMediaListSort() } ?: listOf(MediaListSort.UPDATED_TIME.toNetworkMediaListSort())),
+                                chunk = Optional.present(pageNumber),
+                                perChunk = Optional.present(perPage),
+                            ),
+                        ).execute()
+
+                when {
+                    response.hasErrors() -> {
+                        val errorMessage =
+                            response.errors?.joinToString("; ") { it.message }
+                                ?: "Unknown GraphQL error"
+                        Result.failure(Exception(errorMessage))
+                    }
+
+                    else -> {
+                        val hasNextChunk = response.data?.MediaListCollection?.hasNextChunk
+                        val pageInfo = PageInfo(currentPage = pageNumber, perPage = perPage, hasNextPage = hasNextChunk)
+                        val animeByStatus =
+                            response.data
+                                ?.MediaListCollection
+                                ?.lists
+                                ?.filterNotNull()
+                                ?.flatMap { mediaListGroup ->
+                                    mediaListGroup.entries
+                                        ?.mapNotNull { entry ->
+                                            val media = entry?.media?.toDomainMediaFromListCollection() ?: return@mapNotNull null
+                                            media.copy(
+                                                mediaListEntry =
+                                                    MediaList(
+                                                        id = entry.id,
+                                                        status = entry.status?.toDomainMediaListStatus(),
+                                                        score = entry.score ?: 0.0,
+                                                        progress = entry.progress ?: 0,
+                                                        progressVolumes = entry.progressVolumes,
+                                                        repeat = entry.repeat ?: 0,
+                                                        private = entry.private ?: false,
+                                                        notes = entry.notes.orEmpty(),
+                                                        hiddenFromStatusLists = entry.hiddenFromStatusLists ?: false,
+                                                        advancedScores = entry.advancedScores,
+                                                        media = media,
+                                                    ),
+                                            )
+                                        }.orEmpty()
+                                }
+                                ?: emptyList()
+                        Result.success(
+                            Page(
+                                pageInfo = pageInfo,
+                                data = animeByStatus,
                             ),
                         )
                     }

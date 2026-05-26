@@ -4,10 +4,12 @@ import com.example.core.domain.model.Page
 import com.example.core.domain.model.airing.AiringSchedule
 import com.example.core.domain.model.media.Media
 import com.example.core.domain.model.media.MediaFormat
+import com.example.core.domain.model.media.MediaListStatus
 import com.example.core.domain.model.media.MediaSeason
 import com.example.core.domain.model.media.MediaSort
 import com.example.core.domain.model.media.MediaStatus
 import com.example.core.domain.model.media.MediaType
+import com.example.core.domain.model.medialistcollection.MediaListSort
 import com.example.core.domain.model.thread.Thread
 import com.example.core.domain.repository.MediaRepository
 import com.example.core.domain.service.MediaService
@@ -35,6 +37,24 @@ class MediaRepositoryImpl
                     mediaType = mediaType,
                 ).onFailure { error ->
                     Timber.e(error, "Failed to get trending now media")
+                }
+
+        override suspend fun getAnimeByStatus(
+            pageNumber: Int,
+            perPage: Int,
+            status: MediaListStatus,
+            userId: Int?,
+            sortBy: List<MediaListSort>?,
+        ): Result<Page<Media>> =
+            mediaService
+                .getAnimeByStatusList(
+                    pageNumber = pageNumber,
+                    perPage = perPage,
+                    status = status,
+                    userId = userId,
+                    sortBy = sortBy,
+                ).onFailure { error ->
+                    Timber.e(error, "Failed to get anime by status")
                 }
 
         override suspend fun getRecentlyUpdatedAnimeList(

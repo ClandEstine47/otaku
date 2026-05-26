@@ -15,13 +15,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,13 +43,18 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.rememberAsyncImagePainter
 import com.example.core.data.service.isOnline
+import com.example.core.domain.model.MediaListContentType
+import com.example.core.domain.model.media.Media
+import com.example.core.domain.model.media.MediaType
 import com.example.core.domain.model.user.User
 import com.example.core.navigation.NavActionManager
 import com.example.feature.OTAKU_AUTH_URL
 import com.example.feature.R
 import com.example.feature.Utils.openActionView
 import com.example.feature.common.ErrorScreen
+import com.example.feature.common.MediaItem
 import com.example.feature.common.OtakuTitle
+import com.example.feature.common.TitleWithExpandButton
 import dev.chrisbanes.haze.HazeDefaults
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
@@ -97,7 +103,11 @@ fun HomeView(
             } else {
                 if (uiState.error == null) {
                     if (isLoggedIn) {
-                        HomeContent(user = uiState.user)
+                        HomeContent(
+                            navActionManager = navActionManager,
+                            user = uiState.user,
+                            currentAnimeMedia = uiState.currentAnimeMedia,
+                        )
                     } else {
                         AuthContent()
                     }
@@ -106,7 +116,7 @@ fun HomeView(
                         modifier = Modifier.padding(top = 350.dp),
                         onRetryClick = {
                             isOnline = isOnline(context)
-                            // Load data
+                            homeViewModel.loadHomeData()
                         },
                     )
                 }
@@ -117,7 +127,7 @@ fun HomeView(
                 errorMessage = stringResource(R.string.no_internet),
                 onRetryClick = {
                     isOnline = isOnline(context)
-                    // Load data
+                    homeViewModel.loadHomeData()
                 },
             )
         }
@@ -127,7 +137,9 @@ fun HomeView(
 @Composable
 fun HomeContent(
     modifier: Modifier = Modifier,
+    navActionManager: NavActionManager,
     user: User,
+    currentAnimeMedia: List<Media>? = null,
 ) {
     Column(
         modifier =
@@ -220,6 +232,39 @@ fun HomeContent(
         }
 
         Spacer(modifier = Modifier.height(50.dp))
+
+        currentAnimeMedia?.takeIf { it.isNotEmpty() }?.let { currentAnime ->
+            TitleWithExpandButton(
+                titleId = R.string.current_anime,
+                onExpandClick = {
+                    // todo: browse users current anime lists
+                },
+            )
+
+            LazyRow(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                items(currentAnime) { anime ->
+                    MediaItem(
+                        media = anime,
+                        isAnime = true,
+                        releasedEpisodes = anime.nextAiringEpisode?.episode?.minus(1),
+                        progressCount = anime.mediaListEntry?.progress,
+                        showProgress = true,
+                        onClick = { id ->
+                            navActionManager.toMediaDetail(
+                                id = id,
+                                mediaType = MediaType.ANIME,
+                            )
+                        },
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -320,14 +365,13 @@ fun AuthContent() {
 @Composable
 fun AuthContentPreview(
     modifier: Modifier = Modifier,
-    isLoggedIn: Boolean = true,
 ) {
     Column(
         modifier =
-            Modifier
+            modifier
                 .fillMaxSize()
                 .absolutePadding(),
     ) {
-        if (isLoggedIn) HomeContent(user = User()) else AuthContent()
+        AuthContent()
     }
 }

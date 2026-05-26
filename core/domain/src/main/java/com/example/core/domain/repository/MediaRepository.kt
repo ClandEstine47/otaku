@@ -4,10 +4,12 @@ import com.example.core.domain.model.Page
 import com.example.core.domain.model.airing.AiringSchedule
 import com.example.core.domain.model.media.Media
 import com.example.core.domain.model.media.MediaFormat
+import com.example.core.domain.model.media.MediaListStatus
 import com.example.core.domain.model.media.MediaSeason
 import com.example.core.domain.model.media.MediaSort
 import com.example.core.domain.model.media.MediaStatus
 import com.example.core.domain.model.media.MediaType
+import com.example.core.domain.model.medialistcollection.MediaListSort
 import com.example.core.domain.model.thread.Thread
 
 interface MediaRepository {
@@ -17,6 +19,14 @@ interface MediaRepository {
         seasonYear: Int,
         season: MediaSeason,
         mediaType: MediaType,
+    ): Result<Page<Media>>
+
+    suspend fun getAnimeByStatus(
+        pageNumber: Int,
+        perPage: Int,
+        status: MediaListStatus,
+        userId: Int? = null,
+        sortBy: List<MediaListSort>? = null,
     ): Result<Page<Media>>
 
     suspend fun getRecentlyUpdatedAnimeList(

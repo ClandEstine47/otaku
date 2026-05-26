@@ -44,6 +44,8 @@ fun ImageCard(
     totalChapters: Int? = null,
     totalEpisodes: Int? = null,
     releasedEpisodes: Int? = null,
+    progressCount: Int? = 0,
+    showProgress: Boolean = false,
     format: String? = null,
 ) {
     Column(
@@ -117,21 +119,41 @@ fun ImageCard(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Row {
-                        releasedEpisodes?.let {
-                            Box(
-                                modifier =
-                                    Modifier
-                                        .padding(start = 3.dp, top = 1.dp, bottom = 1.dp)
-                                        .clip(RoundedCornerShape(5.dp))
-                                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)),
-                            ) {
-                                Text(
-                                    text = releasedEpisodes.toString(),
-                                    style = MaterialTheme.typography.labelSmall,
-                                    fontWeight = FontWeight.Medium,
-                                    color = Color.White,
-                                    modifier = Modifier.padding(2.dp),
-                                )
+                        if (showProgress) {
+                            progressCount?.let {
+                                Box(
+                                    modifier =
+                                        Modifier
+                                            .padding(start = 3.dp, top = 1.dp, bottom = 1.dp)
+                                            .clip(RoundedCornerShape(5.dp))
+                                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)),
+                                ) {
+                                    Text(
+                                        text = progressCount.toString(),
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontWeight = FontWeight.Medium,
+                                        color = Color.White,
+                                        modifier = Modifier.padding(2.dp),
+                                    )
+                                }
+                            }
+                        } else {
+                            releasedEpisodes?.let {
+                                Box(
+                                    modifier =
+                                        Modifier
+                                            .padding(start = 3.dp, top = 1.dp, bottom = 1.dp)
+                                            .clip(RoundedCornerShape(5.dp))
+                                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)),
+                                ) {
+                                    Text(
+                                        text = releasedEpisodes.toString(),
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontWeight = FontWeight.Medium,
+                                        color = Color.White,
+                                        modifier = Modifier.padding(2.dp),
+                                    )
+                                }
                             }
                         }
 

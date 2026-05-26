@@ -1,0 +1,116 @@
+query UserListCollection(
+    $userId: Int,
+    $type: MediaType,
+    $status: MediaListStatus,
+    $sort: [MediaListSort],
+    $chunk: Int,
+    $perChunk: Int
+) {
+    MediaListCollection(
+        userId: $userId,
+        type: $type,
+        sort: $sort,
+        status: $status,
+        chunk: $chunk,
+        perChunk: $perChunk,
+        forceSingleCompletedList: true
+    ) {
+        lists {
+            name
+            isCustomList
+            entries {
+                id
+                status
+                score
+                advancedScores
+                progress
+                progressVolumes
+                repeat
+                private
+                hiddenFromStatusLists
+                notes
+                mediaId
+                media {
+                    id
+                    idMal
+                    status
+                    chapters
+                    episodes
+                    duration
+                    startDate {
+                        year
+                        month
+                        day
+                    }
+                    endDate {
+                        year
+                        month
+                        day
+                    }
+                    season
+                    seasonYear
+                    nextAiringEpisode {
+                        airingAt
+                        timeUntilAiring
+                        episode
+                    }
+                    isAdult
+                    type
+                    genres
+                    meanScore
+                    averageScore
+                    description
+                    synonyms
+                    source
+                    isFavourite
+                    format
+                    bannerImage
+                    countryOfOrigin
+                    coverImage {
+                        large
+                        extraLarge
+                    }
+                    title {
+                        english
+                        romaji
+                        native
+                        userPreferred
+                    }
+                    mediaListEntry { progress private score(format: POINT_100) status }
+                    trailer {
+                        id
+                        site
+                        thumbnail
+                    }
+                    externalLinks {
+                        url
+                        site
+                        color
+                        icon
+                    }
+                    popularity
+                    trending
+                    favourites
+                    rankings {
+                        id
+                        rank
+                        allTime
+                        type
+                    }
+                    siteUrl
+                    stats {
+                        scoreDistribution {
+                            score
+                            amount
+                        }
+                        statusDistribution {
+                            status
+                            amount
+                        }
+                    }
+                }
+            }
+        }
+        hasNextChunk
+    }
+}

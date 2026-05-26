@@ -17,6 +17,8 @@ fun MediaItem(
     isAnime: Boolean,
     releasedEpisodes: Int? = null,
     showScore: Boolean = true,
+    progressCount: Int? = 0,
+    showProgress: Boolean = false,
     onClick: (Int) -> Unit,
 ) {
     val painter =
@@ -41,6 +43,8 @@ fun MediaItem(
             totalChapters = if (!isAnime) media.chapters else null,
             showScore = showScore,
             format = media.format?.name,
+            progressCount = progressCount,
+            showProgress = showProgress,
         )
 
         OtakuImageCardTitle(title = media.title.english.ifBlank { media.title.romaji })
