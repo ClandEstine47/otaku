@@ -63,4 +63,6 @@
     <string name="login">Login</string>
     <string name="activity_not_found">No application found for this action.</string>
     <string name="github_url">https://github.com/ClandEstine47/otaku</string>
+    <string name="anime_">Anime</string>
+    <string name="manga_">Manga</string>
 </resources>

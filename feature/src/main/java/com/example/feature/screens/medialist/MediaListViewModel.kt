@@ -8,7 +8,9 @@ import com.example.core.domain.model.MediaListItem
 import com.example.core.domain.model.airing.AiringSchedule
 import com.example.core.domain.model.media.Media
 import com.example.core.domain.model.media.MediaFormat
+import com.example.core.domain.model.media.MediaListStatus
 import com.example.core.domain.model.media.MediaType
+import com.example.core.domain.model.medialistcollection.MediaListSort
 import com.example.core.domain.repository.MediaRepository
 import com.example.feature.Utils.currentAnimeSeason
 import com.example.feature.Utils.getDayTimestamp
@@ -44,6 +46,7 @@ class MediaListViewModel
             mediaId: Int?,
             mediaType: MediaType,
             contentType: MediaListContentType,
+            userId: Int? = null,
         ) {
             viewModelScope.launch {
                 _state.update {
@@ -134,6 +137,26 @@ class MediaListViewModel
                             MediaListContentType.RECOMMENDED -> {
                                 mediaRepository.getMediaRecommendationsById(
                                     id = mediaId!!,
+                                )
+                            }
+
+                            MediaListContentType.USER_CURRENT_ANIME -> {
+                                mediaRepository.getAnimeByStatus(
+                                    pageNumber = _state.value.pageNumber,
+                                    perPage = 30,
+                                    status = MediaListStatus.CURRENT,
+                                    userId = userId,
+                                    sortBy = listOf(MediaListSort.UPDATED_TIME_DESC),
+                                )
+                            }
+
+                            MediaListContentType.USER_CURRENT_MANGA -> {
+                                mediaRepository.getMangaByStatus(
+                                    pageNumber = _state.value.pageNumber,
+                                    perPage = 30,
+                                    status = MediaListStatus.CURRENT,
+                                    userId = userId,
+                                    sortBy = listOf(MediaListSort.UPDATED_TIME_DESC),
                                 )
                             }
                         }

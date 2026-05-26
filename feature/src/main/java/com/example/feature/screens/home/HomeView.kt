@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -190,7 +191,7 @@ fun HomeContent(
                             color = MaterialTheme.colorScheme.primary,
                         )
                         OtakuTitle(
-                            title = stringResource(R.string.anime),
+                            title = stringResource(R.string.anime_),
                             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
                             fontWeight = FontWeight.Medium,
                             style = MaterialTheme.typography.bodyMedium,
@@ -205,7 +206,7 @@ fun HomeContent(
                             color = MaterialTheme.colorScheme.primary,
                         )
                         OtakuTitle(
-                            title = stringResource(R.string.manga),
+                            title = stringResource(R.string.manga_),
                             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
                             fontWeight = FontWeight.Medium,
                             style = MaterialTheme.typography.bodyMedium,
@@ -221,27 +222,30 @@ fun HomeContent(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 25.dp),
+                    .padding(horizontal = 15.dp),
             horizontalArrangement = Arrangement.spacedBy(20.dp, Alignment.CenterHorizontally),
         ) {
             HomeListTile(
-                imageRes = R.drawable.anime_banner_preview,
+                imageRes = R.drawable.anime_list,
                 title = "ANIME LIST",
             )
 
             HomeListTile(
-                imageRes = R.drawable.anime_cover_preview,
+                imageRes = R.drawable.manga_list,
                 title = "MANGA LIST",
             )
         }
 
-        Spacer(modifier = Modifier.height(50.dp))
+        Spacer(modifier = Modifier.height(30.dp))
 
         currentAnimeMedia?.takeIf { it.isNotEmpty() }?.let { currentAnime ->
             TitleWithExpandButton(
                 titleId = R.string.current_anime,
                 onExpandClick = {
-                    // todo: browse users current anime lists
+                    navActionManager.toUserCurrentAnimeList(
+                        titleId = R.string.current_anime,
+                        userId = user.id.takeIf { it > 0 },
+                    )
                 },
             )
 
@@ -274,7 +278,10 @@ fun HomeContent(
             TitleWithExpandButton(
                 titleId = R.string.current_manga,
                 onExpandClick = {
-                    // todo: browse users current manga lists
+                    navActionManager.toUserCurrentMangaList(
+                        titleId = R.string.current_manga,
+                        userId = user.id.takeIf { it > 0 },
+                    )
                 },
             )
 
@@ -332,11 +339,23 @@ private fun RowScope.HomeListTile(
                     .background(Color.Black.copy(alpha = 0.6f)),
             contentAlignment = Alignment.Center,
         ) {
-            OtakuTitle(
-                title = title,
-                color = Color.White,
-                style = MaterialTheme.typography.titleMedium,
-            )
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                OtakuTitle(
+                    title = title,
+                    color = Color.White,
+                    style = MaterialTheme.typography.titleMedium,
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Box(
+                    modifier =
+                        Modifier
+                            .width(56.dp)
+                            .height(2.dp)
+                            .background(MaterialTheme.colorScheme.primary),
+                )
+            }
         }
     }
 }

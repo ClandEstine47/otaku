@@ -71,8 +71,11 @@ fun MediaListView(
     }
     val isCalendarMediaList = arguments.contentType == MediaListContentType.RECENTLY_UPDATED
 
-    // Hide page change buttons for recommended medias
-    val showPageButtons = arguments.contentType != MediaListContentType.RECOMMENDED
+    // Hide page change buttons for recommended medias and user's current anime/manga
+    val showPageButtons =
+        arguments.contentType != MediaListContentType.RECOMMENDED &&
+            arguments.contentType != MediaListContentType.USER_CURRENT_ANIME &&
+            arguments.contentType != MediaListContentType.USER_CURRENT_MANGA
     val pagerState = rememberPagerState(initialPage = selectedTabIndex) { if (isCalendarMediaList) daysSorted.size else 1 }
 
     LaunchedEffect(Unit) {
@@ -80,6 +83,7 @@ fun MediaListView(
             mediaId = arguments.mediaId,
             mediaType = arguments.mediaType,
             contentType = arguments.contentType,
+            userId = arguments.userId,
         )
     }
 
@@ -231,6 +235,7 @@ fun MediaListView(
                                     mediaId = arguments.mediaId,
                                     mediaType = arguments.mediaType,
                                     contentType = arguments.contentType,
+                                    userId = arguments.userId,
                                 )
                             },
                         )
@@ -247,6 +252,7 @@ fun MediaListView(
                                     mediaId = arguments.mediaId,
                                     mediaType = arguments.mediaType,
                                     contentType = arguments.contentType,
+                                    userId = arguments.userId,
                                 )
                             },
                         )
