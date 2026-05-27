@@ -76,6 +76,10 @@ fun MediaListView(
         arguments.contentType != MediaListContentType.RECOMMENDED &&
             arguments.contentType != MediaListContentType.USER_CURRENT_ANIME &&
             arguments.contentType != MediaListContentType.USER_CURRENT_MANGA
+
+    // Sow media progress for user's current anime/manga lists
+    val showProgress = arguments.contentType == MediaListContentType.USER_CURRENT_MANGA || arguments.contentType == MediaListContentType.USER_CURRENT_ANIME
+
     val pagerState = rememberPagerState(initialPage = selectedTabIndex) { if (isCalendarMediaList) daysSorted.size else 1 }
 
     LaunchedEffect(Unit) {
@@ -284,6 +288,7 @@ fun MediaListView(
                             MediaListViewContent(
                                 navActionManager = navActionManager,
                                 mediaList = uiState.mediaListByPage[page],
+                                showProgress = showProgress,
                             ) {}
                         }
 
@@ -291,6 +296,7 @@ fun MediaListView(
                             MediaGridViewContent(
                                 navActionManager = navActionManager,
                                 mediaList = uiState.mediaListByPage[page],
+                                showProgress = showProgress,
                             ) {}
                         }
                     }

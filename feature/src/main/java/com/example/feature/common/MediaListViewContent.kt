@@ -14,6 +14,7 @@ fun MediaListViewContent(
     navActionManager: NavActionManager,
     mediaList: List<MediaListItem>? = null,
     listState: LazyListState = rememberLazyListState(),
+    showProgress: Boolean = false,
     onLoadMore: () -> Unit,
 ) {
     listState.OnBottomReached(
@@ -32,6 +33,7 @@ fun MediaListViewContent(
                     is MediaListItem.MediaListType -> {
                         MediaListItem(
                             mediaItem = mediaItem.media,
+                            showProgress = showProgress,
                             onClick = { id, type ->
                                 navActionManager.toMediaDetail(
                                     id = id,

@@ -20,6 +20,7 @@ fun MediaGridViewContent(
     navActionManager: NavActionManager,
     mediaList: List<MediaListItem>? = null,
     gridState: LazyGridState = rememberLazyGridState(),
+    showProgress: Boolean = false,
     onLoadMore: () -> Unit,
 ) {
     gridState.OnBottomReached(
@@ -46,6 +47,8 @@ fun MediaGridViewContent(
                             media = media,
                             isAnime = media.type == MediaType.ANIME,
                             releasedEpisodes = media.nextAiringEpisode?.episode?.minus(1),
+                            showProgress = showProgress,
+                            progressCount = media.mediaListEntry?.progress,
                             onClick = { id ->
                                 media.type?.let { type ->
                                     navActionManager.toMediaDetail(

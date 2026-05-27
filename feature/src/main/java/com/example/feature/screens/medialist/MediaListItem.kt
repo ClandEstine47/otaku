@@ -44,6 +44,7 @@ import com.example.feature.common.OtakuTitle
 fun MediaListItem(
     modifier: Modifier = Modifier,
     mediaItem: Media,
+    showProgress: Boolean = false,
     onClick: (id: Int, mediaType: MediaType) -> Unit,
 ) {
     val title = mediaItem.title.english.ifBlank { mediaItem.title.romaji }
@@ -127,6 +128,8 @@ fun MediaListItem(
                 totalChapters = mediaItem.chapters,
                 totalEpisodes = mediaItem.episodes,
                 releasedEpisodes = mediaItem.nextAiringEpisode?.episode?.minus(1),
+                showProgress = showProgress,
+                progressCount = mediaItem.mediaListEntry?.progress,
                 format = mediaItem.format?.name,
             )
 
