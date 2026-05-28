@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.absolutePadding
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -172,7 +173,7 @@ fun HomeContent(
             )
 
             Column(
-                verticalArrangement = Arrangement.spacedBy(10.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 OtakuTitle(
                     title = user.name ?: "-",
@@ -184,35 +185,19 @@ fun HomeContent(
                     modifier = Modifier,
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
                 ) {
-                    Column {
-                        OtakuTitle(
-                            title =
-                                user.statistics.anime.count
-                                    .toString(),
-                            color = MaterialTheme.colorScheme.primary,
-                        )
-                        OtakuTitle(
-                            title = stringResource(R.string.anime_),
-                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
-                            fontWeight = FontWeight.Medium,
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                    }
+                    StatBadge(
+                        count =
+                            user.statistics.anime.count
+                                .toString(),
+                        label = stringResource(R.string.anime_),
+                    )
 
-                    Column {
-                        OtakuTitle(
-                            title =
-                                user.statistics.manga.count
-                                    .toString(),
-                            color = MaterialTheme.colorScheme.primary,
-                        )
-                        OtakuTitle(
-                            title = stringResource(R.string.manga_),
-                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
-                            fontWeight = FontWeight.Medium,
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                    }
+                    StatBadge(
+                        count =
+                            user.statistics.manga.count
+                                .toString(),
+                        label = stringResource(R.string.manga_),
+                    )
                 }
             }
         }
@@ -432,6 +417,39 @@ fun AuthContent() {
                 color = MaterialTheme.colorScheme.background,
             )
         }
+    }
+}
+
+@Composable
+fun StatBadge(
+    count: String,
+    label: String,
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Box(
+            modifier =
+                Modifier
+                    .height(32.dp)
+                    .defaultMinSize(minWidth = 50.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(MaterialTheme.colorScheme.primaryContainer)
+                    .padding(horizontal = 12.dp),
+            contentAlignment = Alignment.Center,
+        ) {
+            OtakuTitle(
+                title = count,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+            )
+        }
+
+        Spacer(modifier = Modifier.height(6.dp))
+
+        OtakuTitle(
+            title = label,
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+            fontWeight = FontWeight.Medium,
+            style = MaterialTheme.typography.bodyMedium,
+        )
     }
 }
 
