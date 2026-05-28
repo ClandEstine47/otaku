@@ -28,6 +28,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -368,7 +369,7 @@ private fun RowScope.HomeListTile(
             modifier =
                 Modifier
                     .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.6f)),
+                    .background(MaterialTheme.colorScheme.background.copy(alpha = 0.4f)),
             contentAlignment = Alignment.Center,
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -456,20 +457,23 @@ fun StatBadge(
     label: String,
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Box(
+        Surface(
             modifier =
                 Modifier
                     .height(32.dp)
                     .defaultMinSize(minWidth = 50.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(MaterialTheme.colorScheme.primaryContainer)
-                    .padding(horizontal = 12.dp),
-            contentAlignment = Alignment.Center,
+                    .clip(RoundedCornerShape(8.dp)),
+            color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.45f),
         ) {
-            OtakuTitle(
-                title = count,
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
-            )
+            Box(
+                modifier = Modifier.padding(horizontal = 12.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                OtakuTitle(
+                    title = count,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(6.dp))
