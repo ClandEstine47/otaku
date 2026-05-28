@@ -3,6 +3,7 @@ package com.example.feature.screens.home
 import android.os.Build
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -228,11 +229,25 @@ fun HomeContent(
             HomeListTile(
                 imageRes = R.drawable.anime_list,
                 title = "ANIME LIST",
+                onClick = {
+                    navActionManager.toUserCurrentAnimeList(
+                        titleId = R.string.anime,
+                        userId = user.id.takeIf { it > 0 },
+                        showStatusTabs = true,
+                    )
+                },
             )
 
             HomeListTile(
                 imageRes = R.drawable.manga_list,
                 title = "MANGA LIST",
+                onClick = {
+                    navActionManager.toUserCurrentMangaList(
+                        titleId = R.string.manga,
+                        userId = user.id.takeIf { it > 0 },
+                        showStatusTabs = true,
+                    )
+                },
             )
         }
 
@@ -317,13 +332,15 @@ fun HomeContent(
 private fun RowScope.HomeListTile(
     imageRes: Int,
     title: String,
+    onClick: () -> Unit = {},
 ) {
     Box(
         modifier =
             Modifier
                 .weight(1f)
                 .height(70.dp)
-                .clip(RoundedCornerShape(15.dp)),
+                .clip(RoundedCornerShape(15.dp))
+                .clickable(onClick = onClick),
     ) {
         Image(
             painter = painterResource(imageRes),

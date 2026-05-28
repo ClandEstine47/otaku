@@ -26,6 +26,7 @@ sealed interface OtakuScreen {
         val mediaType: MediaType,
         val contentType: MediaListContentType,
         val userId: Int? = null,
+        val showStatusTabs: Boolean = false,
     ) : OtakuScreen
 
     @Serializable

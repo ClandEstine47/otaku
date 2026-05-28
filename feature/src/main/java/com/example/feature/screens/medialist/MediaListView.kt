@@ -3,14 +3,12 @@ package com.example.feature.screens.medialist
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
@@ -40,10 +38,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.core.domain.model.MediaListContentType
 import com.example.core.domain.model.ViewType
+import com.example.core.domain.model.media.MediaListStatus
 import com.example.core.navigation.NavActionManager
 import com.example.core.navigation.OtakuScreen
 import com.example.feature.R
@@ -66,8 +65,12 @@ fun MediaListView(
     val coroutineScope = rememberCoroutineScope()
 
     val daysSorted = mediaListViewModel.getSortedCalendarTabs()
+    val isUserCurrentList = arguments.contentType == MediaListContentType.USER_CURRENT_ANIME || arguments.contentType == MediaListContentType.USER_CURRENT_MANGA
+    val showUserStatusTabs = isUserCurrentList && arguments.showStatusTabs
+    val userListTabLabels = if (showUserStatusTabs) mediaListViewModel.getUserListTabLabels(arguments.mediaType) else emptyList()
+    val userStatusFilter = if (isUserCurrentList && !showUserStatusTabs) MediaListStatus.CURRENT else null
     var selectedTabIndex by rememberSaveable {
-        mutableIntStateOf(0)
+        mutableIntStateOf(if (showUserStatusTabs) 1 else 0)
     }
     val isCalendarMediaList = arguments.contentType == MediaListContentType.RECENTLY_UPDATED
 
@@ -78,25 +81,49 @@ fun MediaListView(
             arguments.contentType != MediaListContentType.USER_CURRENT_MANGA
 
     // Sow media progress for user's current anime/manga lists
-    val showProgress = arguments.contentType == MediaListContentType.USER_CURRENT_MANGA || arguments.contentType == MediaListContentType.USER_CURRENT_ANIME
+    val showProgress = isUserCurrentList
+    val loadMoreUserList = {
+        if (isUserCurrentList && uiState.hasNextPage == true && !uiState.isLoading && !uiState.isLoadingMore) {
+            // Load the next page explicitly so pagination does not reset to page 1.
+            mediaListViewModel.loadMediaList(
+                mediaId = arguments.mediaId,
+                mediaType = arguments.mediaType,
+                contentType = arguments.contentType,
+                userId = arguments.userId,
+                status = userStatusFilter,
+                loadMore = true,
+                targetPageNumber = uiState.pageNumber + 1,
+            )
+        }
+    }
 
-    val pagerState = rememberPagerState(initialPage = selectedTabIndex) { if (isCalendarMediaList) daysSorted.size else 1 }
+    val pagerPageCount =
+        when {
+            isCalendarMediaList -> daysSorted.size
+            showUserStatusTabs -> userListTabLabels.size
+            else -> 1
+        }
+    val pagerState = rememberPagerState(initialPage = selectedTabIndex.coerceIn(0, (pagerPageCount - 1).coerceAtLeast(0))) { pagerPageCount }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(arguments, userStatusFilter) {
         mediaListViewModel.loadMediaList(
             mediaId = arguments.mediaId,
             mediaType = arguments.mediaType,
             contentType = arguments.contentType,
             userId = arguments.userId,
+            status = userStatusFilter,
+            skipIfAlreadyLoaded = true,
         )
     }
 
-    LaunchedEffect(pagerState) {
-        if (isCalendarMediaList) {
-            snapshotFlow { pagerState.currentPage }.collect { page ->
+    LaunchedEffect(pagerState, isCalendarMediaList, showUserStatusTabs) {
+        snapshotFlow { pagerState.currentPage }.collect { page ->
+            selectedTabIndex = page
+
+            if (isCalendarMediaList) {
+                // For calendar tabs, keep the day offset and the loaded day in sync.
                 mediaListViewModel.setDayOffset(page)
                 mediaListViewModel.loadMediaListByDay(dayIndex = page)
-                selectedTabIndex = page
             }
         }
     }
@@ -220,12 +247,56 @@ fun MediaListView(
                         }
                     },
                 )
+            } else if (showUserStatusTabs) {
+                PrimaryScrollableTabRow(
+                    modifier = Modifier.padding(bottom = 10.dp),
+                    containerColor = MaterialTheme.colorScheme.background,
+                    edgePadding = 5.dp,
+                    selectedTabIndex = selectedTabIndex,
+                    indicator = {
+                        SecondaryIndicator(
+                            Modifier
+                                .tabIndicatorOffset(selectedTabIndex = selectedTabIndex, matchContentSize = true),
+                            height = 3.dp,
+                        )
+                    },
+                    divider = {
+                        HorizontalDivider(color = MaterialTheme.colorScheme.background)
+                    },
+                    tabs = {
+                        userListTabLabels.forEachIndexed { index, label ->
+                            val isSelected = selectedTabIndex == index
+
+                            Tab(
+                                selected = isSelected,
+                                onClick = {
+                                    selectedTabIndex = index
+
+                                    coroutineScope.launch {
+                                        pagerState.animateScrollToPage(index)
+                                    }
+                                },
+                            ) {
+                                Box(
+                                    modifier =
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                                    contentAlignment = Alignment.Center,
+                                ) {
+                                    OtakuTitle(
+                                        title = label,
+                                        color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground,
+                                    )
+                                }
+                            }
+                        }
+                    },
+                )
             } else {
                 if (showPageButtons) {
                     Row(
-                        modifier =
-                            Modifier
-                                .fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(20.dp, Alignment.CenterHorizontally),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
@@ -234,12 +305,13 @@ fun MediaListView(
                             buttonIcon = "<",
                             enabled = (uiState.pageNumber > 1 && !uiState.isLoading),
                             onClick = {
-                                mediaListViewModel.decreasePageNumber()
+                                // Manual page navigation requests the previous page directly.
                                 mediaListViewModel.loadMediaList(
                                     mediaId = arguments.mediaId,
                                     mediaType = arguments.mediaType,
                                     contentType = arguments.contentType,
                                     userId = arguments.userId,
+                                    targetPageNumber = uiState.pageNumber - 1,
                                 )
                             },
                         )
@@ -251,12 +323,13 @@ fun MediaListView(
                             buttonIcon = ">",
                             enabled = (uiState.hasNextPage == true && !uiState.isLoading),
                             onClick = {
-                                mediaListViewModel.increasePageNumber()
+                                // Manual page navigation requests the next page directly.
                                 mediaListViewModel.loadMediaList(
                                     mediaId = arguments.mediaId,
                                     mediaType = arguments.mediaType,
                                     contentType = arguments.contentType,
                                     userId = arguments.userId,
+                                    targetPageNumber = uiState.pageNumber + 1,
                                 )
                             },
                         )
@@ -267,6 +340,10 @@ fun MediaListView(
             }
 
             HorizontalPager(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
                 state = pagerState,
                 verticalAlignment = Alignment.Top,
             ) { page ->
@@ -289,7 +366,11 @@ fun MediaListView(
                                 navActionManager = navActionManager,
                                 mediaList = uiState.mediaListByPage[page],
                                 showProgress = showProgress,
-                            ) {}
+                            ) {
+                                if (page == pagerState.currentPage) {
+                                    loadMoreUserList()
+                                }
+                            }
                         }
 
                         ViewType.GRID -> {
@@ -297,7 +378,11 @@ fun MediaListView(
                                 navActionManager = navActionManager,
                                 mediaList = uiState.mediaListByPage[page],
                                 showProgress = showProgress,
-                            ) {}
+                            ) {
+                                if (page == pagerState.currentPage) {
+                                    loadMoreUserList()
+                                }
+                            }
                         }
                     }
                 }

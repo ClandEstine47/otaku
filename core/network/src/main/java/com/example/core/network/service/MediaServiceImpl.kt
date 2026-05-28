@@ -152,6 +152,79 @@ class MediaServiceImpl
                 sortBy = sortBy,
             )
 
+        override suspend fun getUserListCollection(
+            pageNumber: Int,
+            perPage: Int,
+            mediaType: MediaType,
+            userId: Int?,
+            sortBy: List<MediaListSort>?,
+        ): Result<Page<Media>> =
+            try {
+                val response =
+                    apolloClient
+                        .query(
+                            UserListCollectionQuery(
+                                userId = Optional.presentIfNotNull(userId),
+                                type = Optional.present(mediaType.toNetworkMediaType()),
+                                sort = Optional.present(sortBy?.map { it.toNetworkMediaListSort() } ?: listOf(MediaListSort.UPDATED_TIME_DESC.toNetworkMediaListSort())),
+                                chunk = Optional.present(pageNumber),
+                                perChunk = Optional.present(perPage),
+                            ),
+                        ).execute()
+
+                when {
+                    response.hasErrors() -> {
+                        val errorMessage =
+                            response.errors?.joinToString("; ") { it.message }
+                                ?: "Unknown GraphQL error"
+                        Result.failure(Exception(errorMessage))
+                    }
+
+                    else -> {
+                        val hasNextChunk = response.data?.MediaListCollection?.hasNextChunk
+                        val pageInfo = PageInfo(currentPage = pageNumber, perPage = perPage, hasNextPage = hasNextChunk)
+                        val mediaByCollection =
+                            response.data
+                                ?.MediaListCollection
+                                ?.lists
+                                ?.filterNotNull()
+                                ?.flatMap { mediaListGroup ->
+                                    mediaListGroup.entries
+                                        ?.mapNotNull { entry ->
+                                            val media = entry?.media?.toDomainMediaFromListCollection() ?: return@mapNotNull null
+                                            media.copy(
+                                                mediaListEntry =
+                                                    MediaList(
+                                                        id = entry.id,
+                                                        status = entry.status?.toDomainMediaListStatus(),
+                                                        score = entry.score ?: 0.0,
+                                                        progress = entry.progress ?: 0,
+                                                        progressVolumes = entry.progressVolumes,
+                                                        repeat = entry.repeat ?: 0,
+                                                        private = entry.private ?: false,
+                                                        notes = entry.notes.orEmpty(),
+                                                        hiddenFromStatusLists = entry.hiddenFromStatusLists ?: false,
+                                                        advancedScores = entry.advancedScores,
+                                                        media = media,
+                                                    ),
+                                            )
+                                        }.orEmpty()
+                                }
+                                ?: emptyList()
+                        Result.success(
+                            Page(
+                                pageInfo = pageInfo,
+                                data = mediaByCollection,
+                            ),
+                        )
+                    }
+                }
+            } catch (e: ApolloException) {
+                Result.failure(e)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+
         private suspend fun getMediaByStatusList(
             pageNumber: Int,
             perPage: Int,

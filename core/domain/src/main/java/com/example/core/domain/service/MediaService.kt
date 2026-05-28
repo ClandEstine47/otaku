@@ -40,6 +40,14 @@ interface MediaService {
         sortBy: List<MediaListSort>? = null,
     ): Result<Page<Media>>
 
+    suspend fun getUserListCollection(
+        pageNumber: Int,
+        perPage: Int,
+        mediaType: MediaType,
+        userId: Int? = null,
+        sortBy: List<MediaListSort>? = null,
+    ): Result<Page<Media>>
+
     suspend fun getRecentlyUpdatedAnimeList(
         pageNumber: Int,
         perPage: Int,

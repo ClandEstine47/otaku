@@ -32,9 +32,18 @@ class MediaListViewModel
     constructor(
         private val mediaRepository: MediaRepository,
     ) : ViewModel() {
+        private data class LoadSignature(
+            val mediaId: Int?,
+            val mediaType: MediaType,
+            val contentType: MediaListContentType,
+            val userId: Int?,
+            val status: MediaListStatus?,
+        )
+
         private val currentTime = LocalDateTime.now()
         private val currentAnimeSeason = currentTime.currentAnimeSeason()
         private val nextAnimeSeason = currentTime.nextAnimeSeason()
+        private var lastInitialLoadSignature: LoadSignature? = null
 
         private val _state =
             MutableStateFlow(
@@ -47,12 +56,57 @@ class MediaListViewModel
             mediaType: MediaType,
             contentType: MediaListContentType,
             userId: Int? = null,
+            status: MediaListStatus? = null,
+            loadMore: Boolean = false,
+            targetPageNumber: Int? = null,
+            skipIfAlreadyLoaded: Boolean = false,
         ) {
             viewModelScope.launch {
-                _state.update {
-                    it.copy(
-                        isLoading = true,
-                    )
+                val signature = LoadSignature(mediaId, mediaType, contentType, userId, status)
+
+                // Avoid re-fetching the same initial screen state when coming back from a detail screen.
+                if (!loadMore && skipIfAlreadyLoaded && _state.value.hasLoadedInitialData && lastInitialLoadSignature == signature) {
+                    return@launch
+                }
+
+                val pageToLoad =
+                    when {
+                        targetPageNumber != null -> targetPageNumber.coerceAtLeast(1)
+                        loadMore -> _state.value.pageNumber + 1
+                        else -> 1
+                    }
+
+                if (!loadMore) {
+                    lastInitialLoadSignature = signature
+
+                    // User lists can either be split into status tabs or filtered down to one status.
+                    val userTabCount =
+                        if (contentType == MediaListContentType.USER_CURRENT_ANIME || contentType == MediaListContentType.USER_CURRENT_MANGA) {
+                            if (status == null) getUserListTabStatuses(mediaType).size else 1
+                        } else {
+                            7
+                        }
+
+                    _state.update {
+                        it.copy(
+                            mediaListByPage = List(userTabCount) { emptyList() },
+                            userListTabCounts = if (userTabCount == 7) emptyList() else List(userTabCount) { 0 },
+                            userListMedia = emptyList(),
+                            pageNumber = pageToLoad,
+                            hasNextPage = false,
+                            isLoading = true,
+                            isLoadingMore = false,
+                            hasLoadedInitialData = false,
+                            error = null,
+                        )
+                    }
+                } else {
+                    _state.update {
+                        it.copy(
+                            isLoadingMore = true,
+                            error = null,
+                        )
+                    }
                 }
 
                 val mediaListDeferred =
@@ -63,7 +117,7 @@ class MediaListViewModel
                                 val endOfDay = currentTime.getDayTimestamp(dayOffset = _state.value.dayOffset, isEndOfDay = true)
 
                                 mediaRepository.getRecentlyUpdatedAnimeList(
-                                    pageNumber = _state.value.pageNumber,
+                                    pageNumber = pageToLoad,
                                     perPage = 30,
                                     airingAtLesser = endOfDay.toInt(),
                                     airingAtGreater = startOfDay.toInt(),
@@ -72,7 +126,7 @@ class MediaListViewModel
 
                             MediaListContentType.CURRENT_SEASON -> {
                                 mediaRepository.getSeasonalMedia(
-                                    pageNumber = _state.value.pageNumber,
+                                    pageNumber = pageToLoad,
                                     perPage = 21,
                                     seasonYear = currentAnimeSeason.year,
                                     season = currentAnimeSeason.season,
@@ -82,7 +136,7 @@ class MediaListViewModel
 
                             MediaListContentType.POPULAR_NOW -> {
                                 mediaRepository.getPopularMedia(
-                                    pageNumber = _state.value.pageNumber,
+                                    pageNumber = pageToLoad,
                                     perPage = 21,
                                     mediaType = mediaType,
                                 )
@@ -90,7 +144,7 @@ class MediaListViewModel
 
                             MediaListContentType.NEXT_SEASON -> {
                                 mediaRepository.getSeasonalMedia(
-                                    pageNumber = _state.value.pageNumber,
+                                    pageNumber = pageToLoad,
                                     perPage = 21,
                                     seasonYear = nextAnimeSeason.year,
                                     season = nextAnimeSeason.season,
@@ -100,7 +154,7 @@ class MediaListViewModel
 
                             MediaListContentType.POPULAR_MANGA -> {
                                 mediaRepository.getPopularMedia(
-                                    pageNumber = _state.value.pageNumber,
+                                    pageNumber = pageToLoad,
                                     perPage = 21,
                                     mediaType = mediaType,
                                     countryOfOrigin = "JP",
@@ -109,7 +163,7 @@ class MediaListViewModel
 
                             MediaListContentType.POPULAR_MANHWA -> {
                                 mediaRepository.getPopularMedia(
-                                    pageNumber = _state.value.pageNumber,
+                                    pageNumber = pageToLoad,
                                     perPage = 21,
                                     mediaType = mediaType,
                                     countryOfOrigin = "KR",
@@ -118,7 +172,7 @@ class MediaListViewModel
 
                             MediaListContentType.POPULAR_NOVEL -> {
                                 mediaRepository.getPopularMedia(
-                                    pageNumber = _state.value.pageNumber,
+                                    pageNumber = pageToLoad,
                                     perPage = 21,
                                     mediaType = mediaType,
                                     mediaFormat = MediaFormat.NOVEL,
@@ -127,7 +181,7 @@ class MediaListViewModel
 
                             MediaListContentType.ONE_SHOT -> {
                                 mediaRepository.getPopularMedia(
-                                    pageNumber = _state.value.pageNumber,
+                                    pageNumber = pageToLoad,
                                     perPage = 21,
                                     mediaType = mediaType,
                                     mediaFormat = MediaFormat.ONE_SHOT,
@@ -141,20 +195,20 @@ class MediaListViewModel
                             }
 
                             MediaListContentType.USER_CURRENT_ANIME -> {
-                                mediaRepository.getAnimeByStatus(
-                                    pageNumber = _state.value.pageNumber,
+                                mediaRepository.getUserListCollection(
+                                    pageNumber = pageToLoad,
                                     perPage = 30,
-                                    status = MediaListStatus.CURRENT,
+                                    mediaType = mediaType,
                                     userId = userId,
                                     sortBy = listOf(MediaListSort.UPDATED_TIME_DESC),
                                 )
                             }
 
                             MediaListContentType.USER_CURRENT_MANGA -> {
-                                mediaRepository.getMangaByStatus(
-                                    pageNumber = _state.value.pageNumber,
+                                mediaRepository.getUserListCollection(
+                                    pageNumber = pageToLoad,
                                     perPage = 30,
-                                    status = MediaListStatus.CURRENT,
+                                    mediaType = mediaType,
                                     userId = userId,
                                     sortBy = listOf(MediaListSort.UPDATED_TIME_DESC),
                                 )
@@ -167,43 +221,111 @@ class MediaListViewModel
                 _state.update { currentState ->
                     when {
                         mediaListResult.isSuccess -> {
-                            val mediaListByPage = currentState.mediaListByPage.toMutableList()
-                            mediaListByPage[0] =
-                                mediaListResult.getOrNull()?.data?.map { media ->
-                                    when (media) {
-                                        is Media -> {
-                                            MediaListItem.MediaListType(media)
-                                        }
+                            val mediaListResultData = mediaListResult.getOrNull()?.data.orEmpty()
 
-                                        is AiringSchedule -> {
-                                            MediaListItem.ScheduleType(media)
-                                        }
+                            if (contentType == MediaListContentType.USER_CURRENT_ANIME || contentType == MediaListContentType.USER_CURRENT_MANGA) {
+                                @Suppress("UNCHECKED_CAST")
+                                val userMediaListData = mediaListResult.getOrNull()?.data as? List<Media> ?: emptyList()
+                                val userTabStatuses = getUserListTabStatuses(mediaType)
+                                val accumulatedUserMedia =
+                                    if (loadMore) {
+                                        currentState.userListMedia + userMediaListData
+                                    } else {
+                                        userMediaListData
+                                    }
+                                val userTabPages =
+                                    if (status == null) {
+                                        // Build one page per status tab, with the first tab showing all media.
+                                        val groupedMedia = accumulatedUserMedia.groupBy { it.mediaListEntry?.status }
+                                        userTabStatuses.map { tabStatus ->
+                                            val tabMedia =
+                                                if (tabStatus == null) {
+                                                    accumulatedUserMedia
+                                                } else {
+                                                    groupedMedia[tabStatus].orEmpty()
+                                                }
 
-                                        else -> {
-                                            MediaListItem.MediaListType(Media())
+                                            tabMedia.map { media ->
+                                                MediaListItem.MediaListType(media)
+                                            }
+                                        }
+                                    } else {
+                                        // When tabs are hidden, keep only the selected status in a single page.
+                                        val filteredMedia = accumulatedUserMedia.filter { it.mediaListEntry?.status == status }
+                                        listOf(
+                                            filteredMedia.map { media ->
+                                                MediaListItem.MediaListType(media)
+                                            },
+                                        )
+                                    }
+
+                                currentState.copy(
+                                    mediaListByPage = userTabPages,
+                                    userListTabCounts = userTabPages.map { it.size },
+                                    userListMedia = accumulatedUserMedia,
+                                    pageNumber = pageToLoad,
+                                    isLoading = false,
+                                    isLoadingMore = false,
+                                    hasLoadedInitialData = true,
+                                    hasNextPage = mediaListResult.getOrNull()?.pageInfo?.hasNextPage == true,
+                                    error = null,
+                                )
+                            } else {
+                                val mediaListByPage = currentState.mediaListByPage.toMutableList()
+                                mediaListByPage[0] =
+                                    mediaListResultData.map { media ->
+                                        when (media) {
+                                            is Media -> {
+                                                MediaListItem.MediaListType(media)
+                                            }
+
+                                            is AiringSchedule -> {
+                                                MediaListItem.ScheduleType(media)
+                                            }
+
+                                            else -> {
+                                                MediaListItem.MediaListType(Media())
+                                            }
                                         }
                                     }
-                                }
 
-                            currentState.copy(
-                                mediaListByPage = mediaListByPage,
-                                isLoading = false,
-                                hasNextPage = mediaListResult.getOrNull()?.pageInfo?.hasNextPage,
-                                error = null,
-                            )
+                                currentState.copy(
+                                    mediaListByPage = mediaListByPage,
+                                    pageNumber = pageToLoad,
+                                    isLoading = false,
+                                    isLoadingMore = false,
+                                    hasLoadedInitialData = true,
+                                    hasNextPage = mediaListResult.getOrNull()?.pageInfo?.hasNextPage,
+                                    error = null,
+                                )
+                            }
                         }
 
                         mediaListResult.isFailure -> {
-                            currentState.copy(
-                                mediaListByPage = emptyList(),
-                                isLoading = false,
-                                error = mediaListResult.exceptionOrNull()?.message ?: "An unknown error occurred",
-                            )
+                            if (contentType == MediaListContentType.USER_CURRENT_ANIME || contentType == MediaListContentType.USER_CURRENT_MANGA) {
+                                currentState.copy(
+                                    isLoading = false,
+                                    isLoadingMore = false,
+                                    hasLoadedInitialData = true,
+                                    hasNextPage = false,
+                                    error = mediaListResult.exceptionOrNull()?.message ?: "An unknown error occurred",
+                                )
+                            } else {
+                                currentState.copy(
+                                    mediaListByPage = emptyList(),
+                                    isLoading = false,
+                                    isLoadingMore = false,
+                                    hasLoadedInitialData = true,
+                                    error = mediaListResult.exceptionOrNull()?.message ?: "An unknown error occurred",
+                                )
+                            }
                         }
 
                         else -> {
                             currentState.copy(
                                 isLoading = false,
+                                isLoadingMore = false,
+                                hasLoadedInitialData = true,
                                 error = "Unexpected result state",
                             )
                         }
@@ -276,6 +398,44 @@ class MediaListViewModel
                 )
             }
 
+        @Suppress("unused")
+        fun setSelectedStatus(value: MediaListStatus?) {
+            _state.update {
+                it.copy(
+                    selectedStatus = value,
+                    pageNumber = 1,
+                    mediaListByPage = List(7) { emptyList() },
+                )
+            }
+        }
+
+        fun getUserListTabLabels(mediaType: MediaType): List<String> =
+            when (mediaType) {
+                MediaType.ANIME -> listOf("ALL", "WATCHING", "PLANNING", "COMPLETED", "DROPPED", "PAUSED")
+                MediaType.MANGA -> listOf("ALL", "READING")
+            }
+
+        private fun getUserListTabStatuses(mediaType: MediaType): List<MediaListStatus?> =
+            when (mediaType) {
+                MediaType.ANIME -> {
+                    listOf(
+                        null,
+                        MediaListStatus.CURRENT,
+                        MediaListStatus.PLANNING,
+                        MediaListStatus.COMPLETED,
+                        MediaListStatus.DROPPED,
+                        MediaListStatus.PAUSED,
+                    )
+                }
+
+                MediaType.MANGA -> {
+                    listOf(
+                        null,
+                        MediaListStatus.CURRENT,
+                    )
+                }
+            }
+
         fun increasePageNumber() =
             _state.update {
                 it.copy(
@@ -292,6 +452,7 @@ class MediaListViewModel
 
         fun getSortedCalendarTabs(): List<CalendarTab> {
             val today = LocalDate.now().dayOfWeek
+            // Rotate the week so the current day becomes the first tab.
             val sortedDays = DayOfWeek.entries.sortedBy { (it.value - today.value + 7) % 7 }
 
             return sortedDays.map { dayOfWeek ->

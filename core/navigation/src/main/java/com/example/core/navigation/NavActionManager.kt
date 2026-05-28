@@ -32,6 +32,7 @@ class NavActionManager(
         mediaType: MediaType,
         contentType: MediaListContentType,
         userId: Int? = null,
+        showStatusTabs: Boolean = false,
     ) {
         navController.navigate(
             OtakuScreen.MediaList(
@@ -40,6 +41,7 @@ class NavActionManager(
                 mediaType = mediaType,
                 contentType = contentType,
                 userId = userId,
+                showStatusTabs = showStatusTabs,
             ),
         )
     }
@@ -59,24 +61,28 @@ class NavActionManager(
     fun toUserCurrentAnimeList(
         titleId: Int,
         userId: Int?,
+        showStatusTabs: Boolean = false,
     ) {
         toMediaList(
             titleId = titleId,
             mediaType = MediaType.ANIME,
             contentType = MediaListContentType.USER_CURRENT_ANIME,
             userId = userId,
+            showStatusTabs = showStatusTabs,
         )
     }
 
     fun toUserCurrentMangaList(
         titleId: Int,
         userId: Int?,
+        showStatusTabs: Boolean = false,
     ) {
         toMediaList(
             titleId = titleId,
             mediaType = MediaType.MANGA,
             contentType = MediaListContentType.USER_CURRENT_MANGA,
             userId = userId,
+            showStatusTabs = showStatusTabs,
         )
     }
 

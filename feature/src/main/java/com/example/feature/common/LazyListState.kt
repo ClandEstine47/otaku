@@ -7,6 +7,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 /**
  * Extension function to load more items when the bottom is reached
@@ -37,6 +38,7 @@ fun LazyListState.OnBottomReached(
 
     LaunchedEffect(shouldLoadMore) {
         snapshotFlow { shouldLoadMore.value }
+            .distinctUntilChanged()
             .collect { if (it) onLoadMore() }
     }
 }
@@ -70,6 +72,7 @@ fun LazyGridState.OnBottomReached(
 
     LaunchedEffect(shouldLoadMore) {
         snapshotFlow { shouldLoadMore.value }
+            .distinctUntilChanged()
             .collect { if (it) onLoadMore() }
     }
 }
