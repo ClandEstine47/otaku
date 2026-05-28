@@ -55,6 +55,7 @@ import com.example.core.navigation.NavActionManager
 import com.example.feature.OTAKU_AUTH_URL
 import com.example.feature.R
 import com.example.feature.Utils.openActionView
+import com.example.feature.common.BannerCard
 import com.example.feature.common.ErrorScreen
 import com.example.feature.common.MediaItem
 import com.example.feature.common.OtakuTitle
@@ -89,8 +90,7 @@ fun HomeView(
                         blurRadius = 30.dp,
                         noiseFactor = HazeDefaults.noiseFactor,
                     ),
-                ).fillMaxSize()
-                .absolutePadding(),
+                ).fillMaxSize(),
     ) {
         if (isOnline) {
             if (uiState.isLoading) {
@@ -147,169 +147,199 @@ fun HomeContent(
     currentAnimeMedia: List<Media>? = null,
     currentMangaMedia: List<Media>? = null,
 ) {
+    val bannerVisible = user.bannerImage.isNotBlank()
+    val bannerPainter =
+        if (bannerVisible) {
+            rememberAsyncImagePainter(model = user.bannerImage)
+        } else {
+            null
+        }
+
     Column(
         modifier =
             modifier
                 .fillMaxSize()
-                .padding(20.dp)
-                .padding(top = 30.dp)
                 .verticalScroll(rememberScrollState()),
     ) {
-        Row(
-            modifier = Modifier,
-            horizontalArrangement = Arrangement.spacedBy(40.dp),
-            verticalAlignment = Alignment.CenterVertically,
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .absolutePadding(),
         ) {
-            Image(
-                painter =
-                    rememberAsyncImagePainter(
-                        model = user.avatar.medium,
-                    ),
-                contentDescription = "profile picture",
+            if (bannerVisible && bannerPainter != null) {
+                BannerCard(
+                    bannerPainter = bannerPainter,
+                    height = 232.dp,
+                )
+            }
+            Column(
                 modifier =
                     Modifier
-                        .size(70.dp)
-                        .clip(RoundedCornerShape(30.dp)),
-            )
-
-            Column(
-                verticalArrangement = Arrangement.spacedBy(12.dp),
+                        .padding(20.dp)
+                        .padding(top = 30.dp),
             ) {
-                OtakuTitle(
-                    title = user.name ?: "-",
-                    color = MaterialTheme.colorScheme.onBackground,
-                    style = MaterialTheme.typography.titleMedium,
-                )
-
                 Row(
                     modifier = Modifier,
-                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    horizontalArrangement = Arrangement.spacedBy(40.dp),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    StatBadge(
-                        count =
-                            user.statistics.anime.count
-                                .toString(),
-                        label = stringResource(R.string.anime_),
+                    Image(
+                        painter =
+                            rememberAsyncImagePainter(
+                                model = user.avatar.medium,
+                            ),
+                        contentDescription = "profile picture",
+                        modifier =
+                            Modifier
+                                .size(70.dp)
+                                .clip(RoundedCornerShape(30.dp)),
                     )
 
-                    StatBadge(
-                        count =
-                            user.statistics.manga.count
-                                .toString(),
-                        label = stringResource(R.string.manga_),
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                    ) {
+                        OtakuTitle(
+                            title = user.name ?: "-",
+                            color = MaterialTheme.colorScheme.onBackground,
+                            style = MaterialTheme.typography.titleMedium,
+                        )
+
+                        Row(
+                            modifier = Modifier,
+                            horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        ) {
+                            StatBadge(
+                                count =
+                                    user.statistics.anime.count
+                                        .toString(),
+                                label = stringResource(R.string.anime_),
+                            )
+
+                            StatBadge(
+                                count =
+                                    user.statistics.manga.count
+                                        .toString(),
+                                label = stringResource(R.string.manga_),
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(50.dp))
+
+                Row(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 15.dp),
+                    horizontalArrangement = Arrangement.spacedBy(20.dp, Alignment.CenterHorizontally),
+                ) {
+                    HomeListTile(
+                        imageRes = R.drawable.anime_list,
+                        title = "ANIME LIST",
+                        onClick = {
+                            navActionManager.toUserCurrentAnimeList(
+                                titleId = R.string.anime,
+                                userId = user.id.takeIf { it > 0 },
+                                showStatusTabs = true,
+                            )
+                        },
+                    )
+
+                    HomeListTile(
+                        imageRes = R.drawable.manga_list,
+                        title = "MANGA LIST",
+                        onClick = {
+                            navActionManager.toUserCurrentMangaList(
+                                titleId = R.string.manga,
+                                userId = user.id.takeIf { it > 0 },
+                                showStatusTabs = true,
+                            )
+                        },
                     )
                 }
             }
-        }
-
-        Spacer(modifier = Modifier.height(50.dp))
-
-        Row(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 15.dp),
-            horizontalArrangement = Arrangement.spacedBy(20.dp, Alignment.CenterHorizontally),
-        ) {
-            HomeListTile(
-                imageRes = R.drawable.anime_list,
-                title = "ANIME LIST",
-                onClick = {
-                    navActionManager.toUserCurrentAnimeList(
-                        titleId = R.string.anime,
-                        userId = user.id.takeIf { it > 0 },
-                        showStatusTabs = true,
-                    )
-                },
-            )
-
-            HomeListTile(
-                imageRes = R.drawable.manga_list,
-                title = "MANGA LIST",
-                onClick = {
-                    navActionManager.toUserCurrentMangaList(
-                        titleId = R.string.manga,
-                        userId = user.id.takeIf { it > 0 },
-                        showStatusTabs = true,
-                    )
-                },
-            )
         }
 
         Spacer(modifier = Modifier.height(30.dp))
 
-        currentAnimeMedia?.takeIf { it.isNotEmpty() }?.let { currentAnime ->
-            TitleWithExpandButton(
-                titleId = R.string.current_anime,
-                onExpandClick = {
-                    navActionManager.toUserCurrentAnimeList(
-                        titleId = R.string.current_anime,
-                        userId = user.id.takeIf { it > 0 },
-                    )
-                },
-            )
+        Column(
+            modifier = Modifier.padding(horizontal = 10.dp),
+        ) {
+            currentAnimeMedia?.takeIf { it.isNotEmpty() }?.let { currentAnime ->
+                TitleWithExpandButton(
+                    titleId = R.string.current_anime,
+                    onExpandClick = {
+                        navActionManager.toUserCurrentAnimeList(
+                            titleId = R.string.current_anime,
+                            userId = user.id.takeIf { it > 0 },
+                        )
+                    },
+                )
 
-            LazyRow(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-            ) {
-                items(currentAnime) { anime ->
-                    MediaItem(
-                        media = anime,
-                        isAnime = true,
-                        releasedEpisodes = anime.nextAiringEpisode?.episode?.minus(1),
-                        progressCount = anime.mediaListEntry?.progress,
-                        showProgress = true,
-                        onClick = { id ->
-                            navActionManager.toMediaDetail(
-                                id = id,
-                                mediaType = MediaType.ANIME,
-                            )
-                        },
-                    )
+                LazyRow(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                ) {
+                    items(currentAnime) { anime ->
+                        MediaItem(
+                            media = anime,
+                            isAnime = true,
+                            releasedEpisodes = anime.nextAiringEpisode?.episode?.minus(1),
+                            progressCount = anime.mediaListEntry?.progress,
+                            showProgress = true,
+                            onClick = { id ->
+                                navActionManager.toMediaDetail(
+                                    id = id,
+                                    mediaType = MediaType.ANIME,
+                                )
+                            },
+                        )
+                    }
                 }
             }
-        }
 
-        currentMangaMedia?.takeIf { it.isNotEmpty() }?.let { currentManga ->
-            TitleWithExpandButton(
-                titleId = R.string.current_manga,
-                onExpandClick = {
-                    navActionManager.toUserCurrentMangaList(
-                        titleId = R.string.current_manga,
-                        userId = user.id.takeIf { it > 0 },
-                    )
-                },
-            )
+            currentMangaMedia?.takeIf { it.isNotEmpty() }?.let { currentManga ->
+                TitleWithExpandButton(
+                    titleId = R.string.current_manga,
+                    onExpandClick = {
+                        navActionManager.toUserCurrentMangaList(
+                            titleId = R.string.current_manga,
+                            userId = user.id.takeIf { it > 0 },
+                        )
+                    },
+                )
 
-            LazyRow(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-            ) {
-                items(currentManga) { manga ->
-                    MediaItem(
-                        media = manga,
-                        isAnime = false,
-                        progressCount = manga.mediaListEntry?.progress,
-                        showProgress = true,
-                        onClick = { id ->
-                            navActionManager.toMediaDetail(
-                                id = id,
-                                mediaType = MediaType.MANGA,
-                            )
-                        },
-                    )
+                LazyRow(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                ) {
+                    items(currentManga) { manga ->
+                        MediaItem(
+                            media = manga,
+                            isAnime = false,
+                            progressCount = manga.mediaListEntry?.progress,
+                            showProgress = true,
+                            onClick = { id ->
+                                navActionManager.toMediaDetail(
+                                    id = id,
+                                    mediaType = MediaType.MANGA,
+                                )
+                            },
+                        )
+                    }
                 }
             }
-        }
 
-        Spacer(modifier = Modifier.height(60.dp))
+            Spacer(modifier = Modifier.height(60.dp))
+        }
     }
 }
 
