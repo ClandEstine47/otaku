@@ -6,6 +6,8 @@ import kotlinx.coroutines.flow.Flow
 interface MainRepository {
     suspend fun getUserDetails(): User
 
+    suspend fun removeUserDetails()
+
     suspend fun parseRedirectUri(uri: android.net.Uri)
 
     fun isLoggedIn(): Flow<Boolean>

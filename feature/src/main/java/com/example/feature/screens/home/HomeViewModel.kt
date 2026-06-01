@@ -118,4 +118,10 @@ class HomeViewModel
                 }
             }
         }
+
+        fun logout() {
+            viewModelScope.launch {
+                mainRepository.removeUserDetails()
+            }
+        }
     }

@@ -67,4 +67,7 @@
     <string name="manga_">Manga</string>
     <string name="settings">Settings</string>
     <string name="logout">Logout</string>
+    <string name="logout_confirmation">Are you sure you want to logout?</string>
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
 </resources>

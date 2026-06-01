@@ -60,6 +60,15 @@ class MainRepositoryImpl
                 },
             )
 
+        override suspend fun removeUserDetails() {
+            dataStore.edit {
+                it.remove(ACCESS_TOKEN_KEY)
+                it.remove(USER_NAME)
+                it.remove(USER_ID_KEY)
+                it.remove(DISPLAY_ADULT_KEY)
+            }
+        }
+
         companion object {
             private val ACCESS_TOKEN_KEY = stringPreferencesKey("access_token")
             private val USER_NAME = stringPreferencesKey("user_name")

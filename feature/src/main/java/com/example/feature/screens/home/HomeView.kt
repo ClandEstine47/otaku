@@ -24,6 +24,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -32,6 +33,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -116,6 +119,9 @@ fun HomeView(
                             user = uiState.user,
                             currentAnimeMedia = uiState.currentAnimeMedia,
                             currentMangaMedia = uiState.currentMangaMedia,
+                            onLogoutClick = {
+                                homeViewModel.logout()
+                            },
                         )
                     } else {
                         AuthContent()
@@ -151,8 +157,10 @@ fun HomeContent(
     user: User,
     currentAnimeMedia: List<Media>? = null,
     currentMangaMedia: List<Media>? = null,
+    onLogoutClick: () -> Unit = {},
 ) {
     var showBottomSheet by remember { mutableStateOf(false) }
+    var showLogoutDialog by remember { mutableStateOf(false) }
     val bannerVisible = user.bannerImage.isNotBlank()
     val bannerPainter =
         if (bannerVisible) {
@@ -234,7 +242,7 @@ fun HomeContent(
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(16.dp))
                             .clickable(onClick = {
-                                // todo: logout
+                                showLogoutDialog = true
                             })
                             .padding(horizontal = 12.dp, vertical = 14.dp),
                     verticalAlignment = Alignment.CenterVertically,
@@ -257,6 +265,57 @@ fun HomeContent(
                 Spacer(modifier = Modifier.height(25.dp))
             }
         }
+    }
+
+    if (showLogoutDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                showLogoutDialog = false
+            },
+            title = {
+                OtakuTitle(
+                    title = stringResource(R.string.logout),
+                    color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.titleLarge,
+                )
+            },
+            text = {
+                OtakuTitle(
+                    title = stringResource(R.string.logout_confirmation),
+                    color = MaterialTheme.colorScheme.onBackground,
+                    fontWeight = FontWeight.Normal,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showLogoutDialog = false
+                    },
+                ) {
+                    OtakuTitle(
+                        title = stringResource(R.string.no),
+                        color = MaterialTheme.colorScheme.primary,
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onLogoutClick()
+                        showLogoutDialog = false
+                        showBottomSheet = false
+                    },
+                ) {
+                    OtakuTitle(
+                        title = stringResource(R.string.yes),
+                        color = MaterialTheme.colorScheme.primary,
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                }
+            },
+        )
     }
 
     Column(
