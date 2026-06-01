@@ -9,11 +9,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.core.navigation.NavActionManager
@@ -21,9 +20,11 @@ import com.example.core.navigation.OtakuScreen
 import com.example.core.navigation.navigateAndReplaceStartRoute
 import com.example.feature.screens.BottomNavBar
 import com.example.feature.screens.NavDestination
+import com.example.feature.screens.anime.AnimeViewModel
+import com.example.feature.screens.home.HomeViewModel
+import com.example.feature.screens.manga.MangaViewModel
 import com.example.otaku.ui.theme.OtakuTheme
 import dev.chrisbanes.haze.HazeState
-import kotlinx.coroutines.launch
 
 @Composable
 fun OtakuMain(
@@ -31,11 +32,12 @@ fun OtakuMain(
 ) {
     OtakuTheme {
         val navController = rememberNavController()
-        val scope = rememberCoroutineScope()
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val navActionManager = NavActionManager.rememberNavActionManager(navController)
         val hazeState = remember { HazeState() }
-        val context = LocalContext.current
+        val animeViewModel: AnimeViewModel = hiltViewModel()
+        val homeViewModel: HomeViewModel = hiltViewModel()
+        val mangaViewModel: MangaViewModel = hiltViewModel()
         var bottomTabIndex by rememberSaveable {
             mutableStateOf<Int?>(null)
         }
@@ -103,6 +105,9 @@ fun OtakuMain(
                     padding = padding,
                     isLoggedIn = isLoggedIn,
                     hazeState = hazeState,
+                    animeViewModel = animeViewModel,
+                    homeViewModel = homeViewModel,
+                    mangaViewModel = mangaViewModel,
                 )
             }
         }

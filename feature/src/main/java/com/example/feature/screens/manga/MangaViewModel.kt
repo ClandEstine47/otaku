@@ -27,12 +27,6 @@ class MangaViewModel
             )
         val state = _state.asStateFlow()
 
-        init {
-            viewModelScope.launch {
-                loadData()
-            }
-        }
-
         fun loadData() {
             viewModelScope.launch {
                 _state.update {

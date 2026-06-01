@@ -26,9 +26,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.BlurredEdgeTreatment
@@ -69,12 +66,8 @@ fun BottomNavBar(
             NavBarItem(destination = NavDestination.Manga, iconEnabled = R.drawable.manga_enabled, iconDisabled = R.drawable.manga_disabled, label = stringResource(R.string.manga)),
         )
 
-    var selectedTabIndex by rememberSaveable {
-        mutableIntStateOf(tabIndex)
-    }
-
     val animatedSelectedTabIndex by animateFloatAsState(
-        targetValue = selectedTabIndex.toFloat(),
+        targetValue = tabIndex.toFloat(),
         label = "animatedSelectedTabIndex",
         animationSpec =
             spring(
@@ -126,11 +119,11 @@ fun BottomNavBar(
             ) {
                 navBarItems.forEachIndexed { index, navBarItem ->
                     val alpha by animateFloatAsState(
-                        targetValue = if (selectedTabIndex == index) 1f else .35f,
+                        targetValue = if (tabIndex == index) 1f else .35f,
                         label = "alpha",
                     )
                     val scale by animateFloatAsState(
-                        targetValue = if (selectedTabIndex == index) 1f else .98f,
+                        targetValue = if (tabIndex == index) 1f else .98f,
                         visibilityThreshold = .000001f,
                         animationSpec =
                             spring(
@@ -148,7 +141,6 @@ fun BottomNavBar(
                                 .weight(1f)
                                 .pointerInput(Unit) {
                                     detectTapGestures {
-                                        selectedTabIndex = index
                                         navigate(navBarItem.destination)
                                     }
                                 },
@@ -156,7 +148,7 @@ fun BottomNavBar(
                         verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.CenterVertically),
                     ) {
                         Icon(
-                            painter = painterResource(id = if (selectedTabIndex == index) navBarItem.iconEnabled else navBarItem.iconDisabled),
+                            painter = painterResource(id = if (tabIndex == index) navBarItem.iconEnabled else navBarItem.iconDisabled),
                             tint = MaterialTheme.colorScheme.onBackground,
                             contentDescription = "NavBar Icon",
                         )

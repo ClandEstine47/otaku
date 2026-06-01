@@ -30,14 +30,13 @@ class HomeViewModel
 
         init {
             viewModelScope.launch {
-                mainRepository.isLoggedIn().collectLatest { isLoggedIn ->
+                mainRepository.isLoggedIn().collect { isLoggedIn ->
                     if (isLoggedIn) {
                         _state.update { currentState ->
                             currentState.copy(
                                 isLoggedIn = true,
                             )
                         }
-                        loadHomeData()
                     } else {
                         _state.update { currentState ->
                             currentState.copy(

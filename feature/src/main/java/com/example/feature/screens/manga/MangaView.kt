@@ -15,8 +15,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,7 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.core.data.service.isOnline
 import com.example.core.domain.model.MediaListContentType
@@ -44,6 +48,7 @@ import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.haze
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MangaView(
     navActionManager: NavActionManager,
@@ -54,6 +59,19 @@ fun MangaView(
     val context = LocalContext.current
     var isOnline by remember {
         mutableStateOf(isOnline(context))
+    }
+    val pullToRefreshState = rememberPullToRefreshState()
+    val hasContent =
+        uiState.trendingMangaList != null ||
+            uiState.popularMangaList != null ||
+            uiState.popularManhwaList != null ||
+            uiState.popularNovelList != null ||
+            uiState.popularOneShotList != null
+
+    LaunchedEffect(Unit) {
+        if (!hasContent && !uiState.isLoading) {
+            mangaViewModel.loadData()
+        }
     }
 
     // Haze blur effect working only for API 32+
@@ -68,39 +86,52 @@ fun MangaView(
                         noiseFactor = HazeDefaults.noiseFactor,
                     ),
                 ).fillMaxSize()
-                .absolutePadding()
-                .verticalScroll(rememberScrollState()),
+                .absolutePadding(),
     ) {
         if (isOnline) {
-            if (uiState.isLoading) {
+            PullToRefreshBox(
+                modifier = Modifier.fillMaxSize(),
+                isRefreshing = uiState.isLoading && hasContent,
+                onRefresh = {
+                    mangaViewModel.loadData()
+                },
+                state = pullToRefreshState,
+            ) {
                 Column(
                     modifier =
                         Modifier
                             .fillMaxSize()
-                            .padding(top = 60.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
+                            .verticalScroll(rememberScrollState()),
                 ) {
-                    CircularProgressIndicator()
-                }
-            } else {
-                if (uiState.error == null) {
-                    MangaContent(
-                        navActionManager = navActionManager,
-                        trendingMangaList = uiState.trendingMangaList,
-                        popularMangaList = uiState.popularMangaList,
-                        popularManhwaList = uiState.popularManhwaList,
-                        popularNovelList = uiState.popularNovelList,
-                        popularOneShotList = uiState.popularOneShotList,
-                    )
-                } else {
-                    ErrorScreen(
-                        modifier = Modifier.padding(top = 350.dp),
-                        onRetryClick = {
-                            isOnline = isOnline(context)
-                            mangaViewModel.loadData()
-                        },
-                    )
+                    if (uiState.isLoading && !hasContent) {
+                        Column(
+                            modifier =
+                                Modifier
+                                    .fillMaxSize()
+                                    .padding(top = 60.dp),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    } else if (uiState.error == null) {
+                        MangaContent(
+                            navActionManager = navActionManager,
+                            trendingMangaList = uiState.trendingMangaList,
+                            popularMangaList = uiState.popularMangaList,
+                            popularManhwaList = uiState.popularManhwaList,
+                            popularNovelList = uiState.popularNovelList,
+                            popularOneShotList = uiState.popularOneShotList,
+                        )
+                    } else {
+                        ErrorScreen(
+                            modifier = Modifier.padding(top = 350.dp),
+                            onRetryClick = {
+                                isOnline = isOnline(context)
+                                mangaViewModel.loadData()
+                            },
+                        )
+                    }
                 }
             }
         } else {

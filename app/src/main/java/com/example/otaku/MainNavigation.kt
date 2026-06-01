@@ -1,6 +1,7 @@
 package com.example.otaku
 
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -13,8 +14,11 @@ import com.example.core.navigation.CustomNavType
 import com.example.core.navigation.NavActionManager
 import com.example.core.navigation.OtakuScreen
 import com.example.feature.screens.anime.AnimeView
+import com.example.feature.screens.anime.AnimeViewModel
 import com.example.feature.screens.home.HomeView
+import com.example.feature.screens.home.HomeViewModel
 import com.example.feature.screens.manga.MangaView
+import com.example.feature.screens.manga.MangaViewModel
 import com.example.feature.screens.mediadetail.MediaDetailView
 import com.example.feature.screens.medialist.MediaListView
 import com.example.feature.screens.search.MediaSearchView
@@ -28,6 +32,9 @@ fun MainNavigation(
     isLoggedIn: Boolean,
     padding: PaddingValues,
     hazeState: HazeState,
+    animeViewModel: AnimeViewModel,
+    homeViewModel: HomeViewModel,
+    mangaViewModel: MangaViewModel,
 ) {
     val initialDestination = OtakuScreen.HomeTab
 
@@ -41,6 +48,7 @@ fun MainNavigation(
             AnimeView(
                 navActionManager = navActionManager,
                 hazeState = hazeState,
+                animeViewModel = animeViewModel,
             )
         }
 
@@ -48,6 +56,7 @@ fun MainNavigation(
             MangaView(
                 navActionManager = navActionManager,
                 hazeState = hazeState,
+                mangaViewModel = mangaViewModel,
             )
         }
 
@@ -56,6 +65,7 @@ fun MainNavigation(
                 navActionManager = navActionManager,
                 isLoggedIn = isLoggedIn,
                 hazeState = hazeState,
+                homeViewModel = homeViewModel,
             )
         }
 

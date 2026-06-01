@@ -27,7 +27,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -35,7 +34,10 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -73,6 +75,7 @@ import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.haze
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel as hiltComposeViewModel
 
+@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
 fun HomeView(
     navActionManager: NavActionManager,
@@ -84,6 +87,17 @@ fun HomeView(
     val context = LocalContext.current
     var isOnline by remember {
         mutableStateOf(isOnline(context))
+    }
+    val pullToRefreshState = rememberPullToRefreshState()
+    val hasContent =
+        uiState.user.id > 0 ||
+            uiState.currentAnimeMedia != null ||
+            uiState.currentMangaMedia != null
+
+    LaunchedEffect(isLoggedIn) {
+        if (isLoggedIn && !hasContent && !uiState.isLoading) {
+            homeViewModel.loadHomeData()
+        }
     }
 
     // Haze blur effect working only for API 32+
@@ -100,20 +114,27 @@ fun HomeView(
                 ).fillMaxSize(),
     ) {
         if (isOnline) {
-            if (uiState.isLoading) {
-                Column(
-                    modifier =
-                        Modifier
-                            .fillMaxSize()
-                            .padding(top = 60.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
+            if (isLoggedIn) {
+                PullToRefreshBox(
+                    modifier = Modifier.fillMaxSize(),
+                    isRefreshing = uiState.isLoading && hasContent,
+                    onRefresh = {
+                        homeViewModel.loadHomeData()
+                    },
+                    state = pullToRefreshState,
                 ) {
-                    CircularProgressIndicator()
-                }
-            } else {
-                if (uiState.error == null) {
-                    if (isLoggedIn) {
+                    if (uiState.isLoading && !hasContent) {
+                        Column(
+                            modifier =
+                                Modifier
+                                    .fillMaxSize()
+                                    .padding(top = 60.dp),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    } else if (uiState.error == null) {
                         HomeContent(
                             navActionManager = navActionManager,
                             user = uiState.user,
@@ -124,8 +145,29 @@ fun HomeView(
                             },
                         )
                     } else {
-                        AuthContent()
+                        ErrorScreen(
+                            modifier = Modifier.padding(top = 350.dp),
+                            onRetryClick = {
+                                isOnline = isOnline(context)
+                                homeViewModel.loadHomeData()
+                            },
+                        )
                     }
+                }
+            } else {
+                if (uiState.isLoading) {
+                    Column(
+                        modifier =
+                            Modifier
+                                .fillMaxSize()
+                                .padding(top = 60.dp),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                } else if (uiState.error == null) {
+                    AuthContent()
                 } else {
                     ErrorScreen(
                         modifier = Modifier.padding(top = 350.dp),
@@ -149,7 +191,7 @@ fun HomeView(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
 fun HomeContent(
     modifier: Modifier = Modifier,
