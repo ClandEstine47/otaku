@@ -65,4 +65,6 @@
     <string name="github_url">https://github.com/ClandEstine47/otaku</string>
     <string name="anime_">Anime</string>
     <string name="manga_">Manga</string>
+    <string name="settings">Settings</string>
+    <string name="logout">Logout</string>
 </resources>

@@ -21,13 +21,16 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -140,6 +143,7 @@ fun HomeView(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeContent(
     modifier: Modifier = Modifier,
@@ -148,6 +152,7 @@ fun HomeContent(
     currentAnimeMedia: List<Media>? = null,
     currentMangaMedia: List<Media>? = null,
 ) {
+    var showBottomSheet by remember { mutableStateOf(false) }
     val bannerVisible = user.bannerImage.isNotBlank()
     val bannerPainter =
         if (bannerVisible) {
@@ -155,6 +160,104 @@ fun HomeContent(
         } else {
             null
         }
+
+    if (showBottomSheet) {
+        ModalBottomSheet(
+            onDismissRequest = {
+                showBottomSheet = false
+            },
+        ) {
+            Column(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp),
+                verticalArrangement = Arrangement.Center,
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(20.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Image(
+                        painter =
+                            rememberAsyncImagePainter(
+                                model = user.avatar.medium,
+                            ),
+                        contentDescription = "profile picture",
+                        modifier =
+                            Modifier
+                                .size(50.dp)
+                                .clip(RoundedCornerShape(50.dp)),
+                    )
+
+                    OtakuTitle(
+                        title = user.name ?: "-",
+                        color = MaterialTheme.colorScheme.onBackground,
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(30.dp))
+
+                Row(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(16.dp))
+                            .clickable(onClick = {
+                                // todo: navigate to settings
+                            })
+                            .padding(horizontal = 12.dp, vertical = 14.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(15.dp),
+                ) {
+                    Icon(
+                        modifier = Modifier.size(28.dp),
+                        painter = painterResource(R.drawable.settings),
+                        tint = MaterialTheme.colorScheme.primary,
+                        contentDescription = "Settings",
+                    )
+
+                    OtakuTitle(
+                        title = stringResource(R.string.settings),
+                        color = MaterialTheme.colorScheme.onBackground,
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(25.dp))
+
+                Row(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(16.dp))
+                            .clickable(onClick = {
+                                // todo: logout
+                            })
+                            .padding(horizontal = 12.dp, vertical = 14.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(15.dp),
+                ) {
+                    Icon(
+                        modifier = Modifier.size(28.dp),
+                        painter = painterResource(R.drawable.logout),
+                        tint = MaterialTheme.colorScheme.primary,
+                        contentDescription = "Logout",
+                    )
+
+                    OtakuTitle(
+                        title = stringResource(R.string.logout),
+                        color = MaterialTheme.colorScheme.onBackground,
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(25.dp))
+            }
+        }
+    }
 
     Column(
         modifier =
@@ -181,48 +284,98 @@ fun HomeContent(
                         .padding(top = 30.dp),
             ) {
                 Row(
-                    modifier = Modifier,
-                    horizontalArrangement = Arrangement.spacedBy(40.dp),
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Image(
-                        painter =
-                            rememberAsyncImagePainter(
-                                model = user.avatar.medium,
-                            ),
-                        contentDescription = "profile picture",
-                        modifier =
-                            Modifier
-                                .size(70.dp)
-                                .clip(RoundedCornerShape(30.dp)),
-                    )
-
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                    Row(
+                        modifier = Modifier,
+                        horizontalArrangement = Arrangement.spacedBy(40.dp),
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        OtakuTitle(
-                            title = user.name ?: "-",
-                            color = MaterialTheme.colorScheme.onBackground,
-                            style = MaterialTheme.typography.titleMedium,
+                        Image(
+                            painter =
+                                rememberAsyncImagePainter(
+                                    model = user.avatar.medium,
+                                ),
+                            contentDescription = "profile picture",
+                            modifier =
+                                Modifier
+                                    .size(70.dp)
+                                    .clip(RoundedCornerShape(50.dp))
+                                    .clickable(onClick = {
+                                        showBottomSheet = true
+                                    }),
                         )
 
-                        Row(
-                            modifier = Modifier,
-                            horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(12.dp),
                         ) {
-                            StatBadge(
-                                count =
-                                    user.statistics.anime.count
-                                        .toString(),
-                                label = stringResource(R.string.anime_),
+                            OtakuTitle(
+                                title = user.name ?: "-",
+                                color = MaterialTheme.colorScheme.onBackground,
+                                style = MaterialTheme.typography.titleMedium,
                             )
 
-                            StatBadge(
-                                count =
-                                    user.statistics.manga.count
-                                        .toString(),
-                                label = stringResource(R.string.manga_),
-                            )
+                            Row(
+                                modifier = Modifier,
+                                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                            ) {
+                                StatBadge(
+                                    count =
+                                        user.statistics.anime.count
+                                            .toString(),
+                                    label = stringResource(R.string.anime_),
+                                )
+
+                                StatBadge(
+                                    count =
+                                        user.statistics.manga.count
+                                            .toString(),
+                                    label = stringResource(R.string.manga_),
+                                )
+                            }
+                        }
+                    }
+
+                    Surface(
+                        modifier =
+                            Modifier
+                                .size(56.dp),
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.background.copy(alpha = 0.16f),
+                        shadowElevation = 0.dp,
+                        border =
+                            androidx.compose.foundation.BorderStroke(
+                                width = 1.dp,
+                                brush =
+                                    androidx.compose.ui.graphics.Brush.linearGradient(
+                                        colors =
+                                            listOf(
+                                                MaterialTheme.colorScheme.onBackground.copy(alpha = 0.18f),
+                                                MaterialTheme.colorScheme.onBackground.copy(alpha = 0.08f),
+                                            ),
+                                    ),
+                            ),
+                    ) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            // todo: show notification badge if there are unread notifications
+                            IconButton(
+                                modifier = Modifier.fillMaxSize(),
+                                onClick = {
+                                    // todo: navigate to notifications
+                                },
+                            ) {
+                                Icon(
+                                    modifier = Modifier.size(22.dp),
+                                    painter = painterResource(R.drawable.notification),
+                                    tint = MaterialTheme.colorScheme.onBackground,
+                                    contentDescription = "notifications",
+                                )
+                            }
                         }
                     }
                 }
@@ -339,7 +492,7 @@ fun HomeContent(
                 }
             }
 
-            Spacer(modifier = Modifier.height(60.dp))
+            Spacer(modifier = Modifier.height(70.dp))
         }
     }
 }
