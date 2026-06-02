@@ -1,6 +1,7 @@
 package com.example.feature.common
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.combinedClickable
@@ -9,13 +10,18 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -30,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.example.core.domain.model.media.Media
+import com.example.core.domain.model.media.MediaListStatus
 import com.example.core.domain.model.media.MediaRankType
 import com.example.feature.R
 
@@ -41,8 +48,18 @@ fun BannerItem(
     rankingVisibility: Boolean = false,
     descriptionVisibility: Boolean = false,
     isMediaDetailView: Boolean = false,
+    isUserLoggedIn: Boolean = false,
+    onMediaListStatusClick: (mediaId: Int) -> Unit = {},
     onBannerItemClick: (mediaId: Int) -> Unit,
 ) {
+    val mediaListStatus = media.mediaListEntry?.status
+    val mediaListButtonLabel =
+        if (isUserLoggedIn) {
+            mediaListStatus?.toBannerButtonLabel() ?: "ADD TO LIST"
+        } else {
+            null
+        }
+
     val bannerPainter =
         rememberAsyncImagePainter(
             model =
@@ -170,6 +187,31 @@ fun BannerItem(
                 }
             }
 
+            if (mediaListButtonLabel != null) {
+                OutlinedButton(
+                    onClick = {
+                        onMediaListStatusClick(media.idAniList)
+                    },
+                    shape = RoundedCornerShape(25),
+                    border =
+                        BorderStroke(
+                            width = 2.dp,
+                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+                        ),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .height(60.dp)
+                            .padding(top = 6.dp, end = 35.dp, start = 20.dp),
+                ) {
+                    OtakuTitle(
+                        title = mediaListButtonLabel,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        style = MaterialTheme.typography.titleSmall,
+                    )
+                }
+            }
+
             Row(
                 modifier =
                     Modifier
@@ -209,3 +251,10 @@ fun BannerItem(
         }
     }
 }
+
+private fun MediaListStatus.toBannerButtonLabel(): String =
+    when (this) {
+        MediaListStatus.CURRENT -> "WATCHING"
+        MediaListStatus.REPEATING -> "RE-WATCHING"
+        else -> name
+    }

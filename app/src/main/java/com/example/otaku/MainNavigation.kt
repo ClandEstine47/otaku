@@ -102,6 +102,7 @@ fun MainNavigation(
         ) {
             MediaDetailView(
                 arguments = it.toRoute(),
+                isLoggedIn = isLoggedIn,
                 navActionManager = navActionManager,
             )
         }

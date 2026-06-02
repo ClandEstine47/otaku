@@ -48,6 +48,7 @@ import com.example.feature.R
 import com.example.feature.common.BackButton
 import com.example.feature.common.BannerItem
 import com.example.feature.common.ErrorScreen
+import com.example.feature.common.FavouriteButton
 import com.example.feature.common.OtakuTitle
 import com.example.feature.common.ShareButton
 import com.example.feature.screens.mediadetail.components.MediaCharacters
@@ -73,6 +74,7 @@ import dev.chrisbanes.haze.haze
 @Composable
 fun MediaDetailView(
     arguments: OtakuScreen.MediaDetail,
+    isLoggedIn: Boolean,
     navActionManager: NavActionManager,
     viewModel: MediaDetailViewModel = hiltViewModel(),
 ) {
@@ -108,6 +110,7 @@ fun MediaDetailView(
                 if (uiState.error == null) {
                     MediaDetailContent(
                         navActionManager = navActionManager,
+                        isLoggedIn = isLoggedIn,
                         mediaDetail = uiState.media,
                         mediaThreads = uiState.mediaThreads,
                     )
@@ -137,6 +140,7 @@ fun MediaDetailView(
 @Composable
 fun MediaDetailContent(
     navActionManager: NavActionManager,
+    isLoggedIn: Boolean,
     mediaDetail: Media?,
     mediaThreads: List<Thread>?,
 ) {
@@ -183,10 +187,22 @@ fun MediaDetailContent(
                     )
                 },
                 actions = {
-                    ShareButton(
-                        modifier = Modifier,
-                        url = mediaDetail?.siteUrl.orEmpty(),
-                    )
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    ) {
+                        FavouriteButton(
+                            modifier = Modifier,
+                            enabled = false,
+                            onButtonClick = {
+                                // todo: add/remove to/from favourites
+                            },
+                        )
+
+                        ShareButton(
+                            modifier = Modifier,
+                            url = mediaDetail?.siteUrl.orEmpty(),
+                        )
+                    }
                 },
                 colors =
                     TopAppBarDefaults.topAppBarColors(
@@ -234,6 +250,10 @@ fun MediaDetailContent(
                         rankingVisibility = true,
                         descriptionVisibility = true,
                         isMediaDetailView = true,
+                        isUserLoggedIn = isLoggedIn,
+                        onMediaListStatusClick = {
+                            // todo: open media list status update bottom sheet
+                        },
                         onBannerItemClick = {},
                     )
 

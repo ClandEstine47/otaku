@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -135,5 +137,24 @@ fun ShareButton(
         },
     ) {
         Icon(imageVector = Icons.Default.Share, contentDescription = "share")
+    }
+}
+
+@Composable
+fun FavouriteButton(
+    modifier: Modifier = Modifier,
+    enabled: Boolean,
+    onButtonClick: () -> Unit,
+) {
+    IconButton(
+        modifier = modifier,
+        onClick = {
+            onButtonClick()
+        },
+    ) {
+        Icon(
+            imageVector = if (enabled) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+            contentDescription = "favourites",
+        )
     }
 }
