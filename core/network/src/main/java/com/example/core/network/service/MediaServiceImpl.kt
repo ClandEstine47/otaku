@@ -6,6 +6,7 @@ import com.apollographql.apollo.exception.ApolloException
 import com.example.core.domain.model.Page
 import com.example.core.domain.model.PageInfo
 import com.example.core.domain.model.airing.AiringSchedule
+import com.example.core.domain.model.common.FuzzyDate
 import com.example.core.domain.model.media.Media
 import com.example.core.domain.model.media.MediaFormat
 import com.example.core.domain.model.media.MediaList
@@ -18,11 +19,13 @@ import com.example.core.domain.model.medialistcollection.MediaListSort
 import com.example.core.domain.model.thread.Thread
 import com.example.core.domain.model.user.User
 import com.example.core.domain.service.MediaService
+import com.example.core.network.DeleteMediaListEntryMutation
 import com.example.core.network.MediaQuery
 import com.example.core.network.MediaRecommendationsQuery
 import com.example.core.network.MediaSearchQuery
 import com.example.core.network.MediaThreadsQuery
 import com.example.core.network.RecentlyUpdatedQuery
+import com.example.core.network.SaveMediaListEntryMutation
 import com.example.core.network.SeasonalAnimeQuery
 import com.example.core.network.TrendingNowQuery
 import com.example.core.network.UserListCollectionQuery
@@ -641,6 +644,83 @@ class MediaServiceImpl
                 }
             } catch (e: ApolloException) {
                 Result.failure(e)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+
+        override suspend fun saveMediaListEntry(
+            mediaId: Int,
+            status: MediaListStatus?,
+            score: Double?,
+            progress: Int?,
+            repeat: Int?,
+            private: Boolean?,
+            hiddenFromStatusLists: Boolean?,
+            startedAt: FuzzyDate?,
+            completedAt: FuzzyDate?,
+            notes: String?,
+        ): Result<MediaList> =
+            try {
+                val response =
+                    apolloClient
+                        .mutation(
+                            SaveMediaListEntryMutation(
+                                mediaId = mediaId,
+                                status = Optional.presentIfNotNull(status?.toNetworkMediaListStatus()),
+                                score = Optional.presentIfNotNull(score),
+                                progress = Optional.presentIfNotNull(progress),
+                                repeat = Optional.presentIfNotNull(repeat),
+                                private = Optional.presentIfNotNull(private),
+                                hiddenFromStatusLists = Optional.presentIfNotNull(hiddenFromStatusLists),
+                                startedAt = Optional.present(startedAt?.toNetworkFuzzyDateInput()),
+                                completedAt = Optional.present(completedAt?.toNetworkFuzzyDateInput()),
+                                notes = Optional.presentIfNotNull(notes),
+                            ),
+                        ).execute()
+
+                when {
+                    response.hasErrors() -> {
+                        val errorMessage =
+                            response.errors?.joinToString("; ") { it.message }
+                                ?: "Unknown GraphQL error"
+                        Result.failure(Exception(errorMessage))
+                    }
+
+                    else -> {
+                        val entry = response.data?.SaveMediaListEntry?.toDomainMediaList()
+                        if (entry != null) {
+                            Result.success(entry)
+                        } else {
+                            Result.failure(Exception("Saved entry data is null"))
+                        }
+                    }
+                }
+            } catch (e: ApolloException) {
+                Result.failure(e)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+
+        override suspend fun deleteMediaListEntry(mediaListEntryId: Int): Result<Boolean> =
+            try {
+                val response =
+                    apolloClient
+                        .mutation(DeleteMediaListEntryMutation(mediaListEntryId = Optional.present(mediaListEntryId)))
+                        .execute()
+
+                when {
+                    response.hasErrors() -> {
+                        val errorMessage =
+                            response.errors?.joinToString("; ") { it.message }
+                                ?: "Unknown GraphQL error"
+                        Result.failure(Exception(errorMessage))
+                    }
+
+                    else -> {
+                        val deleted = response.data?.DeleteMediaListEntry?.deleted ?: false
+                        Result.success(deleted)
+                    }
+                }
             } catch (e: Exception) {
                 Result.failure(e)
             }

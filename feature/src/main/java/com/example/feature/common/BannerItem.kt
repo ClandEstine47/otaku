@@ -208,6 +208,7 @@ fun BannerItem(
                         title = mediaListButtonLabel,
                         color = MaterialTheme.colorScheme.onPrimaryContainer,
                         style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.ExtraBold,
                     )
                 }
             }

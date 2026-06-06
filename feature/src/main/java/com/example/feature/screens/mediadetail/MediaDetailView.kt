@@ -17,9 +17,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,6 +29,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -57,6 +60,7 @@ import com.example.feature.screens.mediadetail.components.MediaDetailNavBarItem
 import com.example.feature.screens.mediadetail.components.MediaDetailType
 import com.example.feature.screens.mediadetail.components.MediaExternalLinks
 import com.example.feature.screens.mediadetail.components.MediaInfo
+import com.example.feature.screens.mediadetail.components.MediaListEditorBottomSheet
 import com.example.feature.screens.mediadetail.components.MediaRecommendations
 import com.example.feature.screens.mediadetail.components.MediaRelations
 import com.example.feature.screens.mediadetail.components.MediaReviews
@@ -70,6 +74,7 @@ import dev.chrisbanes.haze.HazeDefaults
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.haze
+import kotlinx.coroutines.launch
 
 @Composable
 fun MediaDetailView(
@@ -113,6 +118,27 @@ fun MediaDetailView(
                         isLoggedIn = isLoggedIn,
                         mediaDetail = uiState.media,
                         mediaThreads = uiState.mediaThreads,
+                        onSaveMediaListEntry = { status, score, progress, repeat, private, hiddenFromStatusLists, startedAt, completedAt, notes ->
+                            uiState.media?.let { media ->
+                                viewModel.saveMediaListEntry(
+                                    mediaId = media.idAniList,
+                                    status = status,
+                                    score = score,
+                                    progress = progress,
+                                    repeat = repeat,
+                                    private = private,
+                                    hiddenFromStatusLists = hiddenFromStatusLists,
+                                    startedAt = startedAt,
+                                    completedAt = completedAt,
+                                    notes = notes,
+                                )
+                            }
+                        },
+                        onDeleteMediaListEntry = {
+                            uiState.media?.let { media ->
+                                viewModel.deleteMediaListEntry(mediaId = media.idAniList)
+                            }
+                        },
                     )
                 } else {
                     ErrorScreen(
@@ -143,7 +169,20 @@ fun MediaDetailContent(
     isLoggedIn: Boolean,
     mediaDetail: Media?,
     mediaThreads: List<Thread>?,
+    onSaveMediaListEntry: (
+        status: com.example.core.domain.model.media.MediaListStatus?,
+        score: Double?,
+        progress: Int?,
+        repeat: Int?,
+        private: Boolean?,
+        hiddenFromStatusLists: Boolean?,
+        startedAt: com.example.core.domain.model.common.FuzzyDate?,
+        completedAt: com.example.core.domain.model.common.FuzzyDate?,
+        notes: String?,
+    ) -> Unit,
+    onDeleteMediaListEntry: () -> Unit,
 ) {
+    val scope = rememberCoroutineScope()
     val hazeState = remember { HazeState() }
     val topAppBarScrollBehavior =
         TopAppBarDefaults.pinnedScrollBehavior(
@@ -155,6 +194,8 @@ fun MediaDetailContent(
     var currentBottomTab by rememberSaveable {
         mutableStateOf(MediaDetailType.INFO)
     }
+    var showMediaListEditor by rememberSaveable { mutableStateOf(false) }
+    val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     val navBarItems =
         listOf(
@@ -163,6 +204,43 @@ fun MediaDetailContent(
             MediaDetailNavBarItem(mediaDetailType = MediaDetailType.STATS, icon = R.drawable.stats),
             MediaDetailNavBarItem(mediaDetailType = MediaDetailType.SOCIAL, icon = R.drawable.social),
         )
+
+    if (showMediaListEditor && mediaDetail != null) {
+        ModalBottomSheet(
+            onDismissRequest = {
+                showMediaListEditor = false
+            },
+            sheetState = bottomSheetState,
+        ) {
+            MediaListEditorBottomSheet(
+                media = mediaDetail,
+                onSave = { status, score, progress, repeat, private, hiddenFromStatusLists, startedAt, completedAt, notes ->
+                    onSaveMediaListEntry(
+                        status,
+                        score,
+                        progress,
+                        repeat,
+                        private,
+                        hiddenFromStatusLists,
+                        startedAt,
+                        completedAt,
+                        notes,
+                    )
+                    scope.launch {
+                        bottomSheetState.hide()
+                        showMediaListEditor = false
+                    }
+                },
+                onDelete = {
+                    onDeleteMediaListEntry()
+                    scope.launch {
+                        bottomSheetState.hide()
+                        showMediaListEditor = false
+                    }
+                },
+            )
+        }
+    }
 
     Scaffold(
         modifier = Modifier.nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
@@ -252,7 +330,7 @@ fun MediaDetailContent(
                         isMediaDetailView = true,
                         isUserLoggedIn = isLoggedIn,
                         onMediaListStatusClick = {
-                            // todo: open media list status update bottom sheet
+                            showMediaListEditor = true
                         },
                         onBannerItemClick = {},
                     )

@@ -1,0 +1,45 @@
+mutation SaveMediaListEntry(
+    $mediaId: Int!
+    $status: MediaListStatus
+    $score: Float
+    $progress: Int
+    $repeat: Int
+    $private: Boolean
+    $hiddenFromStatusLists: Boolean
+    $startedAt: FuzzyDateInput
+    $completedAt: FuzzyDateInput
+    $notes: String
+) {
+    SaveMediaListEntry(
+        mediaId: $mediaId
+        status: $status
+        score: $score
+        progress: $progress
+        repeat: $repeat
+        private: $private
+        hiddenFromStatusLists: $hiddenFromStatusLists
+        startedAt: $startedAt
+        completedAt: $completedAt
+        notes: $notes
+    ) {
+        id
+        status
+        score
+        progress
+        repeat
+        private
+        notes
+        hiddenFromStatusLists
+        startedAt {
+            year
+            month
+            day
+        }
+        completedAt {
+            year
+            month
+            day
+        }
+    }
+}
+

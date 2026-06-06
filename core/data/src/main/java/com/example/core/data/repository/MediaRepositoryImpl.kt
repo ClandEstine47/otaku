@@ -2,8 +2,10 @@ package com.example.core.data.repository
 
 import com.example.core.domain.model.Page
 import com.example.core.domain.model.airing.AiringSchedule
+import com.example.core.domain.model.common.FuzzyDate
 import com.example.core.domain.model.media.Media
 import com.example.core.domain.model.media.MediaFormat
+import com.example.core.domain.model.media.MediaList
 import com.example.core.domain.model.media.MediaListStatus
 import com.example.core.domain.model.media.MediaSeason
 import com.example.core.domain.model.media.MediaSort
@@ -199,4 +201,40 @@ class MediaRepositoryImpl
                 tags = tags,
                 sortBy = sortBy,
             )
+
+        override suspend fun saveMediaListEntry(
+            mediaId: Int,
+            status: MediaListStatus?,
+            score: Double?,
+            progress: Int?,
+            repeat: Int?,
+            private: Boolean?,
+            hiddenFromStatusLists: Boolean?,
+            startedAt: FuzzyDate?,
+            completedAt: FuzzyDate?,
+            notes: String?,
+        ): Result<MediaList> =
+            mediaService
+                .saveMediaListEntry(
+                    mediaId = mediaId,
+                    status = status,
+                    score = score,
+                    progress = progress,
+                    repeat = repeat,
+                    private = private,
+                    hiddenFromStatusLists = hiddenFromStatusLists,
+                    startedAt = startedAt,
+                    completedAt = completedAt,
+                    notes = notes,
+                ).onFailure { error ->
+                    Timber.e(error, "Failed to save media list entry")
+                }
+
+        override suspend fun deleteMediaListEntry(mediaListEntryId: Int): Result<Boolean> =
+            mediaService
+                .deleteMediaListEntry(
+                    mediaListEntryId = mediaListEntryId,
+                ).onFailure { error ->
+                    Timber.e(error, "Failed to delete media list entry")
+                }
     }

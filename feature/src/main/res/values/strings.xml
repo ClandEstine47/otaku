@@ -70,4 +70,12 @@
     <string name="logout_confirmation">Are you sure you want to logout?</string>
     <string name="no">No</string>
     <string name="yes">Yes</string>
+    <string name="list_editor">List Editor</string>
+    <string name="score">Score</string>
+    <string name="repeat_count">Repeat Count</string>
+    <string name="save">Save</string>
+    <string name="other">Other</string>
+    <string name="notes">Notes</string>
+    <string name="delete">Delete</string>
+    <string name="remove">Remove</string>
 </resources>

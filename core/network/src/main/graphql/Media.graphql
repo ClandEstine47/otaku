@@ -49,7 +49,26 @@ query Media(
             native
             userPreferred
         }
-        mediaListEntry { progress private score(format: POINT_100) status }
+        mediaListEntry {
+            id
+            startedAt {
+                year
+                month
+                day
+            }
+            completedAt {
+                year
+                month
+                day
+            }
+
+            progress
+            private
+            score(format: POINT_10_DECIMAL)
+            status
+            notes
+            repeat
+        }
         trailer {
             id
             site

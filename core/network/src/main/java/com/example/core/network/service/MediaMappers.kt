@@ -1,5 +1,6 @@
 package com.example.core.network.service
 
+import com.apollographql.apollo.api.Optional
 import com.example.core.domain.model.PageInfo
 import com.example.core.domain.model.ScoreDistribution
 import com.example.core.domain.model.StatusDistribution
@@ -38,12 +39,14 @@ import com.example.core.network.MediaRecommendationsQuery
 import com.example.core.network.MediaSearchQuery
 import com.example.core.network.MediaThreadsQuery
 import com.example.core.network.RecentlyUpdatedQuery
+import com.example.core.network.SaveMediaListEntryMutation
 import com.example.core.network.SeasonalAnimeQuery
 import com.example.core.network.TrendingNowQuery
 import com.example.core.network.UserListCollectionQuery
 import com.example.core.network.ViewerQuery
 import com.example.core.network.MediaQuery.Studios as NetworkStudios
 import com.example.core.network.type.CharacterRole as NetworkCharacterRole
+import com.example.core.network.type.FuzzyDateInput as NetworkFuzzyDateInput
 import com.example.core.network.type.MediaFormat as NetworkMediaFormat
 import com.example.core.network.type.MediaListSort as NetworkMediaListSort
 import com.example.core.network.type.MediaListStatus as NetworkMediaListStatus
@@ -341,10 +344,25 @@ fun MediaQuery.Media.toDomainMedia(): Media =
             ),
         mediaListEntry =
             MediaList(
+                id = mediaListEntry?.id,
+                startedAt =
+                    FuzzyDate(
+                        year = mediaListEntry?.startedAt?.year,
+                        month = mediaListEntry?.startedAt?.month,
+                        day = mediaListEntry?.startedAt?.day,
+                    ),
+                completedAt =
+                    FuzzyDate(
+                        year = mediaListEntry?.completedAt?.year,
+                        month = mediaListEntry?.completedAt?.month,
+                        day = mediaListEntry?.completedAt?.day,
+                    ),
                 progress = mediaListEntry?.progress ?: 0,
                 private = mediaListEntry?.private ?: false,
                 score = mediaListEntry?.score ?: 0.0,
                 status = mediaListEntry?.status?.toDomainMediaListStatus(),
+                notes = mediaListEntry?.notes ?: "",
+                repeat = mediaListEntry?.repeat ?: 0,
             ),
         trailer =
             MediaTrailer(
@@ -913,3 +931,34 @@ fun MediaSort.toNetworkMediaSort(): com.example.core.network.type.MediaSort =
         MediaSort.TRENDING -> com.example.core.network.type.MediaSort.TRENDING_DESC
         MediaSort.FAVOURITES -> com.example.core.network.type.MediaSort.FAVOURITES_DESC
     }
+
+fun FuzzyDate.toNetworkFuzzyDateInput(): NetworkFuzzyDateInput =
+    NetworkFuzzyDateInput(
+        year = Optional.presentIfNotNull(year),
+        month = Optional.presentIfNotNull(month),
+        day = Optional.presentIfNotNull(day),
+    )
+
+fun SaveMediaListEntryMutation.SaveMediaListEntry.toDomainMediaList(): MediaList =
+    MediaList(
+        id = id,
+        status = status?.toDomainMediaListStatus(),
+        score = score ?: 0.0,
+        progress = progress ?: 0,
+        repeat = repeat ?: 0,
+        private = `private` ?: false,
+        notes = notes.orEmpty(),
+        hiddenFromStatusLists = hiddenFromStatusLists ?: false,
+        startedAt =
+            FuzzyDate(
+                year = startedAt?.year,
+                month = startedAt?.month,
+                day = startedAt?.day,
+            ),
+        completedAt =
+            FuzzyDate(
+                year = completedAt?.year,
+                month = completedAt?.month,
+                day = completedAt?.day,
+            ),
+    )

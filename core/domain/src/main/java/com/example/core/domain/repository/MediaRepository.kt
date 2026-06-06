@@ -2,8 +2,10 @@ package com.example.core.domain.repository
 
 import com.example.core.domain.model.Page
 import com.example.core.domain.model.airing.AiringSchedule
+import com.example.core.domain.model.common.FuzzyDate
 import com.example.core.domain.model.media.Media
 import com.example.core.domain.model.media.MediaFormat
+import com.example.core.domain.model.media.MediaList
 import com.example.core.domain.model.media.MediaListStatus
 import com.example.core.domain.model.media.MediaSeason
 import com.example.core.domain.model.media.MediaSort
@@ -94,4 +96,21 @@ interface MediaRepository {
         tags: List<String>? = null,
         sortBy: List<MediaSort>? = null,
     ): Result<Page<Media>>
+
+    suspend fun saveMediaListEntry(
+        mediaId: Int,
+        status: MediaListStatus? = null,
+        score: Double? = null,
+        progress: Int? = null,
+        repeat: Int? = null,
+        private: Boolean? = null,
+        hiddenFromStatusLists: Boolean? = null,
+        startedAt: FuzzyDate? = null,
+        completedAt: FuzzyDate? = null,
+        notes: String? = null,
+    ): Result<MediaList>
+
+    suspend fun deleteMediaListEntry(
+        mediaListEntryId: Int,
+    ): Result<Boolean>
 }

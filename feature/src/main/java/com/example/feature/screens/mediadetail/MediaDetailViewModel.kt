@@ -2,6 +2,8 @@ package com.example.feature.screens.mediadetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.core.domain.model.common.FuzzyDate
+import com.example.core.domain.model.media.MediaListStatus
 import com.example.core.domain.repository.MediaRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -108,6 +110,118 @@ class MediaDetailViewModel
                             )
                         }
                     }
+                }
+            }
+        }
+
+        fun saveMediaListEntry(
+            mediaId: Int,
+            status: MediaListStatus?,
+            score: Double?,
+            progress: Int?,
+            repeat: Int?,
+            private: Boolean?,
+            hiddenFromStatusLists: Boolean?,
+            startedAt: FuzzyDate?,
+            completedAt: FuzzyDate?,
+            notes: String?,
+        ) {
+            viewModelScope.launch {
+                _state.update {
+                    it.copy(
+                        isSavingMediaList = true,
+                    )
+                }
+
+                val result =
+                    mediaRepository.saveMediaListEntry(
+                        mediaId = mediaId,
+                        status = status,
+                        score = score,
+                        progress = progress,
+                        repeat = repeat,
+                        private = private,
+                        hiddenFromStatusLists = hiddenFromStatusLists,
+                        startedAt = startedAt,
+                        completedAt = completedAt,
+                        notes = notes,
+                    )
+
+                _state.update { currentState ->
+                    when {
+                        result.isSuccess -> {
+                            currentState.copy(
+                                isSavingMediaList = false,
+                                mediaListSaveSuccess = true,
+                            )
+                        }
+
+                        result.isFailure -> {
+                            currentState.copy(
+                                isSavingMediaList = false,
+                                error = result.exceptionOrNull()?.message ?: "Failed to save media list entry",
+                            )
+                        }
+
+                        else -> {
+                            currentState.copy(
+                                isSavingMediaList = false,
+                            )
+                        }
+                    }
+                }
+
+                if (result.isSuccess) {
+                    getMediaDetail(mediaId)
+                }
+            }
+        }
+
+        fun deleteMediaListEntry(mediaId: Int) {
+            val mediaListEntryId =
+                state.value.media
+                    ?.mediaListEntry
+                    ?.id
+            if (mediaListEntryId == null) {
+                _state.update { it.copy(error = "No media list entry found to delete") }
+                return
+            }
+
+            viewModelScope.launch {
+                _state.update {
+                    it.copy(
+                        isSavingMediaList = true,
+                    )
+                }
+
+                val result = mediaRepository.deleteMediaListEntry(mediaListEntryId)
+
+                _state.update { currentState ->
+                    when {
+                        result.isSuccess -> {
+                            currentState.copy(
+                                isSavingMediaList = false,
+                                mediaListSaveSuccess = true,
+                            )
+                        }
+
+                        result.isFailure -> {
+                            currentState.copy(
+                                isSavingMediaList = false,
+                                error = result.exceptionOrNull()?.message ?: "Failed to delete media list entry",
+                            )
+                        }
+
+                        else -> {
+                            currentState.copy(
+                                isSavingMediaList = false,
+                            )
+                        }
+                    }
+                }
+
+                if (result.isSuccess) {
+                    getMediaDetail(mediaId)
                 }
             }
         }
