@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.core.domain.model.common.FuzzyDate
 import com.example.core.domain.model.media.MediaListStatus
+import com.example.core.domain.model.media.MediaType
 import com.example.core.domain.repository.MediaRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,8 +43,10 @@ class MediaDetailViewModel
                 _state.update { currentState ->
                     when {
                         media.isSuccess -> {
+                            val mediaData = media.getOrNull()
                             currentState.copy(
-                                media = media.getOrNull(),
+                                media = mediaData,
+                                isFavourite = currentState.isFavourite ?: mediaData?.isFavourite,
                                 isLoadingMediaDetails = false,
                                 error = null,
                             )
@@ -222,6 +225,29 @@ class MediaDetailViewModel
 
                 if (result.isSuccess) {
                     getMediaDetail(mediaId)
+                }
+            }
+        }
+
+        fun toggleFavourite(mediaId: Int) {
+            val media = state.value.media ?: return
+            val isAnime = media.type == MediaType.ANIME
+
+            viewModelScope.launch {
+                val result =
+                    mediaRepository.toggleFavourite(
+                        animeId = if (isAnime) mediaId else null,
+                        mangaId = if (!isAnime) mediaId else null,
+                    )
+
+                if (result.isSuccess) {
+                    _state.update { it.copy(isFavourite = !it.isFavourite!!) }
+                } else {
+                    _state.update {
+                        it.copy(
+                            error = result.exceptionOrNull()?.message ?: "Failed to toggle favourite",
+                        )
+                    }
                 }
             }
         }

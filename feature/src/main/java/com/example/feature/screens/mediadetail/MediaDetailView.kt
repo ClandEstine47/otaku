@@ -118,6 +118,7 @@ fun MediaDetailView(
                         isLoggedIn = isLoggedIn,
                         mediaDetail = uiState.media,
                         mediaThreads = uiState.mediaThreads,
+                        isFavourite = uiState.isFavourite,
                         onSaveMediaListEntry = { status, score, progress, repeat, private, hiddenFromStatusLists, startedAt, completedAt, notes ->
                             uiState.media?.let { media ->
                                 viewModel.saveMediaListEntry(
@@ -137,6 +138,11 @@ fun MediaDetailView(
                         onDeleteMediaListEntry = {
                             uiState.media?.let { media ->
                                 viewModel.deleteMediaListEntry(mediaId = media.idAniList)
+                            }
+                        },
+                        onToggleFavourite = {
+                            uiState.media?.let { media ->
+                                viewModel.toggleFavourite(mediaId = media.idAniList)
                             }
                         },
                     )
@@ -169,6 +175,7 @@ fun MediaDetailContent(
     isLoggedIn: Boolean,
     mediaDetail: Media?,
     mediaThreads: List<Thread>?,
+    isFavourite: Boolean? = false,
     onSaveMediaListEntry: (
         status: com.example.core.domain.model.media.MediaListStatus?,
         score: Double?,
@@ -181,6 +188,7 @@ fun MediaDetailContent(
         notes: String?,
     ) -> Unit,
     onDeleteMediaListEntry: () -> Unit,
+    onToggleFavourite: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val hazeState = remember { HazeState() }
@@ -270,9 +278,9 @@ fun MediaDetailContent(
                     ) {
                         FavouriteButton(
                             modifier = Modifier,
-                            enabled = false,
+                            enabled = isFavourite,
                             onButtonClick = {
-                                // todo: add/remove to/from favourites
+                                onToggleFavourite()
                             },
                         )
 

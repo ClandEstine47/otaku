@@ -113,4 +113,9 @@ interface MediaRepository {
     suspend fun deleteMediaListEntry(
         mediaListEntryId: Int,
     ): Result<Boolean>
+
+    suspend fun toggleFavourite(
+        animeId: Int? = null,
+        mangaId: Int? = null,
+    ): Result<Boolean>
 }

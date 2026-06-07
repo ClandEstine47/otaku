@@ -143,7 +143,7 @@ fun ShareButton(
 @Composable
 fun FavouriteButton(
     modifier: Modifier = Modifier,
-    enabled: Boolean,
+    enabled: Boolean? = false,
     onButtonClick: () -> Unit,
 ) {
     IconButton(
@@ -153,7 +153,7 @@ fun FavouriteButton(
         },
     ) {
         Icon(
-            imageVector = if (enabled) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+            imageVector = if (enabled == true) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
             contentDescription = "favourites",
         )
     }

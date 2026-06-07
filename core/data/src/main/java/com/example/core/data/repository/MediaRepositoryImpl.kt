@@ -237,4 +237,16 @@ class MediaRepositoryImpl
                 ).onFailure { error ->
                     Timber.e(error, "Failed to delete media list entry")
                 }
+
+        override suspend fun toggleFavourite(
+            animeId: Int?,
+            mangaId: Int?,
+        ): Result<Boolean> =
+            mediaService
+                .toggleFavourite(
+                    animeId = animeId,
+                    mangaId = mangaId,
+                ).onFailure { error ->
+                    Timber.e(error, "Failed to toggle favourite")
+                }
     }

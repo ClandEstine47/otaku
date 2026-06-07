@@ -27,6 +27,7 @@ import com.example.core.network.MediaThreadsQuery
 import com.example.core.network.RecentlyUpdatedQuery
 import com.example.core.network.SaveMediaListEntryMutation
 import com.example.core.network.SeasonalAnimeQuery
+import com.example.core.network.ToggleFavouriteMutation
 import com.example.core.network.TrendingNowQuery
 import com.example.core.network.UserListCollectionQuery
 import com.example.core.network.ViewerQuery
@@ -719,6 +720,36 @@ class MediaServiceImpl
                     else -> {
                         val deleted = response.data?.DeleteMediaListEntry?.deleted ?: false
                         Result.success(deleted)
+                    }
+                }
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+
+        override suspend fun toggleFavourite(
+            animeId: Int?,
+            mangaId: Int?,
+        ): Result<Boolean> =
+            try {
+                val response =
+                    apolloClient
+                        .mutation(
+                            ToggleFavouriteMutation(
+                                animeId = Optional.presentIfNotNull(animeId),
+                                mangaId = Optional.presentIfNotNull(mangaId),
+                            ),
+                        ).execute()
+
+                when {
+                    response.hasErrors() -> {
+                        val errorMessage =
+                            response.errors?.joinToString("; ") { it.message }
+                                ?: "Unknown GraphQL error"
+                        Result.failure(Exception(errorMessage))
+                    }
+
+                    else -> {
+                        Result.success(true)
                     }
                 }
             } catch (e: Exception) {

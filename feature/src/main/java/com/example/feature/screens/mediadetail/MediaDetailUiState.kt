@@ -10,5 +10,6 @@ data class MediaDetailUiState(
     val isLoadingMediaThreads: Boolean = false,
     val isSavingMediaList: Boolean = false,
     val mediaListSaveSuccess: Boolean = false,
+    val isFavourite: Boolean? = null,
     val error: String? = null,
 )
