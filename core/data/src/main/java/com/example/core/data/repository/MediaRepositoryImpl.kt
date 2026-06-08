@@ -253,4 +253,8 @@ class MediaRepositoryImpl
                 ).onFailure { error ->
                     Timber.e(error, "Failed to toggle favourite")
                 }
+
+        override suspend fun clearCache() {
+            mediaService.clearCache()
+        }
     }

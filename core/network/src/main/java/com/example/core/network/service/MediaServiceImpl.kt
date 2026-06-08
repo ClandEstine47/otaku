@@ -49,6 +49,7 @@ class MediaServiceImpl
                 val response =
                     apolloClient
                         .query(ViewerQuery())
+                        .fetchPolicy(FetchPolicy.NetworkFirst)
                         .execute()
 
                 when {
@@ -783,4 +784,13 @@ class MediaServiceImpl
             } catch (e: Exception) {
                 Result.failure(e)
             }
+
+        override suspend fun clearCache() {
+            try {
+                apolloClient.apolloStore.clearAll()
+                Timber.tag("MediaServiceImpl").d("Cache cleared successfully")
+            } catch (e: Exception) {
+                Timber.tag("MediaServiceImpl").e(e, "Failed to clear cache")
+            }
+        }
     }

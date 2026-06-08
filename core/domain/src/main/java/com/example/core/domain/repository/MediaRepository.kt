@@ -119,4 +119,6 @@ interface MediaRepository {
         animeId: Int? = null,
         mangaId: Int? = null,
     ): Result<Boolean>
+
+    suspend fun clearCache()
 }

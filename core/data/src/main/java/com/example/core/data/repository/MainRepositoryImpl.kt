@@ -61,6 +61,7 @@ class MainRepositoryImpl
             )
 
         override suspend fun removeUserDetails() {
+            mediaService.clearCache()
             dataStore.edit {
                 it.remove(ACCESS_TOKEN_KEY)
                 it.remove(USER_NAME)

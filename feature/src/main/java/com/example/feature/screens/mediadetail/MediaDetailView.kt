@@ -276,13 +276,15 @@ fun MediaDetailContent(
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
                     ) {
-                        FavouriteButton(
-                            modifier = Modifier,
-                            enabled = isFavourite,
-                            onButtonClick = {
-                                onToggleFavourite()
-                            },
-                        )
+                        if (isLoggedIn) {
+                            FavouriteButton(
+                                modifier = Modifier,
+                                enabled = isFavourite,
+                                onButtonClick = {
+                                    onToggleFavourite()
+                                },
+                            )
+                        }
 
                         ShareButton(
                             modifier = Modifier,
