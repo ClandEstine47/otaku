@@ -1,6 +1,11 @@
 package com.example.core.network.di
 
 import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.cache.normalized.api.CacheKey
+import com.apollographql.apollo.cache.normalized.api.CacheKeyGenerator
+import com.apollographql.apollo.cache.normalized.api.CacheKeyGeneratorContext
+import com.apollographql.apollo.cache.normalized.api.MemoryCacheFactory
+import com.apollographql.apollo.cache.normalized.normalizedCache
 import com.apollographql.apollo.network.okHttpClient
 import dagger.Module
 import dagger.Provides
@@ -21,6 +26,20 @@ object NetworkModule {
     fun provideApolloClient(
         authorizationInterceptor: AuthorizationInterceptor,
     ): ApolloClient {
+        val cacheFactory = MemoryCacheFactory(maxSizeBytes = 10 * 1024 * 1024)
+
+        val cacheKeyGenerator =
+            object : CacheKeyGenerator {
+                override fun cacheKeyForObject(
+                    obj: Map<String, Any?>,
+                    context: CacheKeyGeneratorContext,
+                ): CacheKey? {
+                    val id = obj["id"] ?: obj["_id"] ?: return null
+                    val typename = obj["__typename"] as? String ?: return null
+                    return CacheKey(typename, id.toString())
+                }
+            }
+
         val okHttpClient =
             OkHttpClient
                 .Builder()
@@ -31,7 +50,10 @@ object NetworkModule {
             .Builder()
             .serverUrl(ANILIST_GRAPHQL_URL)
             .okHttpClient(okHttpClient)
-            .build()
+            .normalizedCache(
+                normalizedCacheFactory = cacheFactory,
+                cacheKeyGenerator = cacheKeyGenerator,
+            ).build()
     }
 
     class AuthorizationInterceptor

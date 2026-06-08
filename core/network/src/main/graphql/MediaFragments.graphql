@@ -1,0 +1,4 @@
+fragment MediaFavourite on Media {
+  id
+  isFavourite
+}

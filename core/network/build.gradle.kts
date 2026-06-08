@@ -45,6 +45,7 @@ apollo {
     service("service") {
         packageName.set("com.example.core.network")
         generateFragmentImplementations.set(true)
+        addTypename.set("always")
         introspection {
             endpointUrl.set("https://graphql.anilist.co")
             schemaFile.set(file("src/main/graphql/schema.graphqls"))
@@ -65,7 +66,11 @@ dependencies {
 
     // apollo graphql
     implementation(libs.apollo.runtime)
+    implementation(libs.apollo.normalized.cache)
     testImplementation(libs.apollo.testing.support)
+
+    // timber
+    implementation(libs.timber)
 
     // di
     implementation(libs.dagger.hilt)

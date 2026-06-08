@@ -73,6 +73,7 @@ interface MediaService {
 
     suspend fun getMediaById(
         id: Int,
+        fetchFromNetwork: Boolean,
     ): Result<Media>
 
     suspend fun getMediaRecommendationsById(

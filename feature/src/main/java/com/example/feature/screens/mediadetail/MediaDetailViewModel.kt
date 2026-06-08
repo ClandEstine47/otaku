@@ -7,6 +7,7 @@ import com.example.core.domain.model.media.MediaListStatus
 import com.example.core.domain.model.media.MediaType
 import com.example.core.domain.repository.MediaRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -25,12 +26,17 @@ class MediaDetailViewModel
             )
         val state = _state.asStateFlow()
 
+        private var toggleJob: Job? = null
+
         fun loadData(id: Int) {
             getMediaDetail(id)
             getMediaThreads(id)
         }
 
-        fun getMediaDetail(id: Int) {
+        fun getMediaDetail(
+            id: Int,
+            fetchFromNetwork: Boolean = false,
+        ) {
             viewModelScope.launch {
                 _state.update {
                     it.copy(
@@ -38,7 +44,7 @@ class MediaDetailViewModel
                     )
                 }
 
-                val media = mediaRepository.getMediaById(id = id)
+                val media = mediaRepository.getMediaById(id = id, fetchFromNetwork = fetchFromNetwork)
 
                 _state.update { currentState ->
                     when {
@@ -175,7 +181,10 @@ class MediaDetailViewModel
                 }
 
                 if (result.isSuccess) {
-                    getMediaDetail(mediaId)
+                    getMediaDetail(
+                        id = mediaId,
+                        fetchFromNetwork = true,
+                    )
                 }
             }
         }
@@ -224,31 +233,33 @@ class MediaDetailViewModel
                 }
 
                 if (result.isSuccess) {
-                    getMediaDetail(mediaId)
+                    getMediaDetail(id = mediaId, fetchFromNetwork = true)
                 }
             }
         }
 
         fun toggleFavourite(mediaId: Int) {
+            if (toggleJob?.isActive == true) return
             val media = state.value.media ?: return
             val isAnime = media.type == MediaType.ANIME
 
-            viewModelScope.launch {
-                val result =
-                    mediaRepository.toggleFavourite(
-                        animeId = if (isAnime) mediaId else null,
-                        mangaId = if (!isAnime) mediaId else null,
-                    )
-
-                if (result.isSuccess) {
-                    _state.update { it.copy(isFavourite = !it.isFavourite!!) }
-                } else {
-                    _state.update {
-                        it.copy(
-                            error = result.exceptionOrNull()?.message ?: "Failed to toggle favourite",
+            toggleJob =
+                viewModelScope.launch {
+                    val result =
+                        mediaRepository.toggleFavourite(
+                            animeId = if (isAnime) mediaId else null,
+                            mangaId = if (!isAnime) mediaId else null,
                         )
+
+                    if (result.isSuccess) {
+                        _state.update { it.copy(isFavourite = !it.isFavourite!!) }
+                    } else {
+                        _state.update {
+                            it.copy(
+                                error = result.exceptionOrNull()?.message ?: "Failed to toggle favourite",
+                            )
+                        }
                     }
                 }
-            }
         }
     }

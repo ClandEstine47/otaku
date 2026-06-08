@@ -2,6 +2,10 @@ package com.example.core.network.service
 
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Optional
+import com.apollographql.apollo.cache.normalized.FetchPolicy
+import com.apollographql.apollo.cache.normalized.api.CacheKey
+import com.apollographql.apollo.cache.normalized.apolloStore
+import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.apollographql.apollo.exception.ApolloException
 import com.example.core.domain.model.Page
 import com.example.core.domain.model.PageInfo
@@ -31,6 +35,8 @@ import com.example.core.network.ToggleFavouriteMutation
 import com.example.core.network.TrendingNowQuery
 import com.example.core.network.UserListCollectionQuery
 import com.example.core.network.ViewerQuery
+import com.example.core.network.fragment.MediaFavouriteImpl
+import timber.log.Timber
 import javax.inject.Inject
 
 class MediaServiceImpl
@@ -249,7 +255,8 @@ class MediaServiceImpl
                                 chunk = Optional.present(pageNumber),
                                 perChunk = Optional.present(perPage),
                             ),
-                        ).execute()
+                        ).fetchPolicy(FetchPolicy.NetworkFirst)
+                        .execute()
 
                 when {
                     response.hasErrors() -> {
@@ -461,7 +468,10 @@ class MediaServiceImpl
                 Result.failure(e)
             }
 
-        override suspend fun getMediaById(id: Int): Result<Media> =
+        override suspend fun getMediaById(
+            id: Int,
+            fetchFromNetwork: Boolean,
+        ): Result<Media> =
             try {
                 val response =
                     apolloClient
@@ -469,7 +479,8 @@ class MediaServiceImpl
                             MediaQuery(
                                 id = id,
                             ),
-                        ).execute()
+                        ).fetchPolicy(if (fetchFromNetwork) FetchPolicy.NetworkFirst else FetchPolicy.CacheFirst)
+                        .execute()
 
                 when {
                     response.hasErrors() -> {
@@ -613,7 +624,8 @@ class MediaServiceImpl
                                 tags = Optional.presentIfNotNull(tags),
                                 sort = Optional.presentIfNotNull(sortBy?.map { it.toNetworkMediaSort() }),
                             ),
-                        ).execute()
+                        ).fetchPolicy(FetchPolicy.NetworkOnly)
+                        .execute()
 
                 when {
                     response.hasErrors() -> {
@@ -731,6 +743,7 @@ class MediaServiceImpl
             mangaId: Int?,
         ): Result<Boolean> =
             try {
+                val mediaId = animeId ?: mangaId ?: throw Exception("Media ID is required")
                 val response =
                     apolloClient
                         .mutation(
@@ -749,6 +762,21 @@ class MediaServiceImpl
                     }
 
                     else -> {
+                        // Update cache
+                        val cacheKey = CacheKey("Media", mediaId.toString())
+                        try {
+                            val existingFragment =
+                                apolloClient.apolloStore.readFragment(MediaFavouriteImpl(), cacheKey)
+                            val updatedFragment =
+                                existingFragment.copy(isFavourite = !existingFragment.isFavourite)
+                            apolloClient.apolloStore.writeFragment(
+                                MediaFavouriteImpl(),
+                                cacheKey,
+                                updatedFragment,
+                            )
+                        } catch (e: Exception) {
+                            Timber.d("Cache update failed for $cacheKey: ${e.message}")
+                        }
                         Result.success(true)
                     }
                 }
