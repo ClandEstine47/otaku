@@ -30,7 +30,7 @@ fun MediaInfo(
     val isReleasing = media.status == MediaStatus.RELEASING
     val episodes = ((if (isReleasing) "${media.nextAiringEpisode?.episode?.minus(1) ?: "?"} | ${media.episodes ?: "?"}" else media.episodes) ?: "?").toString()
     val startDate =
-        if (media.startDate?.isNull() == true) {
+        if (media.startDate?.isNull() ?: true) {
             "?"
         } else {
             Utils.formatDateToText(
@@ -40,7 +40,7 @@ fun MediaInfo(
             )
         }
     val endDate =
-        if (media.endDate?.isNull() == true) {
+        if (media.endDate?.isNull() ?: true) {
             "?"
         } else {
             Utils.formatDateToText(

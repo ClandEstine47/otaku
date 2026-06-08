@@ -107,12 +107,15 @@ object Utils {
         year: Int,
         month: Int,
         day: Int,
-    ): String {
-        val dateTime = LocalDateTime.of(year, month, day, 0, 0)
-        val formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy")
+    ): String =
+        try {
+            val dateTime = LocalDateTime.of(year, month, day, 0, 0)
+            val formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy")
 
-        return dateTime.format(formatter)
-    }
+            dateTime.format(formatter)
+        } catch (e: Exception) {
+            "?"
+        }
 
     fun Context.showToast(message: String?) = message?.let { Toast.makeText(this, message, Toast.LENGTH_SHORT).show() }
 
