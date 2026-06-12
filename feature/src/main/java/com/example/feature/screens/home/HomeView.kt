@@ -25,6 +25,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -463,19 +465,42 @@ fun HomeContent(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center,
                         ) {
-                            // todo: show notification badge if there are unread notifications
+                            val count = user.unreadNotificationCount
+
                             IconButton(
                                 modifier = Modifier.fillMaxSize(),
                                 onClick = {
                                     // todo: navigate to notifications
                                 },
                             ) {
-                                Icon(
-                                    modifier = Modifier.size(22.dp),
-                                    painter = painterResource(R.drawable.notification),
-                                    tint = MaterialTheme.colorScheme.onBackground,
-                                    contentDescription = "notifications",
-                                )
+                                BadgedBox(
+                                    badge = {
+                                        if (count > 0) {
+                                            Badge(containerColor = Color.Red) {
+                                                Text(
+                                                    text = if (count > 99) "99+" else count.toString(),
+                                                    color = Color.White,
+                                                    fontSize = 10.sp,
+                                                    fontWeight = FontWeight.Bold,
+                                                )
+                                            }
+                                        }
+                                    },
+                                ) {
+                                    Icon(
+                                        modifier = Modifier.size(22.dp),
+                                        painter =
+                                            painterResource(
+                                                if (count > 0) {
+                                                    R.drawable.notification_active
+                                                } else {
+                                                    R.drawable.notification
+                                                },
+                                            ),
+                                        tint = MaterialTheme.colorScheme.onBackground,
+                                        contentDescription = "notifications",
+                                    )
+                                }
                             }
                         }
                     }
