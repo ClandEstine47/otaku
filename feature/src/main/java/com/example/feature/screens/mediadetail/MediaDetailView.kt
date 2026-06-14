@@ -428,10 +428,15 @@ private fun MediaInfoTab(
     }
 
     // Media Relations
-    MediaRelations(
-        mediaConnection = media.relations,
-        navActionManager = navActionManager,
-    )
+    if (media.relations.edges
+            .isNullOrEmpty()
+            .not()
+    ) {
+        MediaRelations(
+            mediaConnection = media.relations,
+            navActionManager = navActionManager,
+        )
+    }
 
     // Media Recommendations
     if (!media.recommendations.nodes.isNullOrEmpty()) {
