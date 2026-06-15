@@ -14,6 +14,8 @@ import com.example.core.domain.model.character.CharacterRole
 import com.example.core.domain.model.common.FuzzyDate
 import com.example.core.domain.model.media.*
 import com.example.core.domain.model.medialistcollection.MediaListSort
+import com.example.core.domain.model.notification.Notification
+import com.example.core.domain.model.notification.NotificationType
 import com.example.core.domain.model.recommendation.Recommendation
 import com.example.core.domain.model.recommendation.RecommendationConnection
 import com.example.core.domain.model.review.Review
@@ -38,6 +40,7 @@ import com.example.core.network.MediaQuery
 import com.example.core.network.MediaRecommendationsQuery
 import com.example.core.network.MediaSearchQuery
 import com.example.core.network.MediaThreadsQuery
+import com.example.core.network.NotificationsQuery
 import com.example.core.network.RecentlyUpdatedQuery
 import com.example.core.network.SaveMediaListEntryMutation
 import com.example.core.network.SeasonalAnimeQuery
@@ -56,6 +59,7 @@ import com.example.core.network.type.MediaSeason as NetworkMediaSeason
 import com.example.core.network.type.MediaSource as NetworkMediaSource
 import com.example.core.network.type.MediaStatus as NetworkMediaStatus
 import com.example.core.network.type.MediaType as NetworkMediaType
+import com.example.core.network.type.NotificationType as NetworkNotificationType
 import com.example.core.network.type.ReviewRating as NetworkReviewRating
 
 fun ViewerQuery.Viewer.toDomainUser(): User =
@@ -962,3 +966,167 @@ fun SaveMediaListEntryMutation.SaveMediaListEntry.toDomainMediaList(): MediaList
                 day = completedAt?.day,
             ),
     )
+
+fun NotificationsQuery.PageInfo.toDomainPageInfo(): PageInfo =
+    PageInfo(
+        currentPage = currentPage ?: 0,
+        hasNextPage = hasNextPage ?: false,
+    )
+
+fun NotificationsQuery.Notification.toDomainNotification(): Notification? =
+    when {
+        onAiringNotification != null -> {
+            val n = onAiringNotification
+            Notification.Airing(
+                id = n.id,
+                type = n.type?.toDomainNotificationType() ?: NotificationType.AIRING,
+                createdAt = n.createdAt ?: 0,
+                contexts = n.contexts,
+                animeId = n.animeId,
+                episode = n.episode,
+                media = n.media?.toDomainNotificationMedia() ?: Media(),
+            )
+        }
+
+        onRelatedMediaAdditionNotification != null -> {
+            val n = onRelatedMediaAdditionNotification
+            Notification.RelatedMediaAddition(
+                id = n.id,
+                type = n.type?.toDomainNotificationType() ?: NotificationType.RELATED_MEDIA_ADDITION,
+                createdAt = n.createdAt ?: 0,
+                context = n.context,
+                mediaId = n.mediaId,
+                media = n.media?.toDomainNotificationMedia() ?: Media(),
+            )
+        }
+
+        onMediaDataChangeNotification != null -> {
+            val n = onMediaDataChangeNotification
+            Notification.MediaDataChange(
+                id = n.id,
+                type = n.type?.toDomainNotificationType() ?: NotificationType.MEDIA_DATA_CHANGE,
+                createdAt = n.createdAt ?: 0,
+                context = n.context,
+                mediaId = n.mediaId,
+                reason = n.reason,
+                media = n.media?.toDomainNotificationMedia() ?: Media(),
+            )
+        }
+
+        onMediaMergeNotification != null -> {
+            val n = onMediaMergeNotification
+            Notification.MediaMerge(
+                id = n.id,
+                type = n.type?.toDomainNotificationType() ?: NotificationType.MEDIA_MERGE,
+                createdAt = n.createdAt ?: 0,
+                context = n.context,
+                mediaId = n.mediaId,
+                reason = n.reason,
+                media = n.media?.toDomainNotificationMedia() ?: Media(),
+            )
+        }
+
+        onMediaDeletionNotification != null -> {
+            val n = onMediaDeletionNotification
+            Notification.MediaDeletion(
+                id = n.id,
+                type = n.type?.toDomainNotificationType() ?: NotificationType.MEDIA_DELETION,
+                createdAt = n.createdAt ?: 0,
+                context = n.context,
+                reason = n.reason,
+                deletedMediaTitle = n.deletedMediaTitle,
+            )
+        }
+
+        else -> {
+            null
+        }
+    }
+
+fun NotificationsQuery.Media.toDomainNotificationMedia(): Media =
+    Media(
+        title = MediaTitle(userPreferred = title?.userPreferred ?: ""),
+        type = type?.toDomainMediaType(),
+        coverImage =
+            MediaCoverImage(
+                medium = coverImage?.medium ?: "",
+                large = coverImage?.large ?: "",
+            ),
+    )
+
+fun NotificationsQuery.Media1.toDomainNotificationMedia(): Media =
+    Media(
+        title = MediaTitle(userPreferred = title?.userPreferred ?: ""),
+        type = type?.toDomainMediaType(),
+        coverImage =
+            MediaCoverImage(
+                medium = coverImage?.medium ?: "",
+                large = coverImage?.large ?: "",
+            ),
+    )
+
+fun NotificationsQuery.Media2.toDomainNotificationMedia(): Media =
+    Media(
+        title = MediaTitle(userPreferred = title?.userPreferred ?: ""),
+        type = type?.toDomainMediaType(),
+        coverImage =
+            MediaCoverImage(
+                medium = coverImage?.medium ?: "",
+                large = coverImage?.large ?: "",
+            ),
+    )
+
+fun NotificationsQuery.Media3.toDomainNotificationMedia(): Media =
+    Media(
+        title = MediaTitle(userPreferred = title?.userPreferred ?: ""),
+        type = type?.toDomainMediaType(),
+        coverImage =
+            MediaCoverImage(
+                medium = coverImage?.medium ?: "",
+                large = coverImage?.large ?: "",
+            ),
+    )
+
+fun NetworkNotificationType.toDomainNotificationType(): NotificationType =
+    when (this) {
+        NetworkNotificationType.ACTIVITY_MESSAGE -> NotificationType.ACTIVITY_MESSAGE
+        NetworkNotificationType.ACTIVITY_REPLY -> NotificationType.ACTIVITY_REPLY
+        NetworkNotificationType.FOLLOWING -> NotificationType.FOLLOWING
+        NetworkNotificationType.ACTIVITY_MENTION -> NotificationType.ACTIVITY_MENTION
+        NetworkNotificationType.THREAD_COMMENT_MENTION -> NotificationType.THREAD_COMMENT_MENTION
+        NetworkNotificationType.THREAD_SUBSCRIBED -> NotificationType.THREAD_SUBSCRIBED
+        NetworkNotificationType.THREAD_COMMENT_REPLY -> NotificationType.THREAD_COMMENT_REPLY
+        NetworkNotificationType.AIRING -> NotificationType.AIRING
+        NetworkNotificationType.ACTIVITY_LIKE -> NotificationType.ACTIVITY_LIKE
+        NetworkNotificationType.ACTIVITY_REPLY_LIKE -> NotificationType.ACTIVITY_REPLY_LIKE
+        NetworkNotificationType.THREAD_LIKE -> NotificationType.THREAD_LIKE
+        NetworkNotificationType.THREAD_COMMENT_LIKE -> NotificationType.THREAD_COMMENT_LIKE
+        NetworkNotificationType.ACTIVITY_REPLY_SUBSCRIBED -> NotificationType.ACTIVITY_REPLY_SUBSCRIBED
+        NetworkNotificationType.RELATED_MEDIA_ADDITION -> NotificationType.RELATED_MEDIA_ADDITION
+        NetworkNotificationType.MEDIA_DATA_CHANGE -> NotificationType.MEDIA_DATA_CHANGE
+        NetworkNotificationType.MEDIA_MERGE -> NotificationType.MEDIA_MERGE
+        NetworkNotificationType.MEDIA_DELETION -> NotificationType.MEDIA_DELETION
+        NetworkNotificationType.UNKNOWN__ -> NotificationType.UNKNOWN
+    }
+
+fun NotificationType.toNetworkNotificationType(): NetworkNotificationType =
+    when (this) {
+        NotificationType.ACTIVITY_MESSAGE -> NetworkNotificationType.ACTIVITY_MESSAGE
+        NotificationType.ACTIVITY_REPLY -> NetworkNotificationType.ACTIVITY_REPLY
+        NotificationType.FOLLOWING -> NetworkNotificationType.FOLLOWING
+        NotificationType.ACTIVITY_MENTION -> NetworkNotificationType.ACTIVITY_MENTION
+        NotificationType.THREAD_COMMENT_MENTION -> NetworkNotificationType.THREAD_COMMENT_MENTION
+        NotificationType.THREAD_SUBSCRIBED -> NetworkNotificationType.THREAD_SUBSCRIBED
+        NotificationType.THREAD_COMMENT_REPLY -> NetworkNotificationType.THREAD_COMMENT_REPLY
+        NotificationType.AIRING -> NetworkNotificationType.AIRING
+        NotificationType.ACTIVITY_LIKE -> NetworkNotificationType.ACTIVITY_LIKE
+        NotificationType.ACTIVITY_REPLY_LIKE -> NetworkNotificationType.ACTIVITY_REPLY_LIKE
+        NotificationType.THREAD_LIKE -> NetworkNotificationType.THREAD_LIKE
+        NotificationType.THREAD_COMMENT_LIKE -> NetworkNotificationType.THREAD_COMMENT_LIKE
+        NotificationType.ACTIVITY_REPLY_SUBSCRIBED -> NetworkNotificationType.ACTIVITY_REPLY_SUBSCRIBED
+        NotificationType.RELATED_MEDIA_ADDITION -> NetworkNotificationType.RELATED_MEDIA_ADDITION
+        NotificationType.MEDIA_DATA_CHANGE -> NetworkNotificationType.MEDIA_DATA_CHANGE
+        NotificationType.MEDIA_MERGE -> NetworkNotificationType.MEDIA_MERGE
+        NotificationType.MEDIA_DELETION -> NetworkNotificationType.MEDIA_DELETION
+        NotificationType.UNKNOWN -> NetworkNotificationType.UNKNOWN__
+    }

@@ -21,6 +21,7 @@ import com.example.feature.screens.manga.MangaView
 import com.example.feature.screens.manga.MangaViewModel
 import com.example.feature.screens.mediadetail.MediaDetailView
 import com.example.feature.screens.medialist.MediaListView
+import com.example.feature.screens.notifications.NotificationsView
 import com.example.feature.screens.search.MediaSearchView
 import dev.chrisbanes.haze.HazeState
 import kotlin.reflect.typeOf
@@ -103,6 +104,12 @@ fun MainNavigation(
             MediaDetailView(
                 arguments = it.toRoute(),
                 isLoggedIn = isLoggedIn,
+                navActionManager = navActionManager,
+            )
+        }
+
+        composable<OtakuScreen.Notifications> {
+            NotificationsView(
                 navActionManager = navActionManager,
             )
         }

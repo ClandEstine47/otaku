@@ -470,7 +470,7 @@ fun HomeContent(
                             IconButton(
                                 modifier = Modifier.fillMaxSize(),
                                 onClick = {
-                                    // todo: navigate to notifications
+                                    navActionManager.toNotifications()
                                 },
                             ) {
                                 BadgedBox(
@@ -520,7 +520,7 @@ fun HomeContent(
                         title = "ANIME LIST",
                         onClick = {
                             navActionManager.toUserCurrentAnimeList(
-                                titleId = R.string.anime,
+                                titleId = R.string.anime_,
                                 userId = user.id.takeIf { it > 0 },
                                 showStatusTabs = true,
                             )
@@ -532,7 +532,7 @@ fun HomeContent(
                         title = "MANGA LIST",
                         onClick = {
                             navActionManager.toUserCurrentMangaList(
-                                titleId = R.string.manga,
+                                titleId = R.string.manga_,
                                 userId = user.id.takeIf { it > 0 },
                                 showStatusTabs = true,
                             )

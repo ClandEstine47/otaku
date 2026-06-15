@@ -135,5 +135,18 @@ object Utils {
 
     fun <T> getFormattedString(value: T?): String = value?.toString()?.replace("_", " ") ?: ""
 
+    fun formatTimeAgo(seconds: Int): String {
+        val now = Instant.now().epochSecond
+        val diff = now - seconds
+
+        return when {
+            diff < 60 -> "Just now"
+            diff < 3600 -> "${diff / 60}m ago"
+            diff < 86400 -> "${diff / 3600}h ago"
+            diff < 2592000 -> "${diff / 86400}d ago"
+            else -> secondsToMonthYearDateFormatter(seconds)
+        }
+    }
+
     fun <T> Flow<T>.firstBlocking() = runBlocking { first() }
 }

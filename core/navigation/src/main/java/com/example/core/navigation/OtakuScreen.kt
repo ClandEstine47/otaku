@@ -34,4 +34,7 @@ sealed interface OtakuScreen {
         val id: Int,
         val mediaType: MediaType,
     ) : OtakuScreen
+
+    @Serializable
+    data object Notifications : OtakuScreen
 }

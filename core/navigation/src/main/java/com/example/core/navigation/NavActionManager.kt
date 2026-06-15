@@ -86,6 +86,10 @@ class NavActionManager(
         )
     }
 
+    fun toNotifications() {
+        navController.navigate(OtakuScreen.Notifications)
+    }
+
     companion object {
         @Composable
         fun rememberNavActionManager(navController: NavHostController = rememberNavController()) =

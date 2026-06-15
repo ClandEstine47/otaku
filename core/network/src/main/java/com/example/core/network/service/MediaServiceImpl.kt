@@ -20,6 +20,8 @@ import com.example.core.domain.model.media.MediaSort
 import com.example.core.domain.model.media.MediaStatus
 import com.example.core.domain.model.media.MediaType
 import com.example.core.domain.model.medialistcollection.MediaListSort
+import com.example.core.domain.model.notification.Notification
+import com.example.core.domain.model.notification.NotificationType
 import com.example.core.domain.model.thread.Thread
 import com.example.core.domain.model.user.User
 import com.example.core.domain.service.MediaService
@@ -28,6 +30,7 @@ import com.example.core.network.MediaQuery
 import com.example.core.network.MediaRecommendationsQuery
 import com.example.core.network.MediaSearchQuery
 import com.example.core.network.MediaThreadsQuery
+import com.example.core.network.NotificationsQuery
 import com.example.core.network.RecentlyUpdatedQuery
 import com.example.core.network.SaveMediaListEntryMutation
 import com.example.core.network.SeasonalAnimeQuery
@@ -781,6 +784,59 @@ class MediaServiceImpl
                         Result.success(true)
                     }
                 }
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+
+        override suspend fun getNotifications(
+            pageNumber: Int,
+            perPage: Int,
+            resetCount: Boolean,
+            types: List<NotificationType>?,
+        ): Result<Page<Notification>> =
+            try {
+                val response =
+                    apolloClient
+                        .query(
+                            NotificationsQuery(
+                                page = Optional.present(pageNumber),
+                                perPage = Optional.present(perPage),
+                                resetCount = Optional.present(resetCount),
+                                typeIn = Optional.presentIfNotNull(types?.map { it.toNetworkNotificationType() }),
+                            ),
+                        ).fetchPolicy(FetchPolicy.NetworkFirst)
+                        .execute()
+
+                when {
+                    response.hasErrors() -> {
+                        val errorMessage =
+                            response.errors?.joinToString("; ") { it.message }
+                                ?: "Unknown GraphQL error"
+                        Result.failure(Exception(errorMessage))
+                    }
+
+                    else -> {
+                        val pageInfo =
+                            response.data
+                                ?.Page
+                                ?.pageInfo
+                                ?.toDomainPageInfo()
+                        val notifications =
+                            response.data
+                                ?.Page
+                                ?.notifications
+                                ?.mapNotNull { it?.toDomainNotification() }
+                                ?: emptyList()
+                        Result.success(
+                            Page(
+                                pageInfo = pageInfo,
+                                data = notifications,
+                            ),
+                        )
+                    }
+                }
+            } catch (e: ApolloException) {
+                Result.failure(e)
             } catch (e: Exception) {
                 Result.failure(e)
             }

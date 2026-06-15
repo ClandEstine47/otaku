@@ -1,0 +1,89 @@
+query Notifications($page: Int, $perPage: Int, $typeIn: [NotificationType], $resetCount: Boolean) {
+    Page(page: $page, perPage: $perPage) {
+        notifications(resetNotificationCount: $resetCount, type_in: $typeIn) {
+            ... on AiringNotification {
+                id
+                contexts
+                animeId
+                episode
+                media {
+                    title {
+                        userPreferred
+                    }
+                    coverImage {
+                        medium
+                        large
+                    }
+                    type
+                }
+                type
+                createdAt
+            }
+            ... on RelatedMediaAdditionNotification {
+                id
+                context
+                mediaId
+                media {
+                    title {
+                        userPreferred
+                    }
+                    coverImage {
+                        medium
+                        large
+                    }
+                    type
+                }
+                type
+                createdAt
+            }
+            ... on MediaDataChangeNotification {
+                id
+                context
+                mediaId
+                reason
+                media {
+                    title {
+                        userPreferred
+                    }
+                    coverImage {
+                        medium
+                        large
+                    }
+                    type
+                }
+                type
+                createdAt
+            }
+            ... on MediaMergeNotification {
+                id
+                context
+                reason
+                mediaId
+                media {
+                    title {
+                        userPreferred
+                    }
+                    coverImage {
+                        medium
+                        large
+                    }
+                    type
+                }
+                type
+                createdAt
+            }
+            ... on MediaDeletionNotification {
+                id
+                context
+                reason
+                deletedMediaTitle
+                type
+                createdAt
+            }
+        }
+        pageInfo {
+            currentPage
+            hasNextPage
+        }
+    }
+}

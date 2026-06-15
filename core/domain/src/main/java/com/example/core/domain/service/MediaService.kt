@@ -12,6 +12,8 @@ import com.example.core.domain.model.media.MediaSort
 import com.example.core.domain.model.media.MediaStatus
 import com.example.core.domain.model.media.MediaType
 import com.example.core.domain.model.medialistcollection.MediaListSort
+import com.example.core.domain.model.notification.Notification
+import com.example.core.domain.model.notification.NotificationType
 import com.example.core.domain.model.thread.Thread
 import com.example.core.domain.model.user.User
 
@@ -122,6 +124,13 @@ interface MediaService {
         animeId: Int? = null,
         mangaId: Int? = null,
     ): Result<Boolean>
+
+    suspend fun getNotifications(
+        pageNumber: Int,
+        perPage: Int,
+        resetCount: Boolean,
+        types: List<NotificationType>? = null,
+    ): Result<Page<Notification>>
 
     suspend fun clearCache()
 }

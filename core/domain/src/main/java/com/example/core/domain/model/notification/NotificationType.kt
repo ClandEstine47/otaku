@@ -18,4 +18,5 @@ enum class NotificationType {
     MEDIA_DATA_CHANGE, // An anime or manga has had a data change that affects how a user may track it in their lists
     MEDIA_MERGE, // Anime or manga entries on the user's list have been merged into a single entry
     MEDIA_DELETION, // An anime or manga on the user's list has been deleted from the site
+    UNKNOWN,
 }

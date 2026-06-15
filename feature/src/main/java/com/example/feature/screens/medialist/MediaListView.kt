@@ -138,7 +138,7 @@ fun MediaListView(
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .padding(start = 5.dp, bottom = 15.dp, end = 5.dp),
+                        .padding(start = 15.dp, bottom = 15.dp, end = 5.dp),
             ) {
                 OtakuTitle(
                     id = arguments.titleId,

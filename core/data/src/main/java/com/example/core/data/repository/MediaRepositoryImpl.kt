@@ -12,6 +12,8 @@ import com.example.core.domain.model.media.MediaSort
 import com.example.core.domain.model.media.MediaStatus
 import com.example.core.domain.model.media.MediaType
 import com.example.core.domain.model.medialistcollection.MediaListSort
+import com.example.core.domain.model.notification.Notification
+import com.example.core.domain.model.notification.NotificationType
 import com.example.core.domain.model.thread.Thread
 import com.example.core.domain.repository.MediaRepository
 import com.example.core.domain.service.MediaService
@@ -253,6 +255,13 @@ class MediaRepositoryImpl
                 ).onFailure { error ->
                     Timber.e(error, "Failed to toggle favourite")
                 }
+
+        override suspend fun getNotifications(
+            pageNumber: Int,
+            perPage: Int,
+            resetCount: Boolean,
+            types: List<NotificationType>?,
+        ): Result<Page<Notification>> = mediaService.getNotifications(pageNumber, perPage, resetCount, types)
 
         override suspend fun clearCache() {
             mediaService.clearCache()
