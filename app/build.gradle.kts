@@ -7,6 +7,8 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.dagger.hilt)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.firebase)
+    alias(libs.plugins.crashlytics)
 }
 
 apply(from = rootProject.file("spotless.gradle"))
@@ -52,6 +54,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
+            manifestPlaceholders["crashlyticsCollectionEnabled"] = "false"
         }
         release {
             isDebuggable = false
@@ -62,6 +65,7 @@ android {
                 "proguard-rules.pro",
             )
             signingConfig = signingConfigs.getByName("release")
+            manifestPlaceholders["crashlyticsCollectionEnabled"] = "true"
         }
     }
     compileOptions {
@@ -125,4 +129,9 @@ dependencies {
 
     // haze
     implementation(libs.haze)
+
+    // firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.crashlytics)
 }

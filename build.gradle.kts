@@ -9,6 +9,8 @@ plugins {
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.dagger.hilt) apply false
     alias(libs.plugins.spotless) apply false
+    alias(libs.plugins.firebase) apply false
+    alias(libs.plugins.crashlytics) apply false
 }
 
 // Apply the plugin to all projects

@@ -25,6 +25,9 @@ kotlinxSerializationJson = "1.10.0"
 kotlinxCoroutinesTest = "1.10.2"
 material = "1.13.0"
 spotless = "8.4.0"
+googleServices = "4.4.4"
+crashlytics = "3.0.7"
+firebaseBom = "34.14.1"
 timber = "5.0.1"
 richEditor = "1.0.0-rc14"
 haze = "0.7.3"
@@ -55,6 +58,9 @@ compose-material-icons = { group = "androidx.compose.material", name = "material
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "androidxHiltNavigationCompose" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidxAppcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
+firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
+firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
 apollo-runtime = { group = "com.apollographql.apollo", name = "apollo-runtime", version.ref = "apolloGraphql" }
 apollo-normalized-cache = { group = "com.apollographql.apollo", name = "apollo-normalized-cache", version.ref = "apolloGraphql" }
 apollo-testing-support = { group = "com.apollographql.apollo", name = "apollo-testing-support", version.ref = "apolloGraphql" }
@@ -86,3 +92,5 @@ apollo-graphql = { id = "com.apollographql.apollo", version.ref = "apolloGraphql
 dagger-hilt = { id = "com.google.dagger.hilt.android", version.ref = "daggerHilt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
+firebase = { id = "com.google.gms.google-services", version.ref = "googleServices" }
+crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics" }
