@@ -1,11 +1,11 @@
 package com.example.core.navigation
 
 import androidx.navigation.NavController
-import androidx.navigation.NavGraph.Companion.findStartDestination
 
 fun NavController.navigateAndReplaceStartRoute(newHomeRoute: OtakuScreen) {
     navigate(newHomeRoute) {
-        popUpTo(graph.findStartDestination().id) {
+        popUpTo(graph.id) {
+            inclusive = true
             saveState = true
         }
         launchSingleTop = true
