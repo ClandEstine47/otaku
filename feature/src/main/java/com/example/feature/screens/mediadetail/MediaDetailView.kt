@@ -240,7 +240,9 @@ fun MediaDetailContent(
                     }
                 },
                 onDelete = {
-                    onDeleteMediaListEntry()
+                    if (mediaDetail.mediaListEntry?.id != null) {
+                        onDeleteMediaListEntry()
+                    }
                     scope.launch {
                         bottomSheetState.hide()
                         showMediaListEditor = false
