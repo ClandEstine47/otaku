@@ -86,6 +86,9 @@ class AnimeViewModelTest {
                 )
             } returns popularResponse
 
+            // When
+            viewModel.loadData()
+
             // Advance coroutines
             testDispatcher.scheduler.advanceUntilIdle()
 
@@ -122,6 +125,9 @@ class AnimeViewModelTest {
             coEvery {
                 mediaRepository.getPopularMedia(any(), any(), any())
             } returns Result.failure(Exception(errorMessage))
+
+            // When
+            viewModel.loadData()
 
             // Advance coroutines
             testDispatcher.scheduler.advanceUntilIdle()
@@ -160,6 +166,9 @@ class AnimeViewModelTest {
             coEvery {
                 mediaRepository.getPopularMedia(any(), any(), any())
             } returns successResponse
+
+            // When
+            viewModel.loadData()
 
             // Advance coroutines
             testDispatcher.scheduler.advanceUntilIdle()

@@ -70,6 +70,9 @@ class MangaViewModelTest {
                 )
             } returnsMany listOf(popularMangaResponse, popularManhwaResponse, popularNovelResponse, popularOneShotResponse)
 
+            // When
+            viewModel.loadData()
+
             // Advance coroutines
             testDispatcher.scheduler.advanceUntilIdle()
 
@@ -99,6 +102,9 @@ class MangaViewModelTest {
             coEvery {
                 mediaRepository.getPopularMedia(any(), any(), any(), any(), any())
             } returns Result.failure(Exception(errorMessage))
+
+            // When
+            viewModel.loadData()
 
             // Advance coroutines
             testDispatcher.scheduler.advanceUntilIdle()
@@ -135,6 +141,9 @@ class MangaViewModelTest {
                     mediaFormat = any(),
                 )
             } returns successResponse
+
+            // When
+            viewModel.loadData()
 
             // Advance coroutines
             testDispatcher.scheduler.advanceUntilIdle()

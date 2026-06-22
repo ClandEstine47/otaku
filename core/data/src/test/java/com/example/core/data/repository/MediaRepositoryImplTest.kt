@@ -521,6 +521,7 @@ class MediaRepositoryImplTest {
             coEvery {
                 mediaService.getMediaById(
                     id = defaultParams.mediaId,
+                    fetchFromNetwork = false,
                 )
             } returns Result.success(expectedMedia)
 
@@ -528,6 +529,7 @@ class MediaRepositoryImplTest {
             val result =
                 mediaRepository.getMediaById(
                     id = defaultParams.mediaId,
+                    fetchFromNetwork = false,
                 )
 
             // Then
@@ -544,6 +546,7 @@ class MediaRepositoryImplTest {
             coEvery {
                 mediaService.getMediaById(
                     id = defaultParams.mediaId,
+                    fetchFromNetwork = false,
                 )
             } returns Result.failure(expectedError)
 
@@ -551,6 +554,7 @@ class MediaRepositoryImplTest {
             val result =
                 mediaRepository.getMediaById(
                     id = defaultParams.mediaId,
+                    fetchFromNetwork = false,
                 )
 
             // Then

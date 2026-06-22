@@ -58,8 +58,8 @@ class MediaDetailViewModelTest {
         runTest {
             // Given
             val mediaId = 1
-            val mockMedia = mockk<Media>()
-            coEvery { mediaRepository.getMediaById(mediaId) } returns Result.success(mockMedia)
+            val mockMedia = Media(idAniList = mediaId, isFavourite = true)
+            coEvery { mediaRepository.getMediaById(id = mediaId, fetchFromNetwork = false) } returns Result.success(mockMedia)
 
             // When
             viewModel.getMediaDetail(mediaId)
@@ -70,9 +70,10 @@ class MediaDetailViewModelTest {
                 assertEquals(mockMedia, media)
                 assertFalse(isLoadingMediaDetails)
                 assertNull(error)
+                assertEquals(true, isFavourite)
             }
 
-            coVerify(exactly = 1) { mediaRepository.getMediaById(mediaId) }
+            coVerify(exactly = 1) { mediaRepository.getMediaById(id = mediaId, fetchFromNetwork = false) }
         }
 
     @Test
@@ -82,7 +83,7 @@ class MediaDetailViewModelTest {
             val mediaId = 1
             val errorMessage = "Network error"
             coEvery {
-                mediaRepository.getMediaById(mediaId)
+                mediaRepository.getMediaById(id = mediaId, fetchFromNetwork = false)
             } returns Result.failure(Exception(errorMessage))
 
             // When
@@ -96,7 +97,7 @@ class MediaDetailViewModelTest {
                 assertEquals(errorMessage, error)
             }
 
-            coVerify(exactly = 1) { mediaRepository.getMediaById(mediaId) }
+            coVerify(exactly = 1) { mediaRepository.getMediaById(id = mediaId, fetchFromNetwork = false) }
         }
 
     @Test
@@ -174,10 +175,10 @@ class MediaDetailViewModelTest {
             // Given
             val mediaId = 1
             coEvery {
-                mediaRepository.getMediaById(mediaId)
+                mediaRepository.getMediaById(id = mediaId, fetchFromNetwork = false)
             } coAnswers {
                 delay(100)
-                Result.success(mockk())
+                Result.success(Media(idAniList = mediaId))
             }
 
             // When
@@ -230,10 +231,10 @@ class MediaDetailViewModelTest {
             // Given
             val mediaId = 1
             coEvery {
-                mediaRepository.getMediaById(mediaId)
+                mediaRepository.getMediaById(id = mediaId, fetchFromNetwork = false)
             } coAnswers {
                 delay(100)
-                Result.success(mockk())
+                Result.success(Media(idAniList = mediaId))
             }
             coEvery {
                 mediaRepository.getMediaThreads(any(), any(), any())

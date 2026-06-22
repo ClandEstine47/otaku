@@ -13,16 +13,24 @@ import com.apollographql.apollo.network.NetworkTransport
 import com.apollographql.apollo.testing.QueueTestNetworkTransport
 import com.apollographql.apollo.testing.enqueueTestResponse
 import com.example.core.domain.model.media.MediaFormat
+import com.example.core.domain.model.media.MediaListStatus
 import com.example.core.domain.model.media.MediaSeason
 import com.example.core.domain.model.media.MediaSort
 import com.example.core.domain.model.media.MediaStatus
 import com.example.core.domain.model.media.MediaType
+import com.example.core.network.DeleteMediaListEntryMutation
 import com.example.core.network.MediaQuery
+import com.example.core.network.MediaRecommendationsQuery
 import com.example.core.network.MediaSearchQuery
 import com.example.core.network.MediaThreadsQuery
+import com.example.core.network.NotificationsQuery
 import com.example.core.network.RecentlyUpdatedQuery
+import com.example.core.network.SaveMediaListEntryMutation
 import com.example.core.network.SeasonalAnimeQuery
+import com.example.core.network.ToggleFavouriteMutation
 import com.example.core.network.TrendingNowQuery
+import com.example.core.network.UserListCollectionQuery
+import com.example.core.network.ViewerQuery
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.*
@@ -31,9 +39,12 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 import com.example.core.network.type.MediaFormat as NetworkMediaFormat
+import com.example.core.network.type.MediaListSort as NetworkMediaListSort
+import com.example.core.network.type.MediaListStatus as NetworkMediaListStatus
 import com.example.core.network.type.MediaSeason as NetworkMediaSeason
 import com.example.core.network.type.MediaStatus as NetworkMediaStatus
 import com.example.core.network.type.MediaType as NetworkMediaType
+import com.example.core.network.type.NotificationType as NetworkNotificationType
 
 @OptIn(ApolloExperimental::class)
 @RunWith(JUnit4::class)
@@ -78,8 +89,10 @@ class MediaServiceImplTest {
                 SeasonalAnimeQuery.Data(
                     Page =
                         SeasonalAnimeQuery.Page(
+                            __typename = "Page",
                             pageInfo =
                                 SeasonalAnimeQuery.PageInfo(
+                                    __typename = "PageInfo",
                                     total = 5,
                                     currentPage = 1,
                                     hasNextPage = true,
@@ -87,6 +100,7 @@ class MediaServiceImplTest {
                             media =
                                 listOf(
                                     SeasonalAnimeQuery.Medium(
+                                        __typename = "Media",
                                         id = 123,
                                         idMal = 123,
                                         status = NetworkMediaStatus.FINISHED,
@@ -94,6 +108,7 @@ class MediaServiceImplTest {
                                         episodes = 12,
                                         nextAiringEpisode =
                                             SeasonalAnimeQuery.NextAiringEpisode(
+                                                __typename = "AiringSchedule",
                                                 episode = 12,
                                             ),
                                         isAdult = false,
@@ -107,17 +122,20 @@ class MediaServiceImplTest {
                                         countryOfOrigin = "JP",
                                         coverImage =
                                             SeasonalAnimeQuery.CoverImage(
+                                                __typename = "MediaCoverImage",
                                                 large = "",
                                                 extraLarge = "",
                                             ),
                                         title =
                                             SeasonalAnimeQuery.Title(
+                                                __typename = "MediaTitle",
                                                 romaji = "Test Anime",
                                                 english = "Test Anime EN",
                                                 userPreferred = "Test Anime EN",
                                             ),
                                         mediaListEntry =
                                             SeasonalAnimeQuery.MediaListEntry(
+                                                __typename = "MediaList",
                                                 progress = 12,
                                                 private = false,
                                                 score = 10.0,
@@ -179,6 +197,7 @@ class MediaServiceImplTest {
                 SeasonalAnimeQuery.Data(
                     Page =
                         SeasonalAnimeQuery.Page(
+                            __typename = "Page",
                             pageInfo = null,
                             media = null,
                         ),
@@ -231,13 +250,7 @@ class MediaServiceImplTest {
                 data = null,
                 errors =
                     listOf(
-                        Error(
-                            message = "GraphQL Error",
-                            locations = null,
-                            path = null,
-                            extensions = null,
-                            nonStandardFields = null,
-                        ),
+                        Error.Builder(message = "GraphQL Error").build(),
                     ),
             )
 
@@ -310,8 +323,10 @@ class MediaServiceImplTest {
                 RecentlyUpdatedQuery.Data(
                     Page =
                         RecentlyUpdatedQuery.Page(
+                            __typename = "Page",
                             pageInfo =
                                 RecentlyUpdatedQuery.PageInfo(
+                                    __typename = "PageInfo",
                                     total = 5,
                                     currentPage = 1,
                                     hasNextPage = true,
@@ -319,14 +334,17 @@ class MediaServiceImplTest {
                             airingSchedules =
                                 listOf(
                                     RecentlyUpdatedQuery.AiringSchedule(
+                                        __typename = "AiringSchedule",
                                         episode = 5,
                                         airingAt = 1698624100,
                                         media =
                                             RecentlyUpdatedQuery.Media(
+                                                __typename = "Media",
                                                 id = 456,
                                                 idMal = 789,
                                                 title =
                                                     RecentlyUpdatedQuery.Title(
+                                                        __typename = "MediaTitle",
                                                         romaji = "Test Anime",
                                                         english = "Test Anime EN",
                                                         userPreferred = "Test Anime EN",
@@ -340,6 +358,7 @@ class MediaServiceImplTest {
                                                 bannerImage = "banner.jpg",
                                                 coverImage =
                                                     RecentlyUpdatedQuery.CoverImage(
+                                                        __typename = "MediaCoverImage",
                                                         large = "cover_large.jpg",
                                                         extraLarge = "cover_xl.jpg",
                                                     ),
@@ -350,6 +369,7 @@ class MediaServiceImplTest {
                                                 mediaListEntry = null,
                                                 nextAiringEpisode =
                                                     RecentlyUpdatedQuery.NextAiringEpisode(
+                                                        __typename = "AiringSchedule",
                                                         episode = 6,
                                                     ),
                                             ),
@@ -409,8 +429,10 @@ class MediaServiceImplTest {
                 RecentlyUpdatedQuery.Data(
                     Page =
                         RecentlyUpdatedQuery.Page(
+                            __typename = "Page",
                             pageInfo =
                                 RecentlyUpdatedQuery.PageInfo(
+                                    __typename = "PageInfo",
                                     total = 0,
                                     currentPage = 1,
                                     hasNextPage = false,
@@ -467,13 +489,7 @@ class MediaServiceImplTest {
                 data = null,
                 errors =
                     listOf(
-                        Error(
-                            message = "GraphQL Error",
-                            locations = null,
-                            path = null,
-                            extensions = null,
-                            nonStandardFields = null,
-                        ),
+                        Error.Builder(message = "GraphQL Error").build(),
                     ),
             )
 
@@ -535,8 +551,10 @@ class MediaServiceImplTest {
                 TrendingNowQuery.Data(
                     Page =
                         TrendingNowQuery.Page(
+                            __typename = "Page",
                             pageInfo =
                                 TrendingNowQuery.PageInfo(
+                                    __typename = "PageInfo",
                                     total = 5,
                                     currentPage = 1,
                                     hasNextPage = true,
@@ -544,6 +562,7 @@ class MediaServiceImplTest {
                             media =
                                 listOf(
                                     TrendingNowQuery.Medium(
+                                        __typename = "Media",
                                         id = 123,
                                         idMal = 123,
                                         status = NetworkMediaStatus.FINISHED,
@@ -551,6 +570,7 @@ class MediaServiceImplTest {
                                         episodes = 12,
                                         nextAiringEpisode =
                                             TrendingNowQuery.NextAiringEpisode(
+                                                __typename = "AiringSchedule",
                                                 episode = 12,
                                             ),
                                         isAdult = false,
@@ -564,17 +584,20 @@ class MediaServiceImplTest {
                                         countryOfOrigin = "JP",
                                         coverImage =
                                             TrendingNowQuery.CoverImage(
+                                                __typename = "MediaCoverImage",
                                                 large = "",
                                                 extraLarge = "",
                                             ),
                                         title =
                                             TrendingNowQuery.Title(
+                                                __typename = "MediaTitle",
                                                 romaji = "Test Anime",
                                                 english = "Test Anime EN",
                                                 userPreferred = "Test Anime EN",
                                             ),
                                         mediaListEntry =
                                             TrendingNowQuery.MediaListEntry(
+                                                __typename = "MediaList",
                                                 progress = 12,
                                                 private = false,
                                                 score = 10.0,
@@ -633,6 +656,7 @@ class MediaServiceImplTest {
                 TrendingNowQuery.Data(
                     Page =
                         TrendingNowQuery.Page(
+                            __typename = "Page",
                             pageInfo = null,
                             media = null,
                         ),
@@ -679,13 +703,7 @@ class MediaServiceImplTest {
                 data = null,
                 errors =
                     listOf(
-                        Error(
-                            message = "GraphQL Error",
-                            locations = null,
-                            path = null,
-                            extensions = null,
-                            nonStandardFields = null,
-                        ),
+                        Error.Builder(message = "GraphQL Error").build(),
                     ),
             )
 
@@ -752,8 +770,10 @@ class MediaServiceImplTest {
                 SeasonalAnimeQuery.Data(
                     Page =
                         SeasonalAnimeQuery.Page(
+                            __typename = "Page",
                             pageInfo =
                                 SeasonalAnimeQuery.PageInfo(
+                                    __typename = "PageInfo",
                                     total = 5,
                                     currentPage = 1,
                                     hasNextPage = true,
@@ -761,6 +781,7 @@ class MediaServiceImplTest {
                             media =
                                 listOf(
                                     SeasonalAnimeQuery.Medium(
+                                        __typename = "Media",
                                         id = 123,
                                         idMal = 123,
                                         status = NetworkMediaStatus.FINISHED,
@@ -768,6 +789,7 @@ class MediaServiceImplTest {
                                         episodes = 12,
                                         nextAiringEpisode =
                                             SeasonalAnimeQuery.NextAiringEpisode(
+                                                __typename = "AiringSchedule",
                                                 episode = 12,
                                             ),
                                         isAdult = false,
@@ -781,17 +803,20 @@ class MediaServiceImplTest {
                                         countryOfOrigin = "JP",
                                         coverImage =
                                             SeasonalAnimeQuery.CoverImage(
+                                                __typename = "MediaCoverImage",
                                                 large = "",
                                                 extraLarge = "",
                                             ),
                                         title =
                                             SeasonalAnimeQuery.Title(
+                                                __typename = "MediaTitle",
                                                 romaji = "Test Anime",
                                                 english = "Test Anime EN",
                                                 userPreferred = "Test Anime EN",
                                             ),
                                         mediaListEntry =
                                             SeasonalAnimeQuery.MediaListEntry(
+                                                __typename = "MediaList",
                                                 progress = 12,
                                                 private = false,
                                                 score = 10.0,
@@ -854,6 +879,7 @@ class MediaServiceImplTest {
                 SeasonalAnimeQuery.Data(
                     Page =
                         SeasonalAnimeQuery.Page(
+                            __typename = "Page",
                             pageInfo = null,
                             media = null,
                         ),
@@ -906,13 +932,7 @@ class MediaServiceImplTest {
                 data = null,
                 errors =
                     listOf(
-                        Error(
-                            message = "GraphQL Error",
-                            locations = null,
-                            path = null,
-                            extensions = null,
-                            nonStandardFields = null,
-                        ),
+                        Error.Builder(message = "GraphQL Error").build(),
                     ),
             )
 
@@ -976,6 +996,7 @@ class MediaServiceImplTest {
                 MediaQuery.Data(
                     Media =
                         MediaQuery.Media(
+                            __typename = "Media",
                             id = 123,
                             idMal = 123,
                             status = NetworkMediaStatus.FINISHED,
@@ -983,6 +1004,7 @@ class MediaServiceImplTest {
                             episodes = 12,
                             nextAiringEpisode =
                                 MediaQuery.NextAiringEpisode(
+                                    __typename = "AiringSchedule",
                                     episode = 12,
                                     airingAt = 1698624000,
                                     timeUntilAiring = 0,
@@ -995,15 +1017,19 @@ class MediaServiceImplTest {
                             averageScore = 90,
                             characters =
                                 MediaQuery.Characters(
+                                    __typename = "CharacterConnection",
                                     edges =
                                         listOf(
                                             MediaQuery.Edge3(
+                                                __typename = "CharacterEdge",
                                                 role = null,
                                                 node =
                                                     MediaQuery.Node3(
+                                                        __typename = "Character",
                                                         id = 5,
                                                         name =
                                                             MediaQuery.Name(
+                                                                __typename = "CharacterName",
                                                                 full = "Saitama",
                                                             ),
                                                         image = null,
@@ -1017,11 +1043,13 @@ class MediaServiceImplTest {
                             countryOfOrigin = "JP",
                             coverImage =
                                 MediaQuery.CoverImage(
+                                    __typename = "MediaCoverImage",
                                     large = "",
                                     extraLarge = "",
                                 ),
                             title =
                                 MediaQuery.Title(
+                                    __typename = "MediaTitle",
                                     romaji = "Test Anime",
                                     english = "Test Anime EN",
                                     native = "Test Anime",
@@ -1029,20 +1057,28 @@ class MediaServiceImplTest {
                                 ),
                             mediaListEntry =
                                 MediaQuery.MediaListEntry(
+                                    __typename = "MediaList",
+                                    id = 123,
+                                    startedAt = null,
+                                    completedAt = null,
                                     progress = 12,
                                     private = false,
                                     score = 10.0,
                                     status = null,
+                                    notes = "",
+                                    repeat = 0,
                                 ),
                             duration = 12,
                             startDate =
                                 MediaQuery.StartDate(
+                                    __typename = "FuzzyDate",
                                     year = 2000,
                                     month = 12,
                                     day = 12,
                                 ),
                             endDate =
                                 MediaQuery.EndDate(
+                                    __typename = "FuzzyDate",
                                     year = 2010,
                                     month = 11,
                                     day = 21,
@@ -1081,6 +1117,7 @@ class MediaServiceImplTest {
             val result =
                 mediaService.getMediaById(
                     id = defaultParams.mediaId,
+                    fetchFromNetwork = false,
                 )
 
             // Then
@@ -1107,13 +1144,7 @@ class MediaServiceImplTest {
                 data = null,
                 errors =
                     listOf(
-                        Error(
-                            message = "GraphQL Error",
-                            locations = null,
-                            path = null,
-                            extensions = null,
-                            nonStandardFields = null,
-                        ),
+                        Error.Builder(message = "GraphQL Error").build(),
                     ),
             )
 
@@ -1121,6 +1152,7 @@ class MediaServiceImplTest {
             val result =
                 mediaService.getMediaById(
                     id = defaultParams.mediaId,
+                    fetchFromNetwork = false,
                 )
 
             // Then
@@ -1151,6 +1183,7 @@ class MediaServiceImplTest {
             val result =
                 mediaService.getMediaById(
                     id = defaultParams.mediaId,
+                    fetchFromNetwork = false,
                 )
 
             // Then
@@ -1169,8 +1202,10 @@ class MediaServiceImplTest {
                 MediaThreadsQuery.Data(
                     Page =
                         MediaThreadsQuery.Page(
+                            __typename = "Page",
                             pageInfo =
                                 MediaThreadsQuery.PageInfo(
+                                    __typename = "PageInfo",
                                     total = 5,
                                     currentPage = 1,
                                     hasNextPage = true,
@@ -1178,6 +1213,7 @@ class MediaServiceImplTest {
                             threads =
                                 listOf(
                                     MediaThreadsQuery.Thread(
+                                        __typename = "Thread",
                                         id = 50,
                                         title = "Media Thread",
                                         body = "Media Thread Body",
@@ -1190,6 +1226,7 @@ class MediaServiceImplTest {
                                         createdAt = 123456,
                                         user =
                                             MediaThreadsQuery.User(
+                                                __typename = "User",
                                                 id = 79,
                                                 name = "User",
                                                 avatar = null,
@@ -1246,6 +1283,7 @@ class MediaServiceImplTest {
                 MediaThreadsQuery.Data(
                     Page =
                         MediaThreadsQuery.Page(
+                            __typename = "Page",
                             pageInfo = null,
                             threads = null,
                         ),
@@ -1292,13 +1330,7 @@ class MediaServiceImplTest {
                 data = null,
                 errors =
                     listOf(
-                        Error(
-                            message = "GraphQL Error",
-                            locations = null,
-                            path = null,
-                            extensions = null,
-                            nonStandardFields = null,
-                        ),
+                        Error.Builder(message = "GraphQL Error").build(),
                     ),
             )
 
@@ -1358,8 +1390,10 @@ class MediaServiceImplTest {
                 MediaSearchQuery.Data(
                     Page =
                         MediaSearchQuery.Page(
+                            __typename = "Page",
                             pageInfo =
                                 MediaSearchQuery.PageInfo(
+                                    __typename = "PageInfo",
                                     total = 5,
                                     currentPage = 1,
                                     hasNextPage = true,
@@ -1367,6 +1401,7 @@ class MediaServiceImplTest {
                             media =
                                 listOf(
                                     MediaSearchQuery.Medium(
+                                        __typename = "Media",
                                         id = 123,
                                         idMal = 123,
                                         status = NetworkMediaStatus.FINISHED,
@@ -1374,6 +1409,7 @@ class MediaServiceImplTest {
                                         episodes = 12,
                                         nextAiringEpisode =
                                             MediaSearchQuery.NextAiringEpisode(
+                                                __typename = "AiringSchedule",
                                                 episode = 12,
                                             ),
                                         isAdult = false,
@@ -1387,17 +1423,20 @@ class MediaServiceImplTest {
                                         countryOfOrigin = "JP",
                                         coverImage =
                                             MediaSearchQuery.CoverImage(
+                                                __typename = "MediaCoverImage",
                                                 large = "",
                                                 extraLarge = "",
                                             ),
                                         title =
                                             MediaSearchQuery.Title(
+                                                __typename = "MediaTitle",
                                                 romaji = "One Piece",
                                                 english = "One Piece",
                                                 userPreferred = "One Piece",
                                             ),
                                         mediaListEntry =
                                             MediaSearchQuery.MediaListEntry(
+                                                __typename = "MediaList",
                                                 progress = 12,
                                                 private = false,
                                                 score = 10.0,
@@ -1473,6 +1512,7 @@ class MediaServiceImplTest {
                 MediaSearchQuery.Data(
                     Page =
                         MediaSearchQuery.Page(
+                            __typename = "Page",
                             pageInfo = null,
                             media = null,
                         ),
@@ -1546,13 +1586,7 @@ class MediaServiceImplTest {
                 data = null,
                 errors =
                     listOf(
-                        Error(
-                            message = "GraphQL Error",
-                            locations = null,
-                            path = null,
-                            extensions = null,
-                            nonStandardFields = null,
-                        ),
+                        Error.Builder(message = "GraphQL Error").build(),
                     ),
             )
 
@@ -1619,6 +1653,700 @@ class MediaServiceImplTest {
             result.onFailure { exception ->
                 assertTrue(exception is ApolloException)
                 assertEquals("Network error", exception.message)
+            }
+        }
+
+    @Test
+    fun `getUserDetails returns success result with mapped data when API call is successful`() =
+        runTest {
+            // Given
+            val testData =
+                ViewerQuery.Data(
+                    Viewer =
+                        ViewerQuery.Viewer(
+                            __typename = "User",
+                            id = 1,
+                            name = "Test User",
+                            bannerImage = "banner.jpg",
+                            unreadNotificationCount = 5,
+                            avatar =
+                                ViewerQuery.Avatar(
+                                    __typename = "UserAvatar",
+                                    medium = "avatar.jpg",
+                                ),
+                            options =
+                                ViewerQuery.Options(
+                                    __typename = "UserOptions",
+                                    displayAdultContent = true,
+                                ),
+                            mediaListOptions =
+                                ViewerQuery.MediaListOptions(
+                                    __typename = "MediaListOptions",
+                                    rowOrder = "title",
+                                    animeList =
+                                        ViewerQuery.AnimeList(
+                                            __typename = "MediaListTypeOptions",
+                                            sectionOrder = listOf("Watching", "Completed"),
+                                            customLists = listOf("Plan to Watch"),
+                                        ),
+                                    mangaList =
+                                        ViewerQuery.MangaList(
+                                            __typename = "MediaListTypeOptions",
+                                            sectionOrder = listOf("Reading", "Completed"),
+                                            customLists = listOf("Plan to Read"),
+                                        ),
+                                ),
+                            statistics =
+                                ViewerQuery.Statistics(
+                                    __typename = "UserStatistics",
+                                    anime =
+                                        ViewerQuery.Anime(
+                                            __typename = "UserStatisticsResource",
+                                            episodesWatched = 100,
+                                            count = 50,
+                                        ),
+                                    manga =
+                                        ViewerQuery.Manga(
+                                            __typename = "UserStatisticsResource",
+                                            chaptersRead = 200,
+                                            count = 30,
+                                        ),
+                                ),
+                        ),
+                )
+
+            testClient.enqueueTestResponse(operation = ViewerQuery(), data = testData)
+
+            // When
+            val result = mediaService.getUserDetails()
+
+            // Then
+            assertTrue(result.isSuccess)
+            result.onSuccess { user ->
+                assertEquals(1, user.id)
+                assertEquals("Test User", user.name)
+                assertEquals(5, user.unreadNotificationCount)
+                assertTrue(user.options.displayAdultContent)
+            }
+        }
+
+    @Test
+    fun `getUserListCollection returns success result with mapped data when API call is successful`() =
+        runTest {
+            // Given
+            val testData =
+                UserListCollectionQuery.Data(
+                    MediaListCollection =
+                        UserListCollectionQuery.MediaListCollection(
+                            __typename = "MediaListCollection",
+                            lists =
+                                listOf(
+                                    UserListCollectionQuery.List(
+                                        __typename = "MediaListGroup",
+                                        name = "Watching",
+                                        isCustomList = false,
+                                        entries =
+                                            listOf(
+                                                UserListCollectionQuery.Entry(
+                                                    __typename = "MediaList",
+                                                    id = 1,
+                                                    status = NetworkMediaListStatus.CURRENT,
+                                                    score = 8.5,
+                                                    advancedScores = null,
+                                                    progress = 5,
+                                                    progressVolumes = null,
+                                                    repeat = 0,
+                                                    private = false,
+                                                    hiddenFromStatusLists = false,
+                                                    notes = "Good anime",
+                                                    mediaId = 123,
+                                                    media =
+                                                        UserListCollectionQuery.Media(
+                                                            __typename = "Media",
+                                                            id = 123,
+                                                            idMal = 123,
+                                                            status = NetworkMediaStatus.RELEASING,
+                                                            chapters = null,
+                                                            episodes = 12,
+                                                            duration = 24,
+                                                            startDate = null,
+                                                            endDate = null,
+                                                            season = NetworkMediaSeason.SPRING,
+                                                            seasonYear = 2024,
+                                                            nextAiringEpisode = null,
+                                                            isAdult = false,
+                                                            type = NetworkMediaType.ANIME,
+                                                            genres = listOf("Action"),
+                                                            meanScore = 80,
+                                                            averageScore = 80,
+                                                            description = "Description",
+                                                            synonyms = emptyList<String>(),
+                                                            source = null,
+                                                            isFavourite = false,
+                                                            format = NetworkMediaFormat.TV,
+                                                            bannerImage = "banner.jpg",
+                                                            countryOfOrigin = "JP",
+                                                            coverImage =
+                                                                UserListCollectionQuery.CoverImage(
+                                                                    __typename = "MediaCoverImage",
+                                                                    large = "large.jpg",
+                                                                    extraLarge = "xl.jpg",
+                                                                ),
+                                                            title =
+                                                                UserListCollectionQuery.Title(
+                                                                    __typename = "MediaTitle",
+                                                                    english = "Test Anime EN",
+                                                                    romaji = "Test Anime",
+                                                                    native = "Test Anime",
+                                                                    userPreferred = "Test Anime",
+                                                                ),
+                                                            mediaListEntry = null,
+                                                            trailer = null,
+                                                            externalLinks = null,
+                                                            popularity = 100,
+                                                            trending = 10,
+                                                            favourites = 50,
+                                                            rankings = null,
+                                                            siteUrl = "url",
+                                                            stats = null,
+                                                        ),
+                                                ),
+                                            ),
+                                    ),
+                                ),
+                            hasNextChunk = false,
+                        ),
+                )
+
+            val query =
+                UserListCollectionQuery(
+                    userId = Optional.present(1),
+                    type = Optional.present(NetworkMediaType.ANIME),
+                    sort = Optional.present(listOf(NetworkMediaListSort.UPDATED_TIME_DESC)),
+                    chunk = Optional.present(1),
+                    perChunk = Optional.present(20),
+                )
+
+            testClient.enqueueTestResponse(operation = query, data = testData)
+
+            // When
+            val result =
+                mediaService.getUserListCollection(
+                    pageNumber = 1,
+                    perPage = 20,
+                    mediaType = MediaType.ANIME,
+                    userId = 1,
+                    sortBy = null,
+                )
+
+            // Then
+            assertTrue(result.isSuccess)
+            result.onSuccess { page ->
+                assertEquals(1, page.data.size)
+                val media = page.data.first()
+                assertEquals(123, media.idAniList)
+                assertNotNull(media.mediaListEntry)
+                assertEquals(1, media.mediaListEntry?.id)
+                assertEquals(8.5, media.mediaListEntry?.score ?: 0.0, 0.0)
+            }
+        }
+
+    @Test
+    fun `getMediaRecommendationsById returns success result with mapped data when API call is successful`() =
+        runTest {
+            // Given
+            val testData =
+                MediaRecommendationsQuery.Data(
+                    Media =
+                        MediaRecommendationsQuery.Media(
+                            __typename = "Media",
+                            id = 123,
+                            idMal = 123,
+                            recommendations =
+                                MediaRecommendationsQuery.Recommendations(
+                                    __typename = "RecommendationConnection",
+                                    edges =
+                                        listOf(
+                                            MediaRecommendationsQuery.Edge(
+                                                __typename = "RecommendationEdge",
+                                                node =
+                                                    MediaRecommendationsQuery.Node(
+                                                        __typename = "Recommendation",
+                                                        mediaRecommendation =
+                                                            MediaRecommendationsQuery.MediaRecommendation(
+                                                                __typename = "Media",
+                                                                id = 456,
+                                                                idMal = 789,
+                                                                title =
+                                                                    MediaRecommendationsQuery.Title(
+                                                                        __typename = "MediaTitle",
+                                                                        english = "Recommended Anime EN",
+                                                                        romaji = "Recommended Anime",
+                                                                    ),
+                                                                type = NetworkMediaType.ANIME,
+                                                                format = NetworkMediaFormat.TV,
+                                                                status = NetworkMediaStatus.FINISHED,
+                                                                genres = listOf("Action"),
+                                                                episodes = 12,
+                                                                chapters = null,
+                                                                bannerImage = "banner.jpg",
+                                                                volumes = null,
+                                                                coverImage =
+                                                                    MediaRecommendationsQuery.CoverImage(
+                                                                        __typename = "MediaCoverImage",
+                                                                        large = "large.jpg",
+                                                                        extraLarge = "xl.jpg",
+                                                                    ),
+                                                                meanScore = 85,
+                                                                nextAiringEpisode = null,
+                                                            ),
+                                                    ),
+                                            ),
+                                        ),
+                                ),
+                        ),
+                )
+
+            val query = MediaRecommendationsQuery(id = 123)
+            testClient.enqueueTestResponse(operation = query, data = testData)
+
+            // When
+            val result = mediaService.getMediaRecommendationsById(id = 123)
+
+            // Then
+            assertTrue(result.isSuccess)
+            result.onSuccess { page ->
+                assertEquals(1, page.data.size)
+                val media = page.data.first()
+                assertEquals(456, media.idAniList)
+                assertEquals("Recommended Anime", media.title.romaji)
+            }
+        }
+
+    @Test
+    fun `saveMediaListEntry returns success result with mapped data when API call is successful`() =
+        runTest {
+            // Given
+            val testData =
+                SaveMediaListEntryMutation.Data(
+                    SaveMediaListEntry =
+                        SaveMediaListEntryMutation.SaveMediaListEntry(
+                            __typename = "MediaList",
+                            id = 1,
+                            status = NetworkMediaListStatus.CURRENT,
+                            score = 8.5,
+                            progress = 5,
+                            repeat = 0,
+                            private = false,
+                            notes = "Good anime",
+                            hiddenFromStatusLists = false,
+                            startedAt =
+                                SaveMediaListEntryMutation.StartedAt(
+                                    __typename = "FuzzyDate",
+                                    year = 2024,
+                                    month = 1,
+                                    day = 1,
+                                ),
+                            completedAt = null,
+                        ),
+                )
+
+            val mutation =
+                SaveMediaListEntryMutation(
+                    mediaId = 123,
+                    status = Optional.present(NetworkMediaListStatus.CURRENT),
+                )
+
+            testClient.enqueueTestResponse(operation = mutation, data = testData)
+
+            // When
+            val result =
+                mediaService.saveMediaListEntry(
+                    mediaId = 123,
+                    status = MediaListStatus.CURRENT,
+                )
+
+            // Then
+            assertTrue(result.isSuccess)
+            result.onSuccess { entry ->
+                assertEquals(1, entry.id)
+                assertEquals(MediaListStatus.CURRENT, entry.status)
+                assertEquals(8.5, entry.score, 0.0)
+            }
+        }
+
+    @Test
+    fun `deleteMediaListEntry returns success result when API call is successful`() =
+        runTest {
+            // Given
+            val testData =
+                DeleteMediaListEntryMutation.Data(
+                    DeleteMediaListEntry =
+                        DeleteMediaListEntryMutation.DeleteMediaListEntry(
+                            __typename = "Deleted",
+                            deleted = true,
+                        ),
+                )
+
+            val mutation = DeleteMediaListEntryMutation(mediaListEntryId = Optional.present(1))
+            testClient.enqueueTestResponse(operation = mutation, data = testData)
+
+            // When
+            val result = mediaService.deleteMediaListEntry(mediaListEntryId = 1)
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(true, result.getOrNull())
+        }
+
+    @Test
+    fun `toggleFavourite returns success result when API call is successful`() =
+        runTest {
+            // Given
+            val testData =
+                ToggleFavouriteMutation.Data(
+                    ToggleFavourite =
+                        ToggleFavouriteMutation.ToggleFavourite(
+                            __typename = "ToggleFavourite",
+                            anime =
+                                ToggleFavouriteMutation.Anime(
+                                    __typename = "MediaConnection",
+                                    pageInfo =
+                                        ToggleFavouriteMutation.PageInfo(
+                                            __typename = "PageInfo",
+                                            currentPage = 1,
+                                        ),
+                                ),
+                        ),
+                )
+
+            val mutation =
+                ToggleFavouriteMutation(
+                    animeId = Optional.present(123),
+                    mangaId = Optional.absent(),
+                )
+            testClient.enqueueTestResponse(operation = mutation, data = testData)
+
+            // When
+            val result = mediaService.toggleFavourite(animeId = 123)
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(true, result.getOrNull())
+        }
+
+    @Test
+    fun `getNotifications returns success result with mapped data when API call is successful`() =
+        runTest {
+            // Given
+            val testData =
+                NotificationsQuery.Data(
+                    Page =
+                        NotificationsQuery.Page(
+                            __typename = "Page",
+                            notifications =
+                                listOf(
+                                    NotificationsQuery.Notification(
+                                        __typename = "AiringNotification",
+                                        onAiringNotification =
+                                            NotificationsQuery.OnAiringNotification(
+                                                id = 1,
+                                                contexts = listOf("Episode", " aired"),
+                                                animeId = 123,
+                                                episode = 5,
+                                                media =
+                                                    NotificationsQuery.Media(
+                                                        __typename = "Media",
+                                                        title =
+                                                            NotificationsQuery.Title(
+                                                                __typename = "MediaTitle",
+                                                                userPreferred = "Test Anime",
+                                                            ),
+                                                        coverImage =
+                                                            NotificationsQuery.CoverImage(
+                                                                __typename = "MediaCoverImage",
+                                                                medium = "medium.jpg",
+                                                                large = "large.jpg",
+                                                            ),
+                                                        type = NetworkMediaType.ANIME,
+                                                    ),
+                                                type = NetworkNotificationType.AIRING,
+                                                createdAt = 123456789,
+                                            ),
+                                        onRelatedMediaAdditionNotification = null,
+                                        onMediaDataChangeNotification = null,
+                                        onMediaMergeNotification = null,
+                                        onMediaDeletionNotification = null,
+                                    ),
+                                ),
+                            pageInfo =
+                                NotificationsQuery.PageInfo(
+                                    __typename = "PageInfo",
+                                    currentPage = 1,
+                                    hasNextPage = true,
+                                ),
+                        ),
+                )
+
+            val query =
+                NotificationsQuery(
+                    page = Optional.present(1),
+                    perPage = Optional.present(20),
+                    resetCount = Optional.present(true),
+                    typeIn = Optional.absent(),
+                )
+
+            testClient.enqueueTestResponse(operation = query, data = testData)
+
+            // When
+            val result =
+                mediaService.getNotifications(
+                    pageNumber = 1,
+                    perPage = 20,
+                    resetCount = true,
+                )
+
+            // Then
+            assertTrue(result.isSuccess)
+            result.onSuccess { page ->
+                assertEquals(1, page.data.size)
+                assertEquals(1, page.pageInfo?.currentPage)
+            }
+        }
+
+    @Test
+    fun `clearCache completes successfully`() =
+        runTest {
+            mediaService.clearCache()
+        }
+
+    @Test
+    fun `getAnimeByStatusList returns success result with mapped data when API call is successful`() =
+        runTest {
+            // Given
+            val testData =
+                UserListCollectionQuery.Data(
+                    MediaListCollection =
+                        UserListCollectionQuery.MediaListCollection(
+                            __typename = "MediaListCollection",
+                            lists =
+                                listOf(
+                                    UserListCollectionQuery.List(
+                                        __typename = "MediaListGroup",
+                                        name = "Watching",
+                                        isCustomList = false,
+                                        entries =
+                                            listOf(
+                                                UserListCollectionQuery.Entry(
+                                                    __typename = "MediaList",
+                                                    id = 1,
+                                                    status = NetworkMediaListStatus.CURRENT,
+                                                    score = 8.5,
+                                                    advancedScores = null,
+                                                    progress = 5,
+                                                    progressVolumes = null,
+                                                    repeat = 0,
+                                                    private = false,
+                                                    hiddenFromStatusLists = false,
+                                                    notes = "Good anime",
+                                                    mediaId = 123,
+                                                    media =
+                                                        UserListCollectionQuery.Media(
+                                                            __typename = "Media",
+                                                            id = 123,
+                                                            idMal = 123,
+                                                            status = NetworkMediaStatus.RELEASING,
+                                                            chapters = null,
+                                                            episodes = 12,
+                                                            duration = 24,
+                                                            startDate = null,
+                                                            endDate = null,
+                                                            season = NetworkMediaSeason.SPRING,
+                                                            seasonYear = 2024,
+                                                            nextAiringEpisode = null,
+                                                            isAdult = false,
+                                                            type = NetworkMediaType.ANIME,
+                                                            genres = listOf("Action"),
+                                                            meanScore = 80,
+                                                            averageScore = 80,
+                                                            description = "Description",
+                                                            synonyms = emptyList<String>(),
+                                                            source = null,
+                                                            isFavourite = false,
+                                                            format = NetworkMediaFormat.TV,
+                                                            bannerImage = "banner.jpg",
+                                                            countryOfOrigin = "JP",
+                                                            coverImage =
+                                                                UserListCollectionQuery.CoverImage(
+                                                                    __typename = "MediaCoverImage",
+                                                                    large = "large.jpg",
+                                                                    extraLarge = "xl.jpg",
+                                                                ),
+                                                            title =
+                                                                UserListCollectionQuery.Title(
+                                                                    __typename = "MediaTitle",
+                                                                    english = "Test Anime EN",
+                                                                    romaji = "Test Anime",
+                                                                    native = "Test Anime",
+                                                                    userPreferred = "Test Anime",
+                                                                ),
+                                                            mediaListEntry = null,
+                                                            trailer = null,
+                                                            externalLinks = null,
+                                                            popularity = 100,
+                                                            trending = 10,
+                                                            favourites = 50,
+                                                            rankings = null,
+                                                            siteUrl = "url",
+                                                            stats = null,
+                                                        ),
+                                                ),
+                                            ),
+                                    ),
+                                ),
+                            hasNextChunk = false,
+                        ),
+                )
+
+            val query =
+                UserListCollectionQuery(
+                    userId = Optional.absent(),
+                    type = Optional.present(NetworkMediaType.ANIME),
+                    status = Optional.present(NetworkMediaListStatus.CURRENT),
+                    sort = Optional.present(listOf(NetworkMediaListSort.UPDATED_TIME_DESC)),
+                    chunk = Optional.present(1),
+                    perChunk = Optional.present(20),
+                )
+
+            testClient.enqueueTestResponse(operation = query, data = testData)
+
+            // When
+            val result =
+                mediaService.getAnimeByStatusList(
+                    pageNumber = 1,
+                    perPage = 20,
+                    status = MediaListStatus.CURRENT,
+                )
+
+            // Then
+            assertTrue(result.isSuccess)
+            result.onSuccess { page ->
+                assertEquals(1, page.data.size)
+            }
+        }
+
+    @Test
+    fun `getMangaByStatusList returns success result with mapped data when API call is successful`() =
+        runTest {
+            // Given
+            val testData =
+                UserListCollectionQuery.Data(
+                    MediaListCollection =
+                        UserListCollectionQuery.MediaListCollection(
+                            __typename = "MediaListCollection",
+                            lists =
+                                listOf(
+                                    UserListCollectionQuery.List(
+                                        __typename = "MediaListGroup",
+                                        name = "Reading",
+                                        isCustomList = false,
+                                        entries =
+                                            listOf(
+                                                UserListCollectionQuery.Entry(
+                                                    __typename = "MediaList",
+                                                    id = 1,
+                                                    status = NetworkMediaListStatus.CURRENT,
+                                                    score = 8.5,
+                                                    advancedScores = null,
+                                                    progress = 5,
+                                                    progressVolumes = null,
+                                                    repeat = 0,
+                                                    private = false,
+                                                    hiddenFromStatusLists = false,
+                                                    notes = "Good manga",
+                                                    mediaId = 123,
+                                                    media =
+                                                        UserListCollectionQuery.Media(
+                                                            __typename = "Media",
+                                                            id = 123,
+                                                            idMal = 123,
+                                                            status = NetworkMediaStatus.FINISHED,
+                                                            chapters = 30,
+                                                            episodes = null,
+                                                            duration = null,
+                                                            startDate = null,
+                                                            endDate = null,
+                                                            season = null,
+                                                            seasonYear = null,
+                                                            nextAiringEpisode = null,
+                                                            isAdult = false,
+                                                            type = NetworkMediaType.MANGA,
+                                                            genres = listOf("Adventure"),
+                                                            meanScore = 80,
+                                                            averageScore = 80,
+                                                            description = "Description",
+                                                            synonyms = emptyList<String>(),
+                                                            source = null,
+                                                            isFavourite = false,
+                                                            format = NetworkMediaFormat.MANGA,
+                                                            bannerImage = "banner.jpg",
+                                                            countryOfOrigin = "JP",
+                                                            coverImage =
+                                                                UserListCollectionQuery.CoverImage(
+                                                                    __typename = "MediaCoverImage",
+                                                                    large = "large.jpg",
+                                                                    extraLarge = "xl.jpg",
+                                                                ),
+                                                            title =
+                                                                UserListCollectionQuery.Title(
+                                                                    __typename = "MediaTitle",
+                                                                    english = "Test Manga EN",
+                                                                    romaji = "Test Manga",
+                                                                    native = "Test Manga",
+                                                                    userPreferred = "Test Manga",
+                                                                ),
+                                                            mediaListEntry = null,
+                                                            trailer = null,
+                                                            externalLinks = null,
+                                                            popularity = 100,
+                                                            trending = 10,
+                                                            favourites = 50,
+                                                            rankings = null,
+                                                            siteUrl = "url",
+                                                            stats = null,
+                                                        ),
+                                                ),
+                                            ),
+                                    ),
+                                ),
+                            hasNextChunk = false,
+                        ),
+                )
+
+            val query =
+                UserListCollectionQuery(
+                    userId = Optional.absent(),
+                    type = Optional.present(NetworkMediaType.MANGA),
+                    status = Optional.present(NetworkMediaListStatus.CURRENT),
+                    sort = Optional.present(listOf(NetworkMediaListSort.UPDATED_TIME_DESC)),
+                    chunk = Optional.present(1),
+                    perChunk = Optional.present(20),
+                )
+
+            testClient.enqueueTestResponse(operation = query, data = testData)
+
+            // When
+            val result =
+                mediaService.getMangaByStatusList(
+                    pageNumber = 1,
+                    perPage = 20,
+                    status = MediaListStatus.CURRENT,
+                )
+
+            // Then
+            assertTrue(result.isSuccess)
+            result.onSuccess { page ->
+                assertEquals(1, page.data.size)
             }
         }
 
