@@ -15,6 +15,7 @@ import com.example.core.domain.model.medialistcollection.MediaListSort
 import com.example.core.domain.model.notification.Notification
 import com.example.core.domain.model.notification.NotificationType
 import com.example.core.domain.model.thread.Thread
+import com.example.core.domain.model.user.User
 import com.example.core.domain.repository.MediaRepository
 import com.example.core.domain.service.MediaService
 import timber.log.Timber
@@ -25,6 +26,11 @@ class MediaRepositoryImpl
     constructor(
         private val mediaService: MediaService,
     ) : MediaRepository {
+        override suspend fun getUser(userId: Int): Result<User> =
+            mediaService.getUser(userId).onFailure { error ->
+                Timber.e(error, "Failed to get user details for id: $userId")
+            }
+
         override suspend fun getSeasonalMedia(
             pageNumber: Int,
             perPage: Int,

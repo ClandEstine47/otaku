@@ -20,6 +20,8 @@ import com.example.core.domain.model.user.User
 interface MediaService {
     suspend fun getUserDetails(): Result<User>
 
+    suspend fun getUser(userId: Int): Result<User>
+
     suspend fun getSeasonalMediaList(
         pageNumber: Int,
         perPage: Int,

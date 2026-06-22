@@ -46,6 +46,7 @@ import com.example.core.network.SaveMediaListEntryMutation
 import com.example.core.network.SeasonalAnimeQuery
 import com.example.core.network.TrendingNowQuery
 import com.example.core.network.UserListCollectionQuery
+import com.example.core.network.UserQuery
 import com.example.core.network.ViewerQuery
 import com.example.core.network.MediaQuery.Studios as NetworkStudios
 import com.example.core.network.type.CharacterRole as NetworkCharacterRole
@@ -61,6 +62,61 @@ import com.example.core.network.type.MediaStatus as NetworkMediaStatus
 import com.example.core.network.type.MediaType as NetworkMediaType
 import com.example.core.network.type.NotificationType as NetworkNotificationType
 import com.example.core.network.type.ReviewRating as NetworkReviewRating
+
+fun UserQuery.User.toDomainUser(
+    followerCount: Int = 0,
+    followingCount: Int = 0,
+): User =
+    User(
+        id = id,
+        name = name,
+        about = about ?: "",
+        avatar =
+            UserAvatar(
+                large = avatar?.large,
+                medium = avatar?.medium,
+            ),
+        bannerImage = bannerImage ?: "",
+        siteUrl = siteUrl ?: "",
+        followerCount = followerCount,
+        followingCount = followingCount,
+        favourites =
+            com.example.core.domain.model.user.Favourites(
+                anime =
+                    MediaConnection(
+                        nodes = favourites?.anime?.nodes?.mapNotNull { it?.toDomainMedia() } ?: emptyList(),
+                    ),
+                manga =
+                    MediaConnection(
+                        nodes = favourites?.manga?.nodes?.mapNotNull { it?.toDomainMedia() } ?: emptyList(),
+                    ),
+                characters =
+                    CharacterConnection(
+                        nodes = favourites?.characters?.nodes?.mapNotNull { it?.toDomainCharacter() } ?: emptyList(),
+                    ),
+                staff =
+                    StaffConnection(
+                        nodes = favourites?.staff?.nodes?.mapNotNull { it?.toDomainStaff() } ?: emptyList(),
+                    ),
+            ),
+        statistics =
+            UserStatisticTypes(
+                anime =
+                    UserStatistics(
+                        count = statistics?.anime?.count ?: 0,
+                        episodesWatched = statistics?.anime?.episodesWatched ?: 0,
+                        minutesWatched = statistics?.anime?.minutesWatched ?: 0,
+                        meanScore = statistics?.anime?.meanScore ?: 0.0,
+                    ),
+                manga =
+                    UserStatistics(
+                        count = statistics?.manga?.count ?: 0,
+                        chaptersRead = statistics?.manga?.chaptersRead ?: 0,
+                        volumesRead = statistics?.manga?.volumesRead ?: 0,
+                        meanScore = statistics?.manga?.meanScore ?: 0.0,
+                    ),
+            ),
+    )
 
 fun ViewerQuery.Viewer.toDomainUser(): User =
     User(
@@ -120,6 +176,62 @@ fun ViewerQuery.Viewer.toDomainUser(): User =
                         chaptersRead = statistics?.manga?.chaptersRead ?: 0,
                     ),
             ),
+    )
+
+fun UserQuery.Node.toDomainMedia(): Media =
+    Media(
+        idAniList = id,
+        title =
+            MediaTitle(
+                english = title?.english ?: "",
+                romaji = title?.romaji ?: "",
+                native = title?.native ?: "",
+                userPreferred = title?.userPreferred ?: "",
+            ),
+        coverImage =
+            MediaCoverImage(
+                medium = coverImage?.medium ?: "",
+                large = coverImage?.large ?: "",
+                extraLarge = coverImage?.extraLarge ?: "",
+            ),
+        meanScore = meanScore ?: 0,
+        episodes = episodes,
+        format = format?.toDomainMediaFormat(),
+    )
+
+fun UserQuery.Node2.toDomainMedia(): Media =
+    Media(
+        idAniList = id,
+        title =
+            MediaTitle(
+                english = title?.english ?: "",
+                romaji = title?.romaji ?: "",
+                native = title?.native ?: "",
+                userPreferred = title?.userPreferred ?: "",
+            ),
+        coverImage =
+            MediaCoverImage(
+                medium = coverImage?.medium ?: "",
+                large = coverImage?.large ?: "",
+                extraLarge = coverImage?.extraLarge ?: "",
+            ),
+        meanScore = meanScore ?: 0,
+        chapters = chapters,
+        format = format?.toDomainMediaFormat(),
+    )
+
+fun UserQuery.Node1.toDomainCharacter(): Character =
+    Character(
+        id = id,
+        name = CharacterName(full = name?.full),
+        image = CharacterImage(medium = image?.medium, large = image?.large),
+    )
+
+fun UserQuery.Node3.toDomainStaff(): Staff =
+    Staff(
+        id = id,
+        name = StaffName(full = name?.full),
+        image = StaffImage(medium = image?.medium, large = image?.large),
     )
 
 fun RecentlyUpdatedQuery.AiringSchedule.toRecentlyUpdatedMedia(): AiringSchedule =

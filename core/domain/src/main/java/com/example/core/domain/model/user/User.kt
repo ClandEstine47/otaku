@@ -21,4 +21,6 @@ data class User(
     val donatorBadge: String = "",
     val moderatorRoles: List<ModRole> = listOf(),
     val createdAt: Int = 0,
+    val followerCount: Int = 0,
+    val followingCount: Int = 0,
 )

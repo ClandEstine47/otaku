@@ -15,8 +15,11 @@ import com.example.core.domain.model.medialistcollection.MediaListSort
 import com.example.core.domain.model.notification.Notification
 import com.example.core.domain.model.notification.NotificationType
 import com.example.core.domain.model.thread.Thread
+import com.example.core.domain.model.user.User
 
 interface MediaRepository {
+    suspend fun getUser(userId: Int): Result<User>
+
     suspend fun getSeasonalMedia(
         pageNumber: Int,
         perPage: Int,

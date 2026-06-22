@@ -37,6 +37,7 @@ import com.example.core.network.SeasonalAnimeQuery
 import com.example.core.network.ToggleFavouriteMutation
 import com.example.core.network.TrendingNowQuery
 import com.example.core.network.UserListCollectionQuery
+import com.example.core.network.UserQuery
 import com.example.core.network.ViewerQuery
 import com.example.core.network.fragment.MediaFavouriteImpl
 import timber.log.Timber
@@ -66,6 +67,51 @@ class MediaServiceImpl
 
                     else -> {
                         val user = response.data?.Viewer?.toDomainUser()
+
+                        if (user != null) {
+                            Result.success(user)
+                        } else {
+                            Result.failure(Exception("User data is null"))
+                        }
+                    }
+                }
+            } catch (e: ApolloException) {
+                Result.failure(e)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+
+        override suspend fun getUser(userId: Int): Result<User> =
+            try {
+                val response =
+                    apolloClient
+                        .query(UserQuery(userId = userId))
+                        .fetchPolicy(FetchPolicy.NetworkFirst)
+                        .execute()
+
+                when {
+                    response.hasErrors() -> {
+                        val errorMessage =
+                            response.errors?.joinToString("; ") { it.message }
+                                ?: "Unknown GraphQL error"
+
+                        Result.failure(Exception(errorMessage))
+                    }
+
+                    else -> {
+                        val user =
+                            response.data?.User?.toDomainUser(
+                                followerCount =
+                                    response.data
+                                        ?.followers
+                                        ?.pageInfo
+                                        ?.total ?: 0,
+                                followingCount =
+                                    response.data
+                                        ?.following
+                                        ?.pageInfo
+                                        ?.total ?: 0,
+                            )
 
                         if (user != null) {
                             Result.success(user)

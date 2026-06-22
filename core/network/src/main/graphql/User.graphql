@@ -1,0 +1,111 @@
+query User($userId: Int!) {
+
+    User(id: $userId) {
+        about
+        avatar {
+            large
+            medium
+        }
+        bannerImage
+        id
+        name
+        siteUrl
+        favourites {
+            anime {
+                nodes {
+                    id
+                    title {
+                        english
+                        romaji
+                        native
+                        userPreferred
+                    }
+                    coverImage {
+                        extraLarge
+                        large
+                        medium
+                    }
+                    meanScore
+                    episodes
+                    format
+                }
+            }
+            characters {
+                nodes {
+                    id
+                    name {
+                        full
+                    }
+                    image {
+                        large
+                        medium
+                    }
+                }
+            }
+            manga {
+                nodes {
+                    id
+                    title {
+                        english
+                        romaji
+                        native
+                        userPreferred
+                    }
+                    coverImage {
+                        extraLarge
+                        large
+                        medium
+                    }
+                    meanScore
+                    chapters
+                    format
+                }
+            }
+            staff {
+                nodes {
+                    id
+                    image {
+                        large
+                        medium
+                    }
+                    name {
+                        full
+                    }
+                }
+            }
+        }
+
+        statistics {
+            anime {
+                count
+                episodesWatched
+                minutesWatched
+                meanScore
+            }
+            manga {
+                chaptersRead
+                count
+                meanScore
+                volumesRead
+            }
+        }
+    }
+
+    followers: Page(perPage: 1) {
+        pageInfo {
+            total
+        }
+        followers(userId: $userId) {
+            id
+        }
+    }
+
+    following: Page(perPage: 1) {
+        pageInfo {
+            total
+        }
+        following(userId: $userId) {
+            id
+        }
+    }
+}
