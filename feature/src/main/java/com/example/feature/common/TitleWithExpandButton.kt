@@ -7,12 +7,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun TitleWithExpandButton(
     modifier: Modifier = Modifier,
     titleId: Int,
+    titleStartPadding: Dp = 10.dp,
     onExpandClick: () -> Unit,
 ) {
     Row(
@@ -22,7 +24,7 @@ fun TitleWithExpandButton(
     ) {
         OtakuTitle(
             id = titleId,
-            modifier = Modifier.padding(start = 10.dp),
+            modifier = Modifier.padding(start = titleStartPadding),
         )
 
         ExpandMediaListButton(

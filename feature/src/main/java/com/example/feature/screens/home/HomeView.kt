@@ -227,7 +227,15 @@ fun HomeContent(
                 verticalArrangement = Arrangement.Center,
             ) {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(16.dp))
+                            .clickable(onClick = {
+                                navActionManager.toProfile(user.id)
+                                showBottomSheet = false
+                            })
+                            .padding(horizontal = 8.dp, vertical = 12.dp),
                     horizontalArrangement = Arrangement.spacedBy(20.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -550,6 +558,7 @@ fun HomeContent(
             currentAnimeMedia?.takeIf { it.isNotEmpty() }?.let { currentAnime ->
                 TitleWithExpandButton(
                     titleId = R.string.current_anime,
+                    titleStartPadding = 0.dp,
                     onExpandClick = {
                         navActionManager.toUserCurrentAnimeList(
                             titleId = R.string.current_anime,
@@ -586,6 +595,7 @@ fun HomeContent(
             currentMangaMedia?.takeIf { it.isNotEmpty() }?.let { currentManga ->
                 TitleWithExpandButton(
                     titleId = R.string.current_manga,
+                    titleStartPadding = 0.dp,
                     onExpandClick = {
                         navActionManager.toUserCurrentMangaList(
                             titleId = R.string.current_manga,

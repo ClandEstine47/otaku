@@ -2,7 +2,6 @@ package com.example.feature.screens.mediadetail.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -21,6 +20,7 @@ import com.example.core.domain.model.media.MediaType
 import com.example.feature.R
 import com.example.feature.Utils
 import com.example.feature.common.OtakuTitle
+import com.example.feature.common.TagItem
 
 @Composable
 fun MediaInfo(
@@ -126,21 +126,5 @@ fun MediaInfo(
 
         TagItem(key = R.string.studios, value = studios.joinToString(separator = "\n"))
         TagItem(key = R.string.producers, value = producers.joinToString(separator = "\n"))
-    }
-}
-
-@Composable
-fun TagItem(
-    modifier: Modifier = Modifier,
-    key: Int,
-    value: String,
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-    ) {
-        OtakuTitle(id = key, color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f), fontWeight = FontWeight.Light, style = MaterialTheme.typography.bodyMedium)
-        Spacer(modifier = Modifier.width(50.dp))
-        OtakuTitle(title = value, textAlign = TextAlign.End, fontWeight = FontWeight.Light, style = MaterialTheme.typography.bodyMedium)
     }
 }

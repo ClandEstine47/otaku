@@ -90,6 +90,14 @@ class NavActionManager(
         navController.navigate(OtakuScreen.Notifications)
     }
 
+    fun toProfile(userId: Int? = null) {
+        navController.navigate(
+            OtakuScreen.Profile(
+                userId = userId,
+            ),
+        )
+    }
+
     companion object {
         @Composable
         fun rememberNavActionManager(navController: NavHostController = rememberNavController()) =
