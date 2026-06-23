@@ -133,7 +133,14 @@ object Utils {
         }
     }
 
-    fun <T> getFormattedString(value: T?): String = value?.toString()?.replace("_", " ") ?: ""
+    fun <T> getFormattedString(value: T?): String {
+        if (value == null) return ""
+        return value
+            .toString()
+            .lowercase()
+            .split("_")
+            .joinToString(" ") { it.replaceFirstChar { char -> char.uppercase() } }
+    }
 
     fun formatTimeAgo(seconds: Int): String {
         val now = Instant.now().epochSecond

@@ -32,8 +32,11 @@ class MainActivity : ComponentActivity() {
         val initialIsLoggedIn = viewModel.isLoggedIn.firstBlocking()
         setContent {
             val isLoggedIn by viewModel.isLoggedIn.collectAsStateWithLifecycle(initialIsLoggedIn)
+            val themeSettings by viewModel.themeSettings.collectAsStateWithLifecycle()
+
             OtakuMain(
                 isLoggedIn = isLoggedIn,
+                themeSettings = themeSettings,
             )
         }
     }

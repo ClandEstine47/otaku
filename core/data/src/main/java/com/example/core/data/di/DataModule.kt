@@ -8,8 +8,10 @@ import androidx.datastore.preferences.core.edit
 import com.apollographql.apollo.ApolloClient
 import com.example.core.data.auth.DataStoreAuthTokenProvider
 import com.example.core.data.repository.MainRepositoryImpl
+import com.example.core.data.repository.SettingsRepositoryImpl
 import com.example.core.domain.auth.AuthTokenProvider
 import com.example.core.domain.repository.MainRepository
+import com.example.core.domain.repository.SettingsRepository
 import com.example.core.domain.service.MediaService
 import com.example.core.network.service.MediaServiceImpl
 import dagger.Module
@@ -63,6 +65,12 @@ object DataModule {
         mediaService: MediaService,
         dataStore: DataStore<Preferences>,
     ): MainRepository = MainRepositoryImpl(mediaService = mediaService, dataStore = dataStore)
+
+    @Provides
+    @Singleton
+    fun provideSettingsRepository(
+        dataStore: DataStore<Preferences>,
+    ): SettingsRepository = SettingsRepositoryImpl(dataStore)
 
     @Provides
     @Singleton

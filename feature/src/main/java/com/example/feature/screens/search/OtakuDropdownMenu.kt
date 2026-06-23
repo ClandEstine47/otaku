@@ -34,9 +34,10 @@ import com.example.feature.common.OtakuTitle
 fun <T> OtakuDropdownMenu(
     options: List<T>,
     currentValue: T?,
-    label: String,
+    label: String? = null,
     onValueChangedEvent: (T) -> Unit,
     modifier: Modifier = Modifier,
+    selectedTextUpperCase: Boolean = false,
 ) {
     var expanded by remember { mutableStateOf(false) }
     var selectedValue by rememberSaveable { mutableStateOf(currentValue) }
@@ -53,19 +54,29 @@ fun <T> OtakuDropdownMenu(
         onExpandedChange = { expanded = !expanded },
         modifier = modifier,
     ) {
+        val displayedText =
+            if (selectedTextUpperCase) {
+                Utils.getFormattedString(selectedValue).uppercase()
+            } else {
+                Utils.getFormattedString(selectedValue)
+            }
+
         OutlinedTextField(
             readOnly = true,
-            value = Utils.getFormattedString(selectedValue),
+            value = displayedText,
             onValueChange = {},
             textStyle = TextStyle(fontWeight = FontWeight.Bold, fontSize = 14.sp),
-            label = {
-                Text(
-                    text = label,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold,
-                    overflow = TextOverflow.Clip,
-                )
-            },
+            label =
+                label?.let {
+                    {
+                        Text(
+                            text = it,
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.Bold,
+                            overflow = TextOverflow.Clip,
+                        )
+                    }
+                },
             trailingIcon = {
                 ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
             },
