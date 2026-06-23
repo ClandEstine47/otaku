@@ -98,6 +98,14 @@ class NavActionManager(
         )
     }
 
+    fun toSettings() {
+        navController.navigate(OtakuScreen.Settings)
+    }
+
+    fun toTheme() {
+        navController.navigate(OtakuScreen.Theme)
+    }
+
     companion object {
         @Composable
         fun rememberNavActionManager(navController: NavHostController = rememberNavController()) =

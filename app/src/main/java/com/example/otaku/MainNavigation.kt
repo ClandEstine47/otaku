@@ -24,6 +24,8 @@ import com.example.feature.screens.medialist.MediaListView
 import com.example.feature.screens.notifications.NotificationsView
 import com.example.feature.screens.profile.ProfileView
 import com.example.feature.screens.search.MediaSearchView
+import com.example.feature.screens.settings.SettingsView
+import com.example.feature.screens.settings.ThemeView
 import dev.chrisbanes.haze.HazeState
 import kotlin.reflect.typeOf
 
@@ -118,6 +120,18 @@ fun MainNavigation(
         composable<OtakuScreen.Profile> {
             ProfileView(
                 arguments = it.toRoute(),
+                navActionManager = navActionManager,
+            )
+        }
+
+        composable<OtakuScreen.Settings> {
+            SettingsView(
+                navActionManager = navActionManager,
+            )
+        }
+
+        composable<OtakuScreen.Theme> {
+            ThemeView(
                 navActionManager = navActionManager,
             )
         }

@@ -42,4 +42,10 @@ sealed interface OtakuScreen {
     data class Profile(
         val userId: Int? = null,
     ) : OtakuScreen
+
+    @Serializable
+    data object Settings : OtakuScreen
+
+    @Serializable
+    data object Theme : OtakuScreen
 }

@@ -66,6 +66,17 @@
     <string name="anime_">Anime</string>
     <string name="manga_">Manga</string>
     <string name="settings">Settings</string>
+    <string name="theme">Theme</string>
+    <string name="theme_subtitle">Choose your favorite colors and styles</string>
+    <string name="theme_mode">Mode</string>
+    <string name="light">Light</string>
+    <string name="dark">Dark</string>
+    <string name="system">System</string>
+    <string name="theme_color">Theme Color</string>
+    <string name="oled_mode">Pure Black (OLED)</string>
+    <string name="oled_subtitle">Reduces power consumption on OLED screens</string>
+    <string name="about">About</string>
+    <string name="about_subtitle">Know more about Otaku</string>
     <string name="logout">Logout</string>
     <string name="logout_confirmation">Are you sure you want to logout?</string>
     <string name="no">No</string>

@@ -266,7 +266,8 @@ fun HomeContent(
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(16.dp))
                             .clickable(onClick = {
-                                // todo: navigate to settings
+                                navActionManager.toSettings()
+                                showBottomSheet = false
                             })
                             .padding(horizontal = 12.dp, vertical = 14.dp),
                     verticalAlignment = Alignment.CenterVertically,
