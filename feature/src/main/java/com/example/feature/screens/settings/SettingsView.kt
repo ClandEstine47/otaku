@@ -84,7 +84,7 @@ fun SettingsView(
                 titleRes = R.string.about,
                 subtitleRes = R.string.about_subtitle,
                 onClick = {
-                    // TODO: Navigate to about screen
+                    navActionManager.toAbout()
                 },
             )
         }

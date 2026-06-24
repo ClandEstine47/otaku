@@ -24,6 +24,7 @@ import com.example.feature.screens.medialist.MediaListView
 import com.example.feature.screens.notifications.NotificationsView
 import com.example.feature.screens.profile.ProfileView
 import com.example.feature.screens.search.MediaSearchView
+import com.example.feature.screens.settings.AboutView
 import com.example.feature.screens.settings.SettingsView
 import com.example.feature.screens.settings.ThemeView
 import dev.chrisbanes.haze.HazeState
@@ -132,6 +133,12 @@ fun MainNavigation(
 
         composable<OtakuScreen.Theme> {
             ThemeView(
+                navActionManager = navActionManager,
+            )
+        }
+
+        composable<OtakuScreen.About> {
+            AboutView(
                 navActionManager = navActionManager,
             )
         }

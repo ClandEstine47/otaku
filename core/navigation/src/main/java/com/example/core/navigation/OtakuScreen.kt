@@ -48,4 +48,7 @@ sealed interface OtakuScreen {
 
     @Serializable
     data object Theme : OtakuScreen
+
+    @Serializable
+    data object About : OtakuScreen
 }
