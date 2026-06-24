@@ -169,7 +169,11 @@ fun HomeView(
                         CircularProgressIndicator()
                     }
                 } else if (uiState.error == null) {
-                    AuthContent()
+                    AuthContent(
+                        onSettingsClick = {
+                            navActionManager.toSettings()
+                        },
+                    )
                 } else {
                     ErrorScreen(
                         modifier = Modifier.padding(top = 350.dp),
@@ -684,59 +688,80 @@ private fun RowScope.HomeListTile(
 }
 
 @Composable
-fun AuthContent() {
+fun AuthContent(
+    onSettingsClick: () -> Unit = {},
+) {
     val context = LocalContext.current
     val githubUrl = stringResource(R.string.github_url)
 
-    Column(
+    Box(
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        OtakuTitle(
-            title = stringResource(R.string.otaku),
-            color = MaterialTheme.colorScheme.primary,
-            style = MaterialTheme.typography.titleLarge,
-            fontSize = 60.sp,
-        )
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        OtakuTitle(
-            id = R.string.powered_by_anilist,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
-            fontWeight = FontWeight.Light,
-            style = MaterialTheme.typography.bodyMedium,
-        )
-
-        Spacer(modifier = Modifier.height(75.dp))
-
         IconButton(
-            onClick = {
-                context.openActionView(githubUrl)
-            },
+            modifier =
+                Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(16.dp)
+                    .padding(top = 15.dp),
+            onClick = onSettingsClick,
         ) {
             Icon(
-                painter = painterResource(R.drawable.github),
-                contentDescription = "Github Link",
+                painter = painterResource(R.drawable.settings),
+                contentDescription = "Settings",
+                tint = MaterialTheme.colorScheme.onBackground,
             )
         }
 
-        Spacer(modifier = Modifier.height(75.dp))
-
-        Button(
-            modifier =
-                Modifier
-                    .fillMaxWidth(0.5f)
-                    .height(50.dp),
-            onClick = {
-                context.openActionView(OTAKU_AUTH_URL)
-            },
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             OtakuTitle(
-                id = R.string.login,
-                color = MaterialTheme.colorScheme.background,
+                title = stringResource(R.string.otaku),
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.titleLarge,
+                fontSize = 60.sp,
             )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            OtakuTitle(
+                id = R.string.powered_by_anilist,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+                fontWeight = FontWeight.Light,
+                style = MaterialTheme.typography.bodyMedium,
+            )
+
+            Spacer(modifier = Modifier.height(75.dp))
+
+            IconButton(
+                onClick = {
+                    context.openActionView(githubUrl)
+                },
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.github),
+                    contentDescription = "Github Link",
+                )
+            }
+
+            Spacer(modifier = Modifier.height(75.dp))
+
+            Button(
+                modifier =
+                    Modifier
+                        .fillMaxWidth(0.5f)
+                        .height(50.dp),
+                onClick = {
+                    context.openActionView(OTAKU_AUTH_URL)
+                },
+            ) {
+                OtakuTitle(
+                    id = R.string.login,
+                    color = MaterialTheme.colorScheme.background,
+                )
+            }
         }
     }
 }
