@@ -3,13 +3,18 @@ package com.example.feature.screens.notifications
 import com.example.core.domain.model.notification.Notification
 import com.example.core.domain.model.notification.NotificationType
 
-data class NotificationsUiState(
+data class NotificationTabState(
+    val notifications: List<Notification> = emptyList(),
+    val currentPage: Int = 1,
+    val hasNextPage: Boolean = false,
     val isLoading: Boolean = false,
-    val notificationsByTab: List<List<Notification>> = List(NotificationTab.entries.size) { emptyList() },
     val error: String? = null,
-    val hasNextPageByTab: List<Boolean> = List(NotificationTab.entries.size) { false },
-    val currentPageByTab: List<Int> = List(NotificationTab.entries.size) { 1 },
+)
+
+data class NotificationsUiState(
     val selectedTab: NotificationTab = NotificationTab.ALL,
+    val tabs: Map<NotificationTab, NotificationTabState> =
+        NotificationTab.entries.associateWith { NotificationTabState() },
 )
 
 enum class NotificationTab(

@@ -67,9 +67,20 @@ fun NotificationsView(
             NotificationTab.entries.size
         }
 
+    // Sync Pager -> ViewModel
     LaunchedEffect(pagerState) {
         snapshotFlow { pagerState.currentPage }.collect { page ->
-            viewModel.onTabSelected(NotificationTab.entries[page])
+            val selectedTab = NotificationTab.entries.getOrNull(page)
+            if (selectedTab != null) {
+                viewModel.onTabSelected(selectedTab)
+            }
+        }
+    }
+
+    // Sync ViewModel -> Pager
+    LaunchedEffect(uiState.selectedTab) {
+        if (pagerState.currentPage != uiState.selectedTab.ordinal) {
+            pagerState.animateScrollToPage(uiState.selectedTab.ordinal)
         }
     }
 
@@ -157,90 +168,113 @@ fun NotificationsView(
                 state = pagerState,
                 verticalAlignment = Alignment.Top,
             ) { page ->
-                val notifications = uiState.notificationsByTab[page]
-                val hasNextPage = uiState.hasNextPageByTab[page]
-                val listState = rememberLazyListState()
+                val tab = NotificationTab.entries[page]
+                val tabState = uiState.tabs[tab] ?: NotificationTabState()
 
-                listState.OnBottomReached(buffer = 3) {
-                    if (hasNextPage && !uiState.isLoading) {
-                        viewModel.loadNotifications()
-                    }
+                NotificationList(
+                    tabState = tabState,
+                    onLoadMore = { viewModel.loadNotifications(tab = tab) },
+                    onRetry = { viewModel.loadNotifications(isRefresh = true, tab = tab) },
+                    onNotificationClick = { notification ->
+                        handleNotificationClick(notification, navActionManager)
+                    },
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun NotificationList(
+    tabState: NotificationTabState,
+    onLoadMore: () -> Unit,
+    onRetry: () -> Unit,
+    onNotificationClick: (Notification) -> Unit,
+) {
+    val listState = rememberLazyListState()
+
+    listState.OnBottomReached(buffer = 3) {
+        if (tabState.hasNextPage && !tabState.isLoading) {
+            onLoadMore()
+        }
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        if (tabState.isLoading && tabState.notifications.isEmpty()) {
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+        } else if (tabState.error != null && tabState.notifications.isEmpty()) {
+            ErrorScreen(onRetryClick = onRetry)
+        } else {
+            LazyColumn(
+                state = listState,
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                items(tabState.notifications) { notification ->
+                    NotificationItem(
+                        notification = notification,
+                        onClick = { onNotificationClick(notification) },
+                    )
+                    HorizontalDivider(
+                        modifier = Modifier.padding(top = 16.dp),
+                        thickness = 0.5.dp,
+                        color = MaterialTheme.colorScheme.outlineVariant,
+                    )
                 }
 
-                if (uiState.isLoading && notifications.isEmpty()) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
-                    }
-                } else if (uiState.error != null && notifications.isEmpty()) {
-                    ErrorScreen(onRetryClick = { viewModel.loadNotifications(true) })
-                } else {
-                    LazyColumn(
-                        state = listState,
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                    ) {
-                        items(notifications) { notification ->
-                            NotificationItem(
-                                notification = notification,
-                                onClick = {
-                                    when (notification) {
-                                        is Notification.Airing -> {
-                                            navActionManager.toMediaDetail(
-                                                notification.animeId,
-                                                notification.media.type ?: MediaType.ANIME,
-                                            )
-                                        }
-
-                                        is Notification.RelatedMediaAddition -> {
-                                            navActionManager.toMediaDetail(
-                                                notification.mediaId,
-                                                notification.media.type ?: MediaType.ANIME,
-                                            )
-                                        }
-
-                                        is Notification.MediaDataChange -> {
-                                            navActionManager.toMediaDetail(
-                                                notification.mediaId,
-                                                notification.media.type ?: MediaType.ANIME,
-                                            )
-                                        }
-
-                                        is Notification.MediaMerge -> {
-                                            navActionManager.toMediaDetail(
-                                                notification.mediaId,
-                                                notification.media.type ?: MediaType.ANIME,
-                                            )
-                                        }
-
-                                        else -> {}
-                                    }
-                                },
-                            )
-                            HorizontalDivider(
-                                modifier = Modifier.padding(top = 16.dp),
-                                thickness = 0.5.dp,
-                                color = MaterialTheme.colorScheme.outlineVariant,
-                            )
-                        }
-
-                        if (hasNextPage && uiState.isLoading) {
-                            item {
-                                Box(
-                                    modifier =
-                                        Modifier
-                                            .fillMaxWidth()
-                                            .padding(16.dp),
-                                    contentAlignment = Alignment.Center,
-                                ) {
-                                    CircularProgressIndicator()
-                                }
-                            }
+                if (tabState.hasNextPage && tabState.isLoading) {
+                    item {
+                        Box(
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            CircularProgressIndicator()
                         }
                     }
                 }
             }
         }
+    }
+}
+
+private fun handleNotificationClick(
+    notification: Notification,
+    navActionManager: NavActionManager,
+) {
+    when (notification) {
+        is Notification.Airing -> {
+            navActionManager.toMediaDetail(
+                notification.animeId,
+                notification.media.type ?: MediaType.ANIME,
+            )
+        }
+
+        is Notification.RelatedMediaAddition -> {
+            navActionManager.toMediaDetail(
+                notification.mediaId,
+                notification.media.type ?: MediaType.ANIME,
+            )
+        }
+
+        is Notification.MediaDataChange -> {
+            navActionManager.toMediaDetail(
+                notification.mediaId,
+                notification.media.type ?: MediaType.ANIME,
+            )
+        }
+
+        is Notification.MediaMerge -> {
+            navActionManager.toMediaDetail(
+                notification.mediaId,
+                notification.media.type ?: MediaType.ANIME,
+            )
+        }
+
+        else -> {}
     }
 }
 

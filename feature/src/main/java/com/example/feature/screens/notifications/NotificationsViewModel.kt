@@ -23,61 +23,63 @@ class NotificationsViewModel
             loadNotifications()
         }
 
-        fun loadNotifications(isRefresh: Boolean = false) {
-            val currentTab = _state.value.selectedTab
-            val tabIndex = currentTab.ordinal
+        fun loadNotifications(
+            isRefresh: Boolean = false,
+            tab: NotificationTab? = null,
+        ) {
+            val targetTab = tab ?: _state.value.selectedTab
+            val currentTabState = _state.value.tabs[targetTab] ?: NotificationTabState()
 
-            if (_state.value.isLoading) return
+            if (currentTabState.isLoading) return
 
-            _state.update {
-                if (isRefresh) {
-                    val newNotificationsByTab = it.notificationsByTab.toMutableList()
-                    newNotificationsByTab[tabIndex] = emptyList()
-                    val newCurrentPageByTab = it.currentPageByTab.toMutableList()
-                    newCurrentPageByTab[tabIndex] = 1
+            _state.update { currentState ->
+                val updatedTabState =
+                    if (isRefresh) {
+                        NotificationTabState(isLoading = true)
+                    } else {
+                        currentTabState.copy(isLoading = true)
+                    }
 
-                    it.copy(
-                        isLoading = true,
-                        notificationsByTab = newNotificationsByTab,
-                        currentPageByTab = newCurrentPageByTab,
-                    )
-                } else {
-                    it.copy(isLoading = true)
-                }
+                currentState.copy(
+                    tabs = currentState.tabs + (targetTab to updatedTabState),
+                )
             }
 
             viewModelScope.launch {
-                val currentState = _state.value
-                val currentPage = currentState.currentPageByTab[tabIndex]
-                val selectedTab = currentState.selectedTab
+                val pageToLoad = if (isRefresh) 1 else currentTabState.currentPage
 
                 mediaRepository
                     .getNotifications(
-                        pageNumber = currentPage,
+                        pageNumber = pageToLoad,
                         perPage = 20,
                         resetCount = true,
-                        types = selectedTab.types,
+                        types = targetTab.types,
                     ).onSuccess { page ->
-                        _state.update { updatedState ->
-                            val newNotificationsByTab = updatedState.notificationsByTab.toMutableList()
-                            newNotificationsByTab[tabIndex] = newNotificationsByTab[tabIndex] + page.data
+                        _state.update { currentState ->
+                            val latestTabState = currentState.tabs[targetTab] ?: NotificationTabState()
+                            val updatedNotifications =
+                                if (isRefresh) page.data else latestTabState.notifications + page.data
 
-                            val newHasNextPageByTab = updatedState.hasNextPageByTab.toMutableList()
-                            newHasNextPageByTab[tabIndex] = page.pageInfo?.hasNextPage ?: false
+                            val updatedTabState =
+                                latestTabState.copy(
+                                    notifications = updatedNotifications,
+                                    currentPage = (if (isRefresh) 1 else latestTabState.currentPage) + 1,
+                                    hasNextPage = page.pageInfo?.hasNextPage ?: false,
+                                    isLoading = false,
+                                    error = null,
+                                )
 
-                            val newCurrentPageByTab = updatedState.currentPageByTab.toMutableList()
-                            newCurrentPageByTab[tabIndex] = updatedState.currentPageByTab[tabIndex] + 1
-
-                            updatedState.copy(
-                                isLoading = false,
-                                notificationsByTab = newNotificationsByTab,
-                                hasNextPageByTab = newHasNextPageByTab,
-                                currentPageByTab = newCurrentPageByTab,
-                                error = null,
+                            currentState.copy(
+                                tabs = currentState.tabs + (targetTab to updatedTabState),
                             )
                         }
                     }.onFailure { error ->
-                        _state.update { it.copy(isLoading = false, error = error.message) }
+                        _state.update { currentState ->
+                            val latestTabState = currentState.tabs[targetTab] ?: NotificationTabState()
+                            currentState.copy(
+                                tabs = currentState.tabs + (targetTab to latestTabState.copy(isLoading = false, error = error.message)),
+                            )
+                        }
                     }
             }
         }
@@ -85,9 +87,10 @@ class NotificationsViewModel
         fun onTabSelected(tab: NotificationTab) {
             if (_state.value.selectedTab == tab) return
             _state.update { it.copy(selectedTab = tab) }
-            // Only load if the tab hasn't been loaded yet
-            if (_state.value.notificationsByTab[tab.ordinal].isEmpty()) {
-                loadNotifications()
+
+            val tabState = _state.value.tabs[tab]
+            if (tabState == null || tabState.notifications.isEmpty()) {
+                loadNotifications(tab = tab)
             }
         }
     }
