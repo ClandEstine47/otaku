@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -34,6 +35,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
@@ -408,15 +410,18 @@ private fun MediaInfoTab(
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         OtakuTitle(id = R.string.tags)
         OtakuTitle(
             id = R.string.show_spoilers,
             color = if (showSpoilerTags) MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f) else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f),
             modifier =
-                Modifier.clickable {
-                    showSpoilerTags = !showSpoilerTags
-                },
+                Modifier
+                    .clip(RoundedCornerShape(10.dp))
+                    .clickable {
+                        showSpoilerTags = !showSpoilerTags
+                    }.padding(horizontal = 10.dp, vertical = 4.dp),
         )
     }
     media.tags?.let { mediaTags ->
