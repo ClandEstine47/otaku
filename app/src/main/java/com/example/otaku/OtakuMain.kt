@@ -3,18 +3,25 @@ package com.example.otaku
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.core.domain.manager.AppUpdateManager
 import com.example.core.domain.model.settings.ThemeSettings
 import com.example.core.navigation.NavActionManager
 import com.example.core.navigation.OtakuScreen
@@ -31,6 +38,8 @@ import dev.chrisbanes.haze.HazeState
 fun OtakuMain(
     isLoggedIn: Boolean,
     themeSettings: ThemeSettings,
+    appUpdateManager: AppUpdateManager,
+    startUpdateFlow: () -> Unit,
 ) {
     OtakuTheme(settings = themeSettings) {
         val navController = rememberNavController()
@@ -40,8 +49,20 @@ fun OtakuMain(
         val animeViewModel: AnimeViewModel = hiltViewModel()
         val homeViewModel: HomeViewModel = hiltViewModel()
         val mangaViewModel: MangaViewModel = hiltViewModel()
+        val snackbarHostState = remember { SnackbarHostState() }
+
+        val updateStatus by appUpdateManager.updateStatus.collectAsStateWithLifecycle()
+
+        var lastHandledStatus by rememberSaveable {
+            mutableStateOf<AppUpdateManager.UpdateStatus?>(null)
+        }
+
+        var snackbarInProgress by remember {
+            mutableStateOf(false)
+        }
+
         var bottomTabIndex by rememberSaveable {
-            mutableStateOf<Int?>(null)
+            mutableIntStateOf(1)
         }
 
         var showBottomBar by rememberSaveable {
@@ -50,20 +71,61 @@ fun OtakuMain(
 
         val bottomNavBarRoutes =
             listOf(
-                OtakuScreen.AnimeTab.toString(),
-                OtakuScreen.HomeTab.toString(),
-                OtakuScreen.MangaTab.toString(),
+                OtakuScreen.AnimeTab::class.qualifiedName,
+                OtakuScreen.HomeTab::class.qualifiedName,
+                OtakuScreen.MangaTab::class.qualifiedName,
             )
 
-        // By default, set index to 1 (Home)
-        LaunchedEffect(Unit) {
-            bottomTabIndex = 1
+        LaunchedEffect(navBackStackEntry) {
+            val currentRoute = navBackStackEntry?.destination?.route
+            showBottomBar = currentRoute in bottomNavBarRoutes
         }
 
-        LaunchedEffect(navBackStackEntry) {
-            val currentRoute = navBackStackEntry?.destination.toString().substringAfterLast('.')
+        LaunchedEffect(updateStatus) {
+            if (updateStatus == lastHandledStatus) return@LaunchedEffect
+            if (snackbarInProgress) return@LaunchedEffect
 
-            showBottomBar = bottomNavBarRoutes.contains(currentRoute)
+            lastHandledStatus = updateStatus
+
+            when (updateStatus) {
+                AppUpdateManager.UpdateStatus.UpdateAvailable -> {
+                    snackbarInProgress = true
+                    val result =
+                        snackbarHostState.showSnackbar(
+                            message = "App update available",
+                            actionLabel = "Update",
+                            duration = SnackbarDuration.Indefinite,
+                        )
+                    snackbarInProgress = false
+                    if (result == SnackbarResult.ActionPerformed) {
+                        startUpdateFlow()
+                    }
+                }
+
+                is AppUpdateManager.UpdateStatus.Downloading -> {
+                    // Progress tracked here: status.bytesDownloaded / status.totalBytesToDownload
+                }
+
+                AppUpdateManager.UpdateStatus.Downloaded -> {
+                    snackbarInProgress = true
+                    val result =
+                        snackbarHostState.showSnackbar(
+                            message = "Update downloaded",
+                            actionLabel = "Restart",
+                            duration = SnackbarDuration.Indefinite,
+                        )
+                    snackbarInProgress = false
+                    if (result == SnackbarResult.ActionPerformed) {
+                        appUpdateManager.completeUpdate()
+                    }
+                }
+
+                is AppUpdateManager.UpdateStatus.Failed -> {
+                    // Errors handled here
+                }
+
+                else -> {}
+            }
         }
 
         Surface(
@@ -71,33 +133,32 @@ fun OtakuMain(
             color = MaterialTheme.colorScheme.background,
         ) {
             Scaffold(
+                snackbarHost = { SnackbarHost(snackbarHostState) },
                 bottomBar = {
                     if (showBottomBar) {
-                        bottomTabIndex?.let { index ->
-                            BottomNavBar(
-                                hazeState = hazeState,
-                                tabIndex = index,
-                                navigate = { navDestination ->
-                                    val newIndex =
-                                        when (navDestination) {
-                                            NavDestination.Anime -> 0
-                                            NavDestination.Home -> 1
-                                            NavDestination.Manga -> 2
-                                        }
-
-                                    if (bottomTabIndex != newIndex) {
-                                        bottomTabIndex = newIndex
-                                        val screen =
-                                            when (navDestination) {
-                                                NavDestination.Anime -> OtakuScreen.AnimeTab
-                                                NavDestination.Home -> OtakuScreen.HomeTab
-                                                NavDestination.Manga -> OtakuScreen.MangaTab
-                                            }
-                                        navController.navigateAndReplaceStartRoute(screen)
+                        BottomNavBar(
+                            hazeState = hazeState,
+                            tabIndex = bottomTabIndex,
+                            navigate = { navDestination ->
+                                val newIndex =
+                                    when (navDestination) {
+                                        NavDestination.Anime -> 0
+                                        NavDestination.Home -> 1
+                                        NavDestination.Manga -> 2
                                     }
-                                },
-                            )
-                        }
+
+                                if (bottomTabIndex != newIndex) {
+                                    bottomTabIndex = newIndex
+                                    val screen =
+                                        when (navDestination) {
+                                            NavDestination.Anime -> OtakuScreen.AnimeTab
+                                            NavDestination.Home -> OtakuScreen.HomeTab
+                                            NavDestination.Manga -> OtakuScreen.MangaTab
+                                        }
+                                    navController.navigateAndReplaceStartRoute(screen)
+                                }
+                            },
+                        )
                     }
                 },
             ) { padding ->

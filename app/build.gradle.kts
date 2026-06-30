@@ -134,4 +134,7 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.crashlytics)
+
+    // in-app updates
+    implementation(libs.google.app.update)
 }
