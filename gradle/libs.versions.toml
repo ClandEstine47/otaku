@@ -34,7 +34,6 @@ haze = "0.7.3"
 androidYoutubePlayer = "13.0.0"
 mockk = "1.14.11"
 googleAppUpdate = "2.1.0"
-mockk = "1.14.9"
 datastoreCore = "1.2.1"
 datastorePreferencesCore = "1.2.1"
 
