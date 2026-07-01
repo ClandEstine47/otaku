@@ -4,7 +4,6 @@ import com.example.core.domain.model.Page
 import com.example.core.domain.model.PageInfo
 import com.example.core.domain.model.airing.AiringSchedule
 import com.example.core.domain.model.media.Media
-import com.example.core.domain.model.media.MediaType
 import com.example.core.domain.repository.MediaRepository
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
@@ -44,7 +43,6 @@ class AnimeViewModelTest {
     fun `loadData success scenario updates state correctly`() =
         runTest {
             // Mock successful responses
-            val mediaType = MediaType.ANIME
             val trendingNowResponse = Result.success(Page<Media>(pageInfo = PageInfo(), data = emptyList()))
             val recentlyUpdatedResponse = Result.success(Page<AiringSchedule>(pageInfo = PageInfo(), data = emptyList()))
             val currentSeasonResponse = Result.success(Page<Media>(pageInfo = PageInfo(), data = emptyList()))
@@ -53,36 +51,38 @@ class AnimeViewModelTest {
 
             coEvery {
                 mediaRepository.getTrendingNowMedia(
-                    pageNumber = 1,
-                    perPage = 20,
-                    mediaType = mediaType,
+                    pageNumber = any(),
+                    perPage = any(),
+                    mediaType = any(),
                 )
             } returns trendingNowResponse
 
             coEvery {
                 mediaRepository.getRecentlyUpdatedAnimeList(
-                    pageNumber = 1,
-                    perPage = 20,
+                    pageNumber = any(),
+                    perPage = any(),
                     airingAtLesser = any(),
-                    airingAtGreater = 0,
+                    airingAtGreater = any(),
                 )
             } returns recentlyUpdatedResponse
 
             coEvery {
                 mediaRepository.getSeasonalMedia(
-                    pageNumber = 1,
-                    perPage = 20,
+                    pageNumber = any(),
+                    perPage = any(),
                     seasonYear = any(),
                     season = any(),
-                    mediaType = mediaType,
+                    mediaType = any(),
                 )
             } returnsMany listOf(currentSeasonResponse, nextSeasonResponse)
 
             coEvery {
                 mediaRepository.getPopularMedia(
-                    pageNumber = 1,
-                    perPage = 20,
-                    mediaType = mediaType,
+                    pageNumber = any(),
+                    perPage = any(),
+                    mediaType = any(),
+                    mediaFormat = any(),
+                    countryOfOrigin = any(),
                 )
             } returns popularResponse
 
@@ -123,7 +123,7 @@ class AnimeViewModelTest {
             } returns Result.failure(Exception(errorMessage))
 
             coEvery {
-                mediaRepository.getPopularMedia(any(), any(), any())
+                mediaRepository.getPopularMedia(any(), any(), any(), any(), any())
             } returns Result.failure(Exception(errorMessage))
 
             // When
@@ -164,7 +164,7 @@ class AnimeViewModelTest {
             } returns successResponse
 
             coEvery {
-                mediaRepository.getPopularMedia(any(), any(), any())
+                mediaRepository.getPopularMedia(any(), any(), any(), any(), any())
             } returns successResponse
 
             // When
@@ -173,13 +173,13 @@ class AnimeViewModelTest {
             // Advance coroutines
             testDispatcher.scheduler.advanceUntilIdle()
 
-            // Verify error state (should fail completely if any request fails)
+            // Verify error state (should update successful ones and keep previous for failed ones)
             with(viewModel.state.value) {
-                assertNull(trendingNowMedia)
+                assertEquals(emptyList<Media>(), trendingNowMedia)
                 assertNull(recentlyUpdatedMedia)
-                assertNull(currentSeasonMedia)
-                assertNull(popularMedia)
-                assertNull(nextSeasonMedia)
+                assertEquals(emptyList<Media>(), currentSeasonMedia)
+                assertEquals(emptyList<Media>(), popularMedia)
+                assertEquals(emptyList<Media>(), nextSeasonMedia)
                 assertEquals(false, isLoading)
                 assertEquals(errorMessage, error)
             }

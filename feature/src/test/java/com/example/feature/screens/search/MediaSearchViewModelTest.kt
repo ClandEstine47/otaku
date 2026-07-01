@@ -55,10 +55,18 @@ class MediaSearchViewModelTest {
 
             coEvery {
                 mediaRepository.getSearchMedia(
-                    pageNumber = 1,
-                    perPage = 21,
-                    mediaType = MediaType.ANIME,
-                    search = "test",
+                    pageNumber = any(),
+                    perPage = any(),
+                    mediaType = any(),
+                    search = any(),
+                    season = any(),
+                    seasonYear = any(),
+                    format = any(),
+                    status = any(),
+                    countryOfOrigin = any(),
+                    genres = any(),
+                    tags = any(),
+                    sortBy = any(),
                 )
             } returns searchResult
 
