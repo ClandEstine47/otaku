@@ -58,6 +58,7 @@ class HomeViewModel
                 _state.update { currentState ->
                     currentState.copy(
                         isLoading = true,
+                        error = null,
                     )
                 }
 
@@ -109,8 +110,8 @@ class HomeViewModel
                 _state.update { currentState ->
                     currentState.copy(
                         user = userResult.getOrNull() ?: currentState.user,
-                        currentAnimeMedia = currentAnimeResult.getOrNull()?.data,
-                        currentMangaMedia = currentMangaResult.getOrNull()?.data,
+                        currentAnimeMedia = currentAnimeResult.getOrNull()?.data ?: currentState.currentAnimeMedia,
+                        currentMangaMedia = currentMangaResult.getOrNull()?.data ?: currentState.currentMangaMedia,
                         isLoading = false,
                         error = currentError,
                     )

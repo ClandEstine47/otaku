@@ -87,14 +87,13 @@ fun HomeView(
 ) {
     val uiState by homeViewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    var isOnline by remember {
-        mutableStateOf(isOnline(context))
-    }
     val pullToRefreshState = rememberPullToRefreshState()
     val hasContent =
-        uiState.user.id > 0 ||
-            uiState.currentAnimeMedia != null ||
-            uiState.currentMangaMedia != null
+        uiState.user.id > 0 &&
+            (
+                uiState.currentAnimeMedia != null ||
+                    uiState.currentMangaMedia != null
+            )
 
     LaunchedEffect(isLoggedIn) {
         if (isLoggedIn && !hasContent && !uiState.isLoading) {
@@ -115,49 +114,26 @@ fun HomeView(
                     ),
                 ).fillMaxSize(),
     ) {
-        if (isOnline) {
-            if (isLoggedIn) {
-                PullToRefreshBox(
-                    modifier = Modifier.fillMaxSize(),
-                    isRefreshing = uiState.isLoading && hasContent,
-                    onRefresh = {
-                        homeViewModel.loadHomeData()
-                    },
-                    state = pullToRefreshState,
-                ) {
-                    if (uiState.isLoading && !hasContent) {
-                        Column(
-                            modifier =
-                                Modifier
-                                    .fillMaxSize()
-                                    .padding(top = 60.dp),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                        ) {
-                            CircularProgressIndicator()
-                        }
-                    } else if (uiState.error == null) {
-                        HomeContent(
-                            navActionManager = navActionManager,
-                            user = uiState.user,
-                            currentAnimeMedia = uiState.currentAnimeMedia,
-                            currentMangaMedia = uiState.currentMangaMedia,
-                            onLogoutClick = {
-                                homeViewModel.logout()
-                            },
-                        )
-                    } else {
-                        ErrorScreen(
-                            modifier = Modifier.padding(top = 350.dp),
-                            onRetryClick = {
-                                isOnline = isOnline(context)
-                                homeViewModel.loadHomeData()
-                            },
-                        )
-                    }
-                }
-            } else {
-                if (uiState.isLoading) {
+        if (isLoggedIn) {
+            PullToRefreshBox(
+                modifier = Modifier.fillMaxSize(),
+                isRefreshing = uiState.isLoading && hasContent,
+                onRefresh = {
+                    homeViewModel.loadHomeData()
+                },
+                state = pullToRefreshState,
+            ) {
+                if (hasContent) {
+                    HomeContent(
+                        navActionManager = navActionManager,
+                        user = uiState.user,
+                        currentAnimeMedia = uiState.currentAnimeMedia,
+                        currentMangaMedia = uiState.currentMangaMedia,
+                        onLogoutClick = {
+                            homeViewModel.logout()
+                        },
+                    )
+                } else if (uiState.isLoading) {
                     Column(
                         modifier =
                             Modifier
@@ -168,31 +144,53 @@ fun HomeView(
                     ) {
                         CircularProgressIndicator()
                     }
-                } else if (uiState.error == null) {
-                    AuthContent(
-                        onSettingsClick = {
-                            navActionManager.toSettings()
-                        },
-                    )
-                } else {
+                } else if (uiState.error != null) {
                     ErrorScreen(
                         modifier = Modifier.padding(top = 350.dp),
+                        errorMessage =
+                            if (!isOnline(context)) {
+                                stringResource(R.string.no_internet)
+                            } else {
+                                uiState.error ?: "Something went wrong."
+                            },
                         onRetryClick = {
-                            isOnline = isOnline(context)
                             homeViewModel.loadHomeData()
                         },
                     )
                 }
             }
         } else {
-            ErrorScreen(
-                modifier = Modifier.padding(top = 350.dp),
-                errorMessage = stringResource(R.string.no_internet),
-                onRetryClick = {
-                    isOnline = isOnline(context)
-                    homeViewModel.loadHomeData()
-                },
-            )
+            if (uiState.isLoading) {
+                Column(
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .padding(top = 60.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else if (uiState.error != null) {
+                ErrorScreen(
+                    modifier = Modifier.padding(top = 350.dp),
+                    errorMessage =
+                        if (!isOnline(context)) {
+                            stringResource(R.string.no_internet)
+                        } else {
+                            uiState.error ?: "Something went wrong."
+                        },
+                    onRetryClick = {
+                        homeViewModel.loadHomeData()
+                    },
+                )
+            } else {
+                AuthContent(
+                    onSettingsClick = {
+                        navActionManager.toSettings()
+                    },
+                )
+            }
         }
     }
 }
