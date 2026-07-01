@@ -22,9 +22,7 @@ import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -58,16 +56,13 @@ fun AnimeView(
 ) {
     val uiState by animeViewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    var isOnline by remember {
-        mutableStateOf(isOnline(context))
-    }
     val pullToRefreshState = rememberPullToRefreshState()
     val hasContent =
-        uiState.trendingNowMedia != null ||
-            uiState.recentlyUpdatedMedia != null ||
-            uiState.currentSeasonMedia != null ||
-            uiState.popularMedia != null ||
-            uiState.nextSeasonMedia != null
+        !uiState.trendingNowMedia.isNullOrEmpty() ||
+            !uiState.recentlyUpdatedMedia.isNullOrEmpty() ||
+            !uiState.currentSeasonMedia.isNullOrEmpty() ||
+            !uiState.popularMedia.isNullOrEmpty() ||
+            !uiState.nextSeasonMedia.isNullOrEmpty()
 
     LaunchedEffect(Unit) {
         if (!hasContent && !uiState.isLoading) {
@@ -89,61 +84,55 @@ fun AnimeView(
                 ).fillMaxSize()
                 .absolutePadding(),
     ) {
-        if (isOnline) {
-            PullToRefreshBox(
-                modifier = Modifier.fillMaxSize(),
-                isRefreshing = uiState.isLoading && hasContent,
-                onRefresh = {
-                    animeViewModel.loadData()
-                },
-                state = pullToRefreshState,
-            ) {
+        PullToRefreshBox(
+            modifier = Modifier.fillMaxSize(),
+            isRefreshing = uiState.isLoading && hasContent,
+            onRefresh = {
+                animeViewModel.loadData()
+            },
+            state = pullToRefreshState,
+        ) {
+            if (hasContent) {
                 Column(
                     modifier =
                         Modifier
                             .fillMaxSize()
                             .verticalScroll(rememberScrollState()),
                 ) {
-                    if (uiState.isLoading && !hasContent) {
-                        Column(
-                            modifier =
-                                Modifier
-                                    .fillMaxSize()
-                                    .padding(top = 60.dp),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                        ) {
-                            CircularProgressIndicator()
-                        }
-                    } else if (uiState.error == null) {
-                        AnimeContent(
-                            navActionManager = navActionManager,
-                            trendingNowMedia = uiState.trendingNowMedia,
-                            recentlyUpdatedMedia = uiState.recentlyUpdatedMedia,
-                            currentSeasonMedia = uiState.currentSeasonMedia,
-                            popularNowMedia = uiState.popularMedia,
-                            nextSeasonMedia = uiState.nextSeasonMedia,
-                        )
-                    } else {
-                        ErrorScreen(
-                            modifier = Modifier.padding(top = 350.dp),
-                            onRetryClick = {
-                                isOnline = isOnline(context)
-                                animeViewModel.loadData()
-                            },
-                        )
-                    }
+                    AnimeContent(
+                        navActionManager = navActionManager,
+                        trendingNowMedia = uiState.trendingNowMedia,
+                        recentlyUpdatedMedia = uiState.recentlyUpdatedMedia,
+                        currentSeasonMedia = uiState.currentSeasonMedia,
+                        popularNowMedia = uiState.popularMedia,
+                        nextSeasonMedia = uiState.nextSeasonMedia,
+                    )
                 }
+            } else if (uiState.isLoading) {
+                Column(
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .padding(top = 60.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                ErrorScreen(
+                    modifier = Modifier.padding(top = 350.dp),
+                    errorMessage =
+                        if (!isOnline(context)) {
+                            stringResource(R.string.no_internet)
+                        } else {
+                            uiState.error ?: "Something went wrong."
+                        },
+                    onRetryClick = {
+                        animeViewModel.loadData()
+                    },
+                )
             }
-        } else {
-            ErrorScreen(
-                modifier = Modifier.padding(top = 350.dp),
-                errorMessage = stringResource(R.string.no_internet),
-                onRetryClick = {
-                    isOnline = isOnline(context)
-                    animeViewModel.loadData()
-                },
-            )
         }
     }
 }
@@ -159,7 +148,7 @@ fun AnimeContent(
 ) {
     val mediaType = MediaType.ANIME
 
-    if (trendingNowMedia != null) {
+    if (!trendingNowMedia.isNullOrEmpty()) {
         Box(modifier = Modifier.fillMaxSize()) {
             InfiniteHorizontalPager(
                 mediaList = trendingNowMedia,
@@ -178,11 +167,10 @@ fun AnimeContent(
                 },
             )
         }
+        Spacer(modifier = Modifier.height(40.dp))
     }
 
-    Spacer(modifier = Modifier.height(40.dp))
-
-    recentlyUpdatedMedia?.let { recentlyUpdatedAnime ->
+    recentlyUpdatedMedia?.takeIf { it.isNotEmpty() }?.let { recentlyUpdatedAnime ->
         TitleWithExpandButton(
             titleId = R.string.recently_updated,
             onExpandClick = {
@@ -217,7 +205,7 @@ fun AnimeContent(
         }
     }
 
-    currentSeasonMedia?.let { currentSeasonAnime ->
+    currentSeasonMedia?.takeIf { it.isNotEmpty() }?.let { currentSeasonAnime ->
         TitleWithExpandButton(
             titleId = R.string.current_season,
             onExpandClick = {
@@ -252,7 +240,7 @@ fun AnimeContent(
         }
     }
 
-    popularNowMedia?.let { popularAnime ->
+    popularNowMedia?.takeIf { it.isNotEmpty() }?.let { popularAnime ->
         TitleWithExpandButton(
             titleId = R.string.popular_now,
             onExpandClick = {
@@ -287,7 +275,7 @@ fun AnimeContent(
         }
     }
 
-    nextSeasonMedia?.let { nextSeasonAnime ->
+    nextSeasonMedia?.takeIf { it.isNotEmpty() }?.let { nextSeasonAnime ->
         TitleWithExpandButton(
             titleId = R.string.next_season,
             onExpandClick = {

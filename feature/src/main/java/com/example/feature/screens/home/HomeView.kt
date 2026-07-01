@@ -144,7 +144,7 @@ fun HomeView(
                     ) {
                         CircularProgressIndicator()
                     }
-                } else if (uiState.error != null) {
+                } else {
                     ErrorScreen(
                         modifier = Modifier.padding(top = 350.dp),
                         errorMessage =
