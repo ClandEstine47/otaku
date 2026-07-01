@@ -32,6 +32,7 @@ class MangaViewModel
                 _state.update {
                     it.copy(
                         isLoading = true,
+                        error = null,
                     )
                 }
 
@@ -87,38 +88,33 @@ class MangaViewModel
                 val popularOneShotResult = popularOneShotResultDeferred.await()
 
                 _state.update { currentState ->
-                    when {
-                        trendingNowResult.isSuccess && popularMangaResult.isSuccess && popularManhwaResult.isSuccess && popularNovelResult.isSuccess && popularOneShotResult.isSuccess -> {
-                            currentState.copy(
-                                trendingMangaList = trendingNowResult.getOrNull()?.data,
-                                popularMangaList = popularMangaResult.getOrNull()?.data,
-                                popularManhwaList = popularManhwaResult.getOrNull()?.data,
-                                popularNovelList = popularNovelResult.getOrNull()?.data,
-                                popularOneShotList = popularOneShotResult.getOrNull()?.data,
-                                isLoading = false,
-                                error = null,
-                            )
+                    val hasAnyFailure =
+                        trendingNowResult.isFailure ||
+                            popularMangaResult.isFailure ||
+                            popularManhwaResult.isFailure ||
+                            popularNovelResult.isFailure ||
+                            popularOneShotResult.isFailure
+
+                    val errorMessage =
+                        if (hasAnyFailure) {
+                            trendingNowResult.exceptionOrNull()?.message
+                                ?: popularMangaResult.exceptionOrNull()?.message
+                                ?: popularManhwaResult.exceptionOrNull()?.message
+                                ?: popularNovelResult.exceptionOrNull()?.message
+                                ?: popularOneShotResult.exceptionOrNull()?.message
+                        } else {
+                            null
                         }
 
-                        trendingNowResult.isFailure || popularMangaResult.isFailure || popularManhwaResult.isFailure || popularNovelResult.isFailure || popularOneShotResult.isFailure -> {
-                            currentState.copy(
-                                trendingMangaList = null,
-                                popularMangaList = null,
-                                popularManhwaList = null,
-                                popularNovelList = null,
-                                popularOneShotList = null,
-                                isLoading = false,
-                                error = trendingNowResult.exceptionOrNull()?.message ?: "An unknown error occurred",
-                            )
-                        }
-
-                        else -> {
-                            currentState.copy(
-                                isLoading = false,
-                                error = "Unexpected result state",
-                            )
-                        }
-                    }
+                    currentState.copy(
+                        trendingMangaList = trendingNowResult.getOrNull()?.data ?: currentState.trendingMangaList,
+                        popularMangaList = popularMangaResult.getOrNull()?.data ?: currentState.popularMangaList,
+                        popularManhwaList = popularManhwaResult.getOrNull()?.data ?: currentState.popularManhwaList,
+                        popularNovelList = popularNovelResult.getOrNull()?.data ?: currentState.popularNovelList,
+                        popularOneShotList = popularOneShotResult.getOrNull()?.data ?: currentState.popularOneShotList,
+                        isLoading = false,
+                        error = errorMessage,
+                    )
                 }
             }
         }

@@ -22,9 +22,7 @@ import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -57,16 +55,13 @@ fun MangaView(
 ) {
     val uiState by mangaViewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    var isOnline by remember {
-        mutableStateOf(isOnline(context))
-    }
     val pullToRefreshState = rememberPullToRefreshState()
     val hasContent =
-        uiState.trendingMangaList != null ||
-            uiState.popularMangaList != null ||
-            uiState.popularManhwaList != null ||
-            uiState.popularNovelList != null ||
-            uiState.popularOneShotList != null
+        !uiState.trendingMangaList.isNullOrEmpty() ||
+            !uiState.popularMangaList.isNullOrEmpty() ||
+            !uiState.popularManhwaList.isNullOrEmpty() ||
+            !uiState.popularNovelList.isNullOrEmpty() ||
+            !uiState.popularOneShotList.isNullOrEmpty()
 
     LaunchedEffect(Unit) {
         if (!hasContent && !uiState.isLoading) {
@@ -88,61 +83,55 @@ fun MangaView(
                 ).fillMaxSize()
                 .absolutePadding(),
     ) {
-        if (isOnline) {
-            PullToRefreshBox(
-                modifier = Modifier.fillMaxSize(),
-                isRefreshing = uiState.isLoading && hasContent,
-                onRefresh = {
-                    mangaViewModel.loadData()
-                },
-                state = pullToRefreshState,
-            ) {
+        PullToRefreshBox(
+            modifier = Modifier.fillMaxSize(),
+            isRefreshing = uiState.isLoading && hasContent,
+            onRefresh = {
+                mangaViewModel.loadData()
+            },
+            state = pullToRefreshState,
+        ) {
+            if (hasContent) {
                 Column(
                     modifier =
                         Modifier
                             .fillMaxSize()
                             .verticalScroll(rememberScrollState()),
                 ) {
-                    if (uiState.isLoading && !hasContent) {
-                        Column(
-                            modifier =
-                                Modifier
-                                    .fillMaxSize()
-                                    .padding(top = 60.dp),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                        ) {
-                            CircularProgressIndicator()
-                        }
-                    } else if (uiState.error == null) {
-                        MangaContent(
-                            navActionManager = navActionManager,
-                            trendingMangaList = uiState.trendingMangaList,
-                            popularMangaList = uiState.popularMangaList,
-                            popularManhwaList = uiState.popularManhwaList,
-                            popularNovelList = uiState.popularNovelList,
-                            popularOneShotList = uiState.popularOneShotList,
-                        )
-                    } else {
-                        ErrorScreen(
-                            modifier = Modifier.padding(top = 350.dp),
-                            onRetryClick = {
-                                isOnline = isOnline(context)
-                                mangaViewModel.loadData()
-                            },
-                        )
-                    }
+                    MangaContent(
+                        navActionManager = navActionManager,
+                        trendingMangaList = uiState.trendingMangaList,
+                        popularMangaList = uiState.popularMangaList,
+                        popularManhwaList = uiState.popularManhwaList,
+                        popularNovelList = uiState.popularNovelList,
+                        popularOneShotList = uiState.popularOneShotList,
+                    )
                 }
+            } else if (uiState.isLoading) {
+                Column(
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .padding(top = 60.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                ErrorScreen(
+                    modifier = Modifier.padding(top = 350.dp),
+                    errorMessage =
+                        if (!isOnline(context)) {
+                            stringResource(R.string.no_internet)
+                        } else {
+                            uiState.error ?: "Something went wrong."
+                        },
+                    onRetryClick = {
+                        mangaViewModel.loadData()
+                    },
+                )
             }
-        } else {
-            ErrorScreen(
-                modifier = Modifier.padding(top = 350.dp),
-                errorMessage = stringResource(R.string.no_internet),
-                onRetryClick = {
-                    isOnline = isOnline(context)
-                    mangaViewModel.loadData()
-                },
-            )
         }
     }
 }
@@ -158,7 +147,7 @@ fun MangaContent(
 ) {
     val mediaType = MediaType.MANGA
 
-    if (trendingMangaList != null) {
+    if (!trendingMangaList.isNullOrEmpty()) {
         Box(modifier = Modifier.fillMaxSize()) {
             InfiniteHorizontalPager(
                 mediaList = trendingMangaList,
@@ -177,11 +166,10 @@ fun MangaContent(
                 },
             )
         }
+        Spacer(modifier = Modifier.height(40.dp))
     }
 
-    Spacer(modifier = Modifier.height(40.dp))
-
-    popularMangaList?.let { mangas ->
+    popularMangaList?.takeIf { it.isNotEmpty() }?.let { mangas ->
         TitleWithExpandButton(
             titleId = R.string.popular_manga,
             onExpandClick = {
@@ -215,7 +203,7 @@ fun MangaContent(
         }
     }
 
-    popularManhwaList?.let { manhwas ->
+    popularManhwaList?.takeIf { it.isNotEmpty() }?.let { manhwas ->
         TitleWithExpandButton(
             titleId = R.string.popular_manhwa,
             onExpandClick = {
@@ -249,7 +237,7 @@ fun MangaContent(
         }
     }
 
-    popularNovelList?.let { novels ->
+    popularNovelList?.takeIf { it.isNotEmpty() }?.let { novels ->
         TitleWithExpandButton(
             titleId = R.string.popular_novel,
             onExpandClick = {
@@ -283,7 +271,7 @@ fun MangaContent(
         }
     }
 
-    popularOneShotList?.let { oneShorts ->
+    popularOneShotList?.takeIf { it.isNotEmpty() }?.let { oneShorts ->
         TitleWithExpandButton(
             titleId = R.string.popular_one_shot,
             onExpandClick = {
