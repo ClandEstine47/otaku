@@ -19,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.core.domain.manager.AppUpdateManager
@@ -69,16 +70,19 @@ fun OtakuMain(
             mutableStateOf(true)
         }
 
-        val bottomNavBarRoutes =
-            listOf(
-                OtakuScreen.AnimeTab::class.qualifiedName,
-                OtakuScreen.HomeTab::class.qualifiedName,
-                OtakuScreen.MangaTab::class.qualifiedName,
-            )
+        val bottomBarScreens =
+            remember {
+                setOf(
+                    OtakuScreen.AnimeTab::class,
+                    OtakuScreen.HomeTab::class,
+                    OtakuScreen.MangaTab::class,
+                )
+            }
 
         LaunchedEffect(navBackStackEntry) {
-            val currentRoute = navBackStackEntry?.destination?.route
-            showBottomBar = currentRoute in bottomNavBarRoutes
+            showBottomBar = navBackStackEntry?.destination?.let { destination ->
+                bottomBarScreens.any { destination.hasRoute(it) }
+            } ?: false
         }
 
         LaunchedEffect(updateStatus) {
