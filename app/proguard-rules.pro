@@ -7,6 +7,22 @@
 
 # Kotlin Serialization
 -keepattributes *Annotation*, EnclosingMethod, Signature, InnerClasses
+-keepclassmembers class ** {
+    @kotlinx.serialization.Serializable *;
+}
+-keepclassmembers class ** {
+    @kotlinx.serialization.SerialName *;
+}
+
+# Haze
+-keep class dev.chrisbanes.haze.** { *; }
+
+# Keep Navigation Routes for Type Safety
+-keep class com.example.core.navigation.OtakuScreen** { *; }
+
+# Keep BottomNavBar UI state classes
+-keep class com.example.feature.screens.NavBarItem { *; }
+-keep class com.example.feature.screens.NavDestination** { *; }
 # and specify the fully qualified class name to the JavaScript interface
 # class:
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
