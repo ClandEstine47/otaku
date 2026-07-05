@@ -82,7 +82,7 @@ class MediaListViewModel
                     // User lists can either be split into status tabs or filtered down to one status.
                     val userTabCount =
                         if (contentType == MediaListContentType.USER_CURRENT_ANIME || contentType == MediaListContentType.USER_CURRENT_MANGA) {
-                            if (status == null) getUserListTabStatuses(mediaType).size else 1
+                            if (status == null) USER_LIST_STATUSES.size else 1
                         } else {
                             7
                         }
@@ -226,7 +226,6 @@ class MediaListViewModel
                             if (contentType == MediaListContentType.USER_CURRENT_ANIME || contentType == MediaListContentType.USER_CURRENT_MANGA) {
                                 @Suppress("UNCHECKED_CAST")
                                 val userMediaListData = mediaListResult.getOrNull()?.data as? List<Media> ?: emptyList()
-                                val userTabStatuses = getUserListTabStatuses(mediaType)
                                 val accumulatedUserMedia =
                                     if (loadMore) {
                                         currentState.userListMedia + userMediaListData
@@ -237,7 +236,7 @@ class MediaListViewModel
                                     if (status == null) {
                                         // Build one page per status tab, with the first tab showing all media.
                                         val groupedMedia = accumulatedUserMedia.groupBy { it.mediaListEntry?.status }
-                                        userTabStatuses.map { tabStatus ->
+                                        USER_LIST_STATUSES.map { tabStatus ->
                                             val tabMedia =
                                                 if (tabStatus == null) {
                                                     accumulatedUserMedia
@@ -415,33 +414,6 @@ class MediaListViewModel
                 MediaType.MANGA -> listOf("ALL", "READING", "PLANNING", "COMPLETED", "DROPPED", "PAUSED", "REREADING")
             }
 
-        private fun getUserListTabStatuses(mediaType: MediaType): List<MediaListStatus?> =
-            when (mediaType) {
-                MediaType.ANIME -> {
-                    listOf(
-                        null,
-                        MediaListStatus.CURRENT,
-                        MediaListStatus.PLANNING,
-                        MediaListStatus.COMPLETED,
-                        MediaListStatus.DROPPED,
-                        MediaListStatus.PAUSED,
-                        MediaListStatus.REPEATING,
-                    )
-                }
-
-                MediaType.MANGA -> {
-                    listOf(
-                        null,
-                        MediaListStatus.CURRENT,
-                        MediaListStatus.PLANNING,
-                        MediaListStatus.COMPLETED,
-                        MediaListStatus.DROPPED,
-                        MediaListStatus.PAUSED,
-                        MediaListStatus.REPEATING,
-                    )
-                }
-            }
-
         fun increasePageNumber() =
             _state.update {
                 it.copy(
@@ -472,5 +444,9 @@ class MediaListViewModel
                     DayOfWeek.SATURDAY -> CalendarTab.SATURDAY
                 }
             }
+        }
+
+        companion object {
+            private val USER_LIST_STATUSES = listOf(null) + MediaListStatus.entries
         }
     }
