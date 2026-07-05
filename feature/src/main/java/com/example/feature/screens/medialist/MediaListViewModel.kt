@@ -411,8 +411,8 @@ class MediaListViewModel
 
         fun getUserListTabLabels(mediaType: MediaType): List<String> =
             when (mediaType) {
-                MediaType.ANIME -> listOf("ALL", "WATCHING", "PLANNING", "COMPLETED", "DROPPED", "PAUSED")
-                MediaType.MANGA -> listOf("ALL", "READING")
+                MediaType.ANIME -> listOf("ALL", "WATCHING", "PLANNING", "COMPLETED", "DROPPED", "PAUSED", "REWATCHING")
+                MediaType.MANGA -> listOf("ALL", "READING", "PLANNING", "COMPLETED", "DROPPED", "PAUSED", "REREADING")
             }
 
         private fun getUserListTabStatuses(mediaType: MediaType): List<MediaListStatus?> =
@@ -425,6 +425,7 @@ class MediaListViewModel
                         MediaListStatus.COMPLETED,
                         MediaListStatus.DROPPED,
                         MediaListStatus.PAUSED,
+                        MediaListStatus.REPEATING,
                     )
                 }
 
@@ -432,6 +433,11 @@ class MediaListViewModel
                     listOf(
                         null,
                         MediaListStatus.CURRENT,
+                        MediaListStatus.PLANNING,
+                        MediaListStatus.COMPLETED,
+                        MediaListStatus.DROPPED,
+                        MediaListStatus.PAUSED,
+                        MediaListStatus.REPEATING,
                     )
                 }
             }
