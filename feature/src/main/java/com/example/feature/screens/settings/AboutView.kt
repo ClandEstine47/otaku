@@ -34,6 +34,7 @@ fun AboutView(
 ) {
     val context = LocalContext.current
     val githubUrl = stringResource(R.string.github_url)
+    val telegramUrl = stringResource(R.string.telegram_url)
     val futureUpdateMessage = stringResource(R.string.future_update)
 
     val packageInfo =
@@ -105,6 +106,15 @@ fun AboutView(
                     subtitleRes = R.string.github_subtitle,
                     onClick = {
                         context.openActionView(githubUrl)
+                    },
+                )
+
+                SettingsItem(
+                    iconRes = R.drawable.telegram,
+                    titleRes = R.string.telegram,
+                    subtitleRes = R.string.telegram_subtitle,
+                    onClick = {
+                        context.openActionView(telegramUrl)
                     },
                 )
 
