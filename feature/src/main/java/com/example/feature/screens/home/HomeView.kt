@@ -691,6 +691,7 @@ fun AuthContent(
 ) {
     val context = LocalContext.current
     val githubUrl = stringResource(R.string.github_url)
+    val telegramUrl = stringResource(R.string.telegram_url)
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -733,15 +734,31 @@ fun AuthContent(
 
             Spacer(modifier = Modifier.height(75.dp))
 
-            IconButton(
-                onClick = {
-                    context.openActionView(githubUrl)
-                },
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(20.dp),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Icon(
-                    painter = painterResource(R.drawable.github),
-                    contentDescription = "Github Link",
-                )
+                IconButton(
+                    onClick = {
+                        context.openActionView(githubUrl)
+                    },
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.github),
+                        contentDescription = "Github Link",
+                    )
+                }
+
+                IconButton(
+                    onClick = {
+                        context.openActionView(telegramUrl)
+                    },
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.telegram),
+                        contentDescription = "Telegram Link",
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(75.dp))
