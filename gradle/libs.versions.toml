@@ -12,6 +12,8 @@ androidxDatastore = "1.2.1"
 androidxHiltNavigationCompose = "1.3.0"
 androidxLifecycle = "2.10.0"
 androidxNavigation = "2.9.8"
+androidxWork = "2.11.2"
+androidxHiltWork = "1.4.0"
 espressoCore = "3.7.0"
 junit = "4.13.2"
 androidxJunit = "1.3.0"
@@ -82,6 +84,9 @@ mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 mockk-android = { group = "io.mockk", name = "mockk-android", version.ref = "mockk" }
 androidx-datastore-core = { group = "androidx.datastore", name = "datastore-core", version.ref = "datastoreCore" }
 androidx-datastore-preferences-core = { group = "androidx.datastore", name = "datastore-preferences-core", version.ref = "datastorePreferencesCore" }
+androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "androidxWork" }
+androidx-hilt-work = { group = "androidx.hilt", name = "hilt-work", version.ref = "androidxHiltWork" }
+androidx-hilt-compiler = { group = "androidx.hilt", name = "hilt-compiler", version.ref = "androidxHiltWork" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

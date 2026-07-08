@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navDeepLink
 import androidx.navigation.toRoute
 import com.example.core.domain.model.MediaListContentType
 import com.example.core.domain.model.media.MediaType
@@ -104,6 +105,12 @@ fun MainNavigation(
                 mapOf(
                     typeOf<MediaType>() to CustomNavType(MediaType::class.java, MediaType.serializer()),
                 ),
+            deepLinks =
+                listOf(
+                    navDeepLink<OtakuScreen.MediaDetail>(
+                        basePath = "com.example.otaku://media_detail",
+                    ),
+                ),
         ) {
             MediaDetailView(
                 arguments = it.toRoute(),
@@ -112,7 +119,14 @@ fun MainNavigation(
             )
         }
 
-        composable<OtakuScreen.Notifications> {
+        composable<OtakuScreen.Notifications>(
+            deepLinks =
+                listOf(
+                    navDeepLink<OtakuScreen.Notifications>(
+                        basePath = "com.example.otaku://notifications",
+                    ),
+                ),
+        ) {
             NotificationsView(
                 navActionManager = navActionManager,
             )

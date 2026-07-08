@@ -137,4 +137,9 @@ dependencies {
 
     // in-app updates
     implementation(libs.google.app.update)
+
+    // work manager
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.androidx.hilt.work)
+    ksp(libs.androidx.hilt.compiler)
 }

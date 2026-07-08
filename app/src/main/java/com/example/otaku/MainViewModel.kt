@@ -32,7 +32,7 @@ class MainViewModel
                 )
 
         fun onIntentDataReceived(data: Uri?) {
-            if (data?.scheme == OTAKU_SCHEME) {
+            if (data?.scheme == OTAKU_SCHEME && data.host == "auth") {
                 viewModelScope.launch {
                     mainRepository.parseRedirectUri(data)
                 }

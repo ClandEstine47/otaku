@@ -40,6 +40,12 @@ class MainRepositoryImpl
 
         override fun isLoggedIn(): Flow<Boolean> = accessToken.map { it != null }
 
+        override fun getLastNotificationTimestamp(): Flow<Int> = dataStore.getValue(LAST_NOTIFICATION_TIMESTAMP).map { it ?: 0 }
+
+        override suspend fun setLastNotificationTimestamp(timestamp: Int) {
+            dataStore.setValue(LAST_NOTIFICATION_TIMESTAMP, timestamp)
+        }
+
         override suspend fun getUserDetails(): User =
             mediaService.getUserDetails().fold(
                 onSuccess = { user ->
@@ -67,6 +73,7 @@ class MainRepositoryImpl
                 it.remove(USER_NAME)
                 it.remove(USER_ID_KEY)
                 it.remove(DISPLAY_ADULT_KEY)
+                it.remove(LAST_NOTIFICATION_TIMESTAMP)
             }
         }
 
@@ -75,5 +82,6 @@ class MainRepositoryImpl
             private val USER_NAME = stringPreferencesKey("user_name")
             private val USER_ID_KEY = intPreferencesKey("user_id")
             private val DISPLAY_ADULT_KEY = booleanPreferencesKey("display_adult")
+            private val LAST_NOTIFICATION_TIMESTAMP = intPreferencesKey("last_notification_timestamp")
         }
     }

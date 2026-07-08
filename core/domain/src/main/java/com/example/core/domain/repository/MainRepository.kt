@@ -11,4 +11,8 @@ interface MainRepository {
     suspend fun parseRedirectUri(uri: android.net.Uri)
 
     fun isLoggedIn(): Flow<Boolean>
+
+    fun getLastNotificationTimestamp(): Flow<Int>
+
+    suspend fun setLastNotificationTimestamp(timestamp: Int)
 }
