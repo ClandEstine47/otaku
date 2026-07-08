@@ -97,6 +97,7 @@
     <string name="delete">Delete</string>
     <string name="remove">Remove</string>
     <string name="notifications">Notifications</string>
+    <string name="notifications_subtitle">Stay updated on airing episodes and media releases</string>
     <string name="bio">Bio</string>
     <string name="stats">Stats</string>
     <string name="episodes_watched">Episodes Watched</string>

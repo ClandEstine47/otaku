@@ -11,8 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import com.example.core.domain.model.settings.AppColor
+import com.example.core.domain.model.settings.AppSettings
 import com.example.core.domain.model.settings.AppTheme
-import com.example.core.domain.model.settings.ThemeSettings
 
 private val DarkColorScheme =
     darkColorScheme(
@@ -107,7 +107,7 @@ private val LavenderLightColorScheme =
 
 @Composable
 fun OtakuTheme(
-    settings: ThemeSettings = ThemeSettings(),
+    settings: AppSettings = AppSettings(),
     content: @Composable () -> Unit,
 ) {
     val darkTheme =

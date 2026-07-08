@@ -20,7 +20,7 @@ class ThemeViewModel
         private val settingsRepository: SettingsRepository,
     ) : ViewModel() {
         val uiState: StateFlow<ThemeUiState> =
-            settingsRepository.themeSettings
+            settingsRepository.appSettings
                 .map { settings ->
                     ThemeUiState(
                         selectedTheme = settings.theme,

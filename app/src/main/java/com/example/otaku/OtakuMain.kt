@@ -23,7 +23,7 @@ import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.core.domain.manager.AppUpdateManager
-import com.example.core.domain.model.settings.ThemeSettings
+import com.example.core.domain.model.settings.AppSettings
 import com.example.core.navigation.NavActionManager
 import com.example.core.navigation.OtakuScreen
 import com.example.core.navigation.navigateAndReplaceStartRoute
@@ -38,11 +38,11 @@ import dev.chrisbanes.haze.HazeState
 @Composable
 fun OtakuMain(
     isLoggedIn: Boolean,
-    themeSettings: ThemeSettings,
+    appSettings: AppSettings,
     appUpdateManager: AppUpdateManager,
     startUpdateFlow: () -> Unit,
 ) {
-    OtakuTheme(settings = themeSettings) {
+    OtakuTheme(settings = appSettings) {
         val navController = rememberNavController()
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val navActionManager = NavActionManager.rememberNavActionManager(navController)

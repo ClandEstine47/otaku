@@ -1,9 +1,10 @@
 package com.example.core.domain.model.settings
 
-data class ThemeSettings(
+data class AppSettings(
     val theme: AppTheme = AppTheme.SYSTEM,
     val color: AppColor = AppColor.DEFAULT,
     val oledEnabled: Boolean = false,
+    val notificationsEnabled: Boolean = true,
 )
 
 enum class AppTheme {

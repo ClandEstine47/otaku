@@ -22,6 +22,7 @@ import com.example.feature.Utils.firstBlocking
 import com.example.otaku.manager.PlayStoreUpdateManager
 import com.example.otaku.notifications.NotificationWorker
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -36,7 +37,7 @@ class MainActivity : ComponentActivity() {
     private val requestNotificationPermission =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
             if (granted) {
-                if (viewModel.isLoggedIn.firstBlocking()) {
+                if (viewModel.isLoggedIn.firstBlocking() && viewModel.appSettingsFlow.firstBlocking().notificationsEnabled) {
                     NotificationWorker.schedule(this)
                 }
             }
@@ -49,44 +50,54 @@ class MainActivity : ComponentActivity() {
         intent?.data?.let { viewModel.onIntentDataReceived(it) }
 
         val initialIsLoggedIn = viewModel.isLoggedIn.firstBlocking()
+        val initialNotificationsEnabled = viewModel.appSettingsFlow.firstBlocking().notificationsEnabled
 
         // Request runtime notification permission on Android 13+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             val granted = ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
             if (!granted) {
                 requestNotificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
-            } else if (initialIsLoggedIn) {
+            } else if (initialIsLoggedIn && initialNotificationsEnabled) {
                 NotificationWorker.schedule(this)
             }
-        } else if (initialIsLoggedIn) {
+        } else if (initialIsLoggedIn && initialNotificationsEnabled) {
             NotificationWorker.schedule(this)
         }
 
         setContent {
             val isLoggedIn by viewModel.isLoggedIn.collectAsStateWithLifecycle(initialIsLoggedIn)
-            val themeSettings by viewModel.themeSettings.collectAsStateWithLifecycle()
+            val appSettings by viewModel.appSettings.collectAsStateWithLifecycle()
             val activity = LocalContext.current as Activity
 
             OtakuMain(
                 isLoggedIn = isLoggedIn,
-                themeSettings = themeSettings,
+                appSettings = appSettings,
                 appUpdateManager = appUpdateManager,
                 startUpdateFlow = { appUpdateManager.startFlexibleUpdate(activity) },
             )
         }
 
-        // Observe login state to schedule/cancel notification worker dynamically
+        // Observe login state and settings to schedule/cancel notification worker dynamically
         lifecycleScope.launch {
-            viewModel.isLoggedIn.collect { loggedIn ->
-                if (loggedIn) {
-                    val hasPermission =
-                        Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
-                            ContextCompat.checkSelfPermission(this@MainActivity, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
-                    if (hasPermission) NotificationWorker.schedule(this@MainActivity)
-                } else {
-                    NotificationWorker.cancel(this@MainActivity)
-                }
+            combine(viewModel.isLoggedIn, viewModel.appSettingsFlow) { loggedIn, settings ->
+                loggedIn to settings.notificationsEnabled
+            }.collect { (loggedIn, notificationsEnabled) ->
+                updateNotificationWorker(loggedIn, notificationsEnabled)
             }
+        }
+    }
+
+    private fun updateNotificationWorker(
+        isLoggedIn: Boolean,
+        notificationsEnabled: Boolean,
+    ) {
+        if (isLoggedIn && notificationsEnabled) {
+            val hasPermission =
+                Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
+                    ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+            if (hasPermission) NotificationWorker.schedule(this)
+        } else {
+            NotificationWorker.cancel(this)
         }
     }
 

@@ -3,7 +3,7 @@ package com.example.otaku
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.core.domain.model.settings.ThemeSettings
+import com.example.core.domain.model.settings.AppSettings
 import com.example.core.domain.repository.MainRepository
 import com.example.core.domain.repository.SettingsRepository
 import com.example.feature.OTAKU_SCHEME
@@ -19,16 +19,18 @@ class MainViewModel
     @Inject
     constructor(
         private val mainRepository: MainRepository,
-        settingsRepository: SettingsRepository,
+        private val settingsRepository: SettingsRepository,
     ) : ViewModel() {
         val isLoggedIn = mainRepository.isLoggedIn()
 
-        val themeSettings: StateFlow<ThemeSettings> =
-            settingsRepository.themeSettings
+        val appSettingsFlow = settingsRepository.appSettings
+
+        val appSettings: StateFlow<AppSettings> =
+            appSettingsFlow
                 .stateIn(
                     scope = viewModelScope,
                     started = SharingStarted.WhileSubscribed(5000),
-                    initialValue = ThemeSettings(),
+                    initialValue = AppSettings(),
                 )
 
         fun onIntentDataReceived(data: Uri?) {
